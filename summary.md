@@ -60,9 +60,9 @@ The logo (`AI_Token_logoPNG.avif` + "AI Token King" text) is the home button —
 | Compare Models | Top-level | `api-compare.html` ✅ |
 | Use Cases | Top-level | `use-cases.html` ✅ |
 | Beginners Guide | Top-level | `beginners-guide.html` ✅ |
-| Blog | Top-level | `#` |
-| Documentation | Top-level | `documentation.html` ✅ |
-| Get Started | CTA button | `#` |
+| Blog | Top-level | `blog.html` ✅ |
+| Documentation | Top-level | `https://www.aitokenking.com.tw/docs` (new tab) ✅ |
+| Get Started | CTA button | `https://www.aitokenking.com.tw/home` (new tab) ✅ |
 
 Dropdowns: click-to-open JS, close on outside click, chevron rotates 180° when open.
 Active page: `.active` class on nav link; active dropdown parent also gets `.active`.
@@ -218,6 +218,47 @@ Chinese screenshots used so far:
 | Blog post template | — | ✅ built (`blog-post.html`) |
 
 **HTML prototype is feature-complete.** All nav links are wired. Next phase: Astro migration (see `go-live-guide.md`).
+
+---
+
+## Session 7 Changes
+
+### GitHub Repository Setup
+- Initialized git repo in project root
+- Set global git config: `antonioduran-insight` / `antonio.duran@insight-software.com`
+- Created `.gitignore` (excludes `node_modules/`, `temporary screenshots/`)
+- Initial commit of all 26 files pushed to `https://github.com/antonioduran-insight/AI_Token_Global`
+- **Workflow going forward:** make changes in Claude Code → `git add` + `git commit` + `git push` → Cloudflare Pages auto-deploys
+
+### New Pages Built
+- **`chatgpt-api.html`** — ChatGPT API guide: two-column layout, sticky sidebar TOC, FAQ accordion, pricing table (GPT-4o, GPT-4o mini, GPT-4 Turbo, o1), cross-links to Gemini + Claude pages
+- **`claude-api.html`** — Claude API guide: same layout, green hero gradient, pricing table (Sonnet 3.5, Haiku, Opus), cross-links to ChatGPT + Gemini pages
+- **`gemini-api.html`** — Gemini API guide: same layout, blue hero gradient, pricing table (1.5 Pro, Flash, 1.0 Pro), cross-links to ChatGPT + Claude pages
+
+### New Section on Homepage (`index.html`)
+- **"Mainstream API Chooser"** section inserted after the 8 Key Topics section
+- 3 cards: ChatGPT (OpenAI black icon), Gemini (4-pointed star gradient), Claude (Anthropic sunburst icon)
+- Each card links to its respective API guide page
+- Gradient CTA banner at bottom of section
+
+### Nav Link Updates (all pages)
+- **Documentation** → `https://www.aitokenking.com.tw/docs` (opens new tab) across all pages
+- **Get Started** → `https://www.aitokenking.com.tw/home` (opens new tab) across all pages
+- **Blog** → `blog.html` across all pages
+
+### Blog System
+- **`blog.html`** — Blog index: hero + search, featured article card (links to `blog-post.html`), 8 category filter tabs (flat flex-wrap, no dropdown), 12-post grid, pagination (page 1 of 17), newsletter CTA
+- **`blog-post.html`** — Single post template: reading progress bar, breadcrumb, sticky sidebar TOC with scroll-spy, share row (X/Twitter, LinkedIn, Copy Link), related articles grid
+
+### CTA Link Fixes
+- **User Guide** sidebar "Ready to try it?" → `https://www.aitokenking.com.tw/home` (new tab)
+- **Compare Models** sidebar "Compare Prices" → `https://www.aitokenking.com.tw/models` (new tab)
+- **Compare Models** final CTA "View Pricing Table →" → `https://www.aitokenking.com.tw/models` (new tab)
+
+### Pending / Next Session
+- Animations and dynamic elements across all pages ("make the site more lively/pop off a bit more")
+- 4th new page (not yet specified by user)
+- Connect GitHub repo to Cloudflare Pages for auto-deploy
 
 ---
 
