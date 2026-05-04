@@ -4,6 +4,11 @@ import es from './es.json';
 export const SUPPORTED_LANGS = ['en', 'es'] as const;
 export type Lang = typeof SUPPORTED_LANGS[number];
 
+export const LANG_META: Record<Lang, { flag: string; label: string }> = {
+  en: { flag: '🇺🇸', label: 'English' },
+  es: { flag: '🇪🇸', label: 'Español' },
+};
+
 const translations = { en, es };
 
 export function useTranslations(lang: Lang) {
