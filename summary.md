@@ -279,7 +279,81 @@ Chinese screenshots used so far:
 
 ---
 
-## Session 9 Changes
+## Session 11 Changes
+
+### Repo Restructure
+- Moved Astro project from `aitokenglobal-astro/` subfolder to repo root using plain `mv` (files were untracked)
+- Archived all 14 HTML prototypes + scripts + brand images into `archive/` using `git mv` (tracked files) to preserve history
+- Replaced root `.gitignore` with Astro's standard version + appended `temporary screenshots/`
+- Committed clean restore point and pushed to GitHub before continuing
+
+### Nav Language Switcher — Dynamic
+- Added `LANG_META` map to `src/i18n/index.ts`:
+  ```ts
+  export const LANG_META: Record<Lang, { flag: string; label: string }> = {
+    en: { flag: '🇺🇸', label: 'English' },
+    es: { flag: '🇪🇸', label: 'Español' },
+  };
+  ```
+- `Nav.astro` now loops `SUPPORTED_LANGS` dynamically instead of hardcoded ternaries — adding a new language only requires adding it to `SUPPORTED_LANGS` and `LANG_META`
+
+### Sanity Schemas — AI Trends Page (POC)
+- Added `studio/schemas/faqItem.ts` — reusable named object type (`question: string`, `answer: portableText`); used as `{ type: 'faqItem' }` in any page schema's FAQ array
+- Added `studio/schemas/aiTrendsPage.ts` — full page singleton schema:
+  - `language` radio (en/es, required)
+  - Hero: `heroHeadline` (string), `heroSubtitle` (text), `heroSubtitle2` (portableText)
+  - Intro: `introTitle`, `introParagraphs` (portableText), `summaryTitle`, `summaryPoints` (array of string)
+  - Trends: `trendsSectionLabel`, `trendsSectionTitle`, `trendCards` (array: tag, title, body [portableText], pullQuote, accentColor [fixed list])
+  - `accentColor` uses named options — editor sees "Purple/Blue/Teal/Amber/Rose", not hex values
+  - Audience: `audienceSectionTitle`, `audienceIntro` (portableText), `audienceCards` (array: audience, body [portableText])
+  - Sources: `sourcesTitle`, `sourcesNote` (text)
+  - FAQ: array of `faqItem`
+- Registered both schemas in `studio/sanity.config.ts`
+- Deployed schema via `sanity schema deploy` CLI
+- Entered EN and ES content for both languages via Sanity Studio; published both documents
+
+### `src/lib/sanity.ts` — New Types and Fetch Function
+- Added interfaces: `TrendCard`, `AudienceCard`, `FaqItem`, `AiTrendsPageData`
+- Added `getAiTrendsPage(lang)` — fetches `*[_type == "aiTrendsPage" && language == $lang][0]` with full field projection
+
+### `src/pages/[lang]/ai-trends.astro` — New Page
+- Full Astro page at `/en/ai-trends` and `/es/ai-trends`
+- Portable Text rendered via `@portabletext/to-html` with custom mark renderers (bold → brand purple `#3C315B`, em → italic)
+- `ACCENT` map: hex → `{ iconGrad, tagBg, tagColor, quoteBg, quoteColor }` for 5 brand colors
+- `CARD_ICONS` array: 5 SVG path strings indexed by card position (structural, language-independent)
+- Trend cards: 3+2 grid layout, left accent border, pull-quote anchored to card bottom via flex column
+- Sources section: "Original Source Download" uppercase label + boxed CTA card + "Related on AI Token King" 3-card grid
+- FAQ accordion: only rendered if `page.faq` has items
+- All prose sections use `:global()` CSS rules to pierce Astro's scoping for `set:html`-injected content
+
+### Bug Fixes Applied This Session
+1. **Hero subtitle2 white text** — changed `<p set:html>` to `<div class="hero-subtitle2" set:html>` + `:global(.hero-subtitle2 p)` CSS rule. Root cause: Astro scoped styles don't apply to HTML injected via `set:html` — `:global()` is required for all prose child selectors
+2. **Trend card pull-quote alignment** — added `display:flex; flex-direction:column` to `.trend-card` + `flex:1` to `.prose-card` so pull-quote callouts anchor to card bottom regardless of body text length. Pattern to reuse on any card grid with a footer element (CTA, callout, badge)
+3. **Sources section** — replaced bare `btn-download` link with labeled section + boxed `cta-download` card (icon + title + meta + arrow, hover lift + border glow)
+4. **Hero text legibility** — subtitle1 bumped to `rgba(255,255,255,0.85)` + `font-weight:500`; subtitle2 bumped to `rgba(255,255,255,0.7)` + `font-weight:500`
+
+### i18n Additions
+- `en.json` + `es.json`: added `aiTrends` namespace — `sourcesDownloadLabel`, `relatedLabel`, `related1/2/3 Tag/Title/Meta`
+
+### Architecture Decisions Locked In
+- **Hosting:** AWS Amplify (not Cloudflare Pages) — `go-live-guide.md` to be updated next
+- **Content strategy:** Sanity-first — all page content in Sanity page singletons, no hardcoded English
+- **Body fields:** Portable Text everywhere (not plain text) — translators need inline bold/links across 15+ languages
+- **FAQ:** Sanity, reusable `faqItem` object type pattern established for all future pages
+- **Language routing:** `[lang]` dynamic routes, `getStaticPaths()` from `SUPPORTED_LANGS`
+
+### Current State
+- `/en/ai-trends` and `/es/ai-trends` fully working, content-complete, live in Sanity
+- Blog routes (`/en/blog`, `/es/blog`, `/en/blog/[slug]`) working from previous session
+- All other static pages (`api-compare`, `user-guide`, `compliance`, `use-cases`, `beginners-guide`, `token-calculator`, `documentation`, `chatgpt-api`, `claude-api`, `gemini-api`) not yet ported to Astro — still in `archive/`
+- Homepage (`/en/`, `/es/`) is a placeholder
+
+### Pending — Next Session
+- **Port remaining 10 static pages** using the same Sanity singleton pattern established with AI Trends
+- **Update `go-live-guide.md`** for AWS Amplify (Phase 6 replacement)
+- **Port homepage** — currently "Coming Soon" placeholder
+- **AWS Amplify deployment** setup
+- **SEO** — sitemap, meta tags, OG images, robots.txt
 
 ### Language Subdirectory Setup
 - Created `en/` subdirectory: all 14 English HTML pages copied there with `../` relative paths for assets
