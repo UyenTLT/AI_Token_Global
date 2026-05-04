@@ -1,0 +1,18 @@
+{
+  "name": "ai-token-global-studio",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy"
+  },
+  "dependencies": {
+    "@sanity/vision": "*",
+    "react": "^19",
+    "react-dom": "^19",
+    "sanity": "*",
+    "sanity-plugin-media": "^4.2.0",
+    "styled-components": "^6.4.1"
+  }
+}

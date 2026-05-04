@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What Is an AI Token? The Complete Guía para Principiantes — AI Token King</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              purple: '#6155F1', blue: '#3E81E5', gray: '#666666',
+              lightgray: '#999999', lavender: '#F5F2FF',
+              softpurple: '#E2DFFE', darkpurple: '#3C315B',
+            }
+          },
+          fontFamily: {
+            heading: ['Kanit', 'sans-serif'],
+            body: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F5F2FF; color: #1C1C1C; -webkit-font-smoothing: antialiased; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.4;
+    }
+
+    /* ── Nav ── */
+    .nav-link { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.875rem; font-weight: 500; color: #3C315B; text-decoration: none; padding: 0.375rem 0.75rem; border-radius: 8px; transition: background-color 0.2s ease, color 0.2s ease; }
+    .nav-link:hover { background-color: #E2DFFE; color: #6155F1; }
+    .nav-link:focus-visible { outline: 2px solid #6155F1; outline-offset: 2px; }
+    .nav-link:active { background-color: #d0cbfd; }
+    .nav-link.active { color: #6155F1; background-color: #EDE9FF; font-weight: 600; }
+
+    .dropdown-item { display: flex; align-items: center; gap: 0.625rem; padding: 0.6rem 0.875rem; border-radius: 9px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.855rem; font-weight: 500; color: #3C315B; text-decoration: none; transition: background-color 0.15s ease, color 0.15s ease; white-space: nowrap; }
+    .dropdown-item:hover { background-color: #F5F2FF; color: #6155F1; }
+    .dropdown-item:focus-visible { outline: 2px solid #6155F1; border-radius: 9px; }
+
+    /* ── Buttons ── */
+    .btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: #6155F1; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 600; padding: 0.625rem 1.375rem; border-radius: 12px; text-decoration: none; box-shadow: 0 2px 12px rgba(97,85,241,0.25), 0 1px 3px rgba(97,85,241,0.15); transition: transform 0.18s cubic-bezier(.22,1,.36,1), box-shadow 0.18s ease; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(97,85,241,0.35); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:focus-visible { outline: 2px solid #6155F1; outline-offset: 3px; }
+
+    /* ── Section label pill ── */
+    .section-label { display: inline-flex; align-items: center; gap: 0.5rem; background: #E2DFFE; color: #6155F1; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.375rem 0.875rem; border-radius: 100px; }
+
+    /* ── Tag pill ── */
+    .tag-pill { display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; background: #E2DFFE; color: #6155F1; text-decoration: none; transition: background-color 0.15s ease; }
+    .tag-pill:hover { background: #d0cbfd; }
+
+    /* ── Sidebar ── */
+    .sidebar-link { display: block; padding: 0.45rem 0.875rem; border-radius: 7px; font-size: 0.845rem; font-weight: 500; color: #666; text-decoration: none; transition: background-color 0.15s ease, color 0.15s ease; }
+    .sidebar-link:hover { background: #F5F2FF; color: #6155F1; }
+    .sidebar-link.active { background: #E2DFFE; color: #6155F1; font-weight: 600; }
+    .sidebar-link:focus-visible { outline: 2px solid #6155F1; outline-offset: 2px; }
+
+    /* ── Article body typography ── */
+    .article-body h2 {
+      font-family: 'Kanit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1C1C1C;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-top: 2.5rem;
+      margin-bottom: 0.875rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(97,85,241,0.1);
+    }
+    .article-body h2:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+    .article-body h3 {
+      font-family: 'Kanit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1C1C1C;
+      letter-spacing: -0.02em;
+      margin-top: 1.75rem;
+      margin-bottom: 0.625rem;
+    }
+    .article-body p {
+      font-size: 0.975rem;
+      line-height: 1.85;
+      color: #444;
+      margin-bottom: 1.125rem;
+    }
+    .article-body ul, .article-body ol {
+      padding-left: 1.375rem;
+      margin-bottom: 1.125rem;
+    }
+    .article-body li {
+      font-size: 0.975rem;
+      line-height: 1.8;
+      color: #444;
+      margin-bottom: 0.375rem;
+    }
+    .article-body strong { color: #1C1C1C; font-weight: 700; }
+    .article-body a { color: #6155F1; text-decoration: underline; text-underline-offset: 3px; }
+    .article-body a:hover { color: #4e44d4; }
+    .article-body code {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.85em;
+      background: #E2DFFE;
+      color: #3C315B;
+      padding: 0.15rem 0.45rem;
+      border-radius: 5px;
+    }
+
+    /* ── Blockquote ── */
+    .article-body blockquote {
+      border-left: 3px solid #6155F1;
+      background: #F5F2FF;
+      border-radius: 0 12px 12px 0;
+      padding: 1.125rem 1.375rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #3C315B;
+      font-size: 0.975rem;
+      line-height: 1.8;
+    }
+
+    /* ── Callout box ── */
+    .callout {
+      background: #fff;
+      border-radius: 14px;
+      border: 1.5px solid rgba(97,85,241,0.15);
+      padding: 1.25rem 1.375rem;
+      margin: 1.75rem 0;
+      box-shadow: 0 2px 10px rgba(97,85,241,0.06);
+    }
+    .callout-accent { border-left: 4px solid #6155F1; border-radius: 0 14px 14px 0; border-top: none; border-right: none; border-bottom: none; background: #F5F2FF; padding: 1.125rem 1.375rem; margin: 1.5rem 0; }
+
+    /* ── Share button ── */
+    .share-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600; color: #3C315B; background: #fff; border: 1.5px solid rgba(97,85,241,0.15); cursor: pointer; text-decoration: none; transition: background-color 0.15s ease, border-color 0.15s ease; }
+    .share-btn:hover { background: #EDE9FF; border-color: rgba(97,85,241,0.3); color: #6155F1; }
+    .share-btn:focus-visible { outline: 2px solid #6155F1; outline-offset: 2px; }
+
+    /* ── Related post card ── */
+    .related-card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(97,85,241,0.07); text-decoration: none; display: block; transition: transform 0.2s cubic-bezier(.22,1,.36,1), box-shadow 0.2s ease; }
+    .related-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(97,85,241,0.14); }
+    .related-card:focus-visible { outline: 2px solid #6155F1; outline-offset: 3px; border-radius: 16px; }
+
+    /* ── Progress bar ── */
+    #read-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(to right, #6155F1, #3E81E5); z-index: 200; width: 0%; transition: width 0.1s linear; }
+
+    /* ── Animations ── */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-up { animation: fadeUp 0.6s cubic-bezier(.22,1,.36,1) both; }
+    .fade-up-1 { animation-delay: 0.06s; }
+    .fade-up-2 { animation-delay: 0.12s; }
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.55s cubic-bezier(.22,1,.36,1), transform 0.55s cubic-bezier(.22,1,.36,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 1023px) { .desktop-nav { display: none !important; } #mobile-menu-btn { display: flex !important; } }
+    @media (max-width: 1060px) { .post-layout { grid-template-columns: 1fr !important; } .post-sidebar { display: none !important; } }
+    @media (max-width: 640px) { .related-grid { grid-template-columns: 1fr !important; } .hero-img { height: 220px !important; } }
+  </style>
+</head>
+<body>
+
+<!-- Progreso de lectura bar -->
+<div id="read-progress"></div>
+
+<!-- ═══════════════════════════════
+     NAVIGATION
+═══════════════════════════════ -->
+<header style="background: rgba(245,242,255,0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(97,85,241,0.1); position: sticky; top: 0; z-index: 100;">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 2rem;">
+
+    <a href="index.html" style="display: flex; align-items: center; gap: 0.625rem; text-decoration: none; flex-shrink: 0;">
+      <img src="../AI_Token_logoPNG.avif" alt="AI Token King Logo" style="width: 36px; height: 36px; object-fit: contain;" />
+      <span style="font-family: 'Kanit', sans-serif; font-size: 1.1rem; font-weight: 700; color: #3C315B; letter-spacing: -0.02em;">AI Token King</span>
+    </a>
+
+    <nav class="desktop-nav" style="display: flex; align-items: center; gap: 0.125rem; flex: 1; justify-content: center;">
+      <div class="nav-dropdown" style="position: relative;">
+        <button class="nav-link nav-dropdown-btn" style="background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;" aria-expanded="false">
+          AI Resources
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="transition: transform 0.2s ease;" class="dropdown-chevron"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="nav-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #fff; border-radius: 14px; box-shadow: 0 8px 32px rgba(97,85,241,0.14), 0 2px 8px rgba(0,0,0,0.07); padding: 0.5rem; min-width: 230px; z-index: 200; border: 1px solid rgba(97,85,241,0.1);">
+          <a href="ai-trends.html" class="dropdown-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M3 6h18M3 18h12" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round"/></svg>
+            Tendencias IA
+          </a>
+          <a href="user-guide.html" class="dropdown-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="#6155F1"/></svg>
+            Guía de Usuario AI Token King
+          </a>
+          <a href="compliance.html" class="dropdown-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 01-2-2V7l4-4h10a2 2 0 012 2v14a2 2 0 01-2 2z" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 3v4H5M9 12h6M9 16h4" stroke="#6155F1" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Cumplimiento Empresarial IA
+          </a>
+        </div>
+      </div>
+      <a href="api-compare.html" class="nav-link">Comparar Modelos</a>
+      <a href="use-cases.html" class="nav-link">Casos de Uso</a>
+      <a href="beginners-guide.html" class="nav-link">Guía para Principiantes</a>
+      <a href="blog.html" class="nav-link active">Blog</a>
+      <a href="https://www.aitokenking.com.tw/docs" class="nav-link" target="_blank" rel="noopener noreferrer">Documentación</a>
+    </nav>
+
+    <div style="display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0;">
+      <a href="https://www.aitokenking.com.tw/home" class="btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1.125rem;" target="_blank" rel="noopener noreferrer">
+        Comenzar
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+
+    <button style="display: none; background: none; border: none; cursor: pointer; padding: 0.5rem;" aria-label="Menu" id="mobile-menu-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="#3C315B" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+
+<!-- ═══════════════════════════════
+     HERO / POST HEADER
+═══════════════════════════════ -->
+<section style="background: radial-gradient(ellipse 80% 60% at 70% 0%, rgba(97,85,241,0.1) 0%, transparent 55%), radial-gradient(ellipse 40% 50% at 5% 100%, rgba(62,129,229,0.08) 0%, transparent 50%), #F5F2FF; padding: 3rem 1.5rem 2.5rem;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+
+    <!-- Breadcrumb -->
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.75rem; font-size: 0.8rem; color: #999; flex-wrap: wrap;">
+      <a href="index.html" style="color: #999; text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='#6155F1'" onmouseout="this.style.color='#999'">Inicio</a>
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#CCC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <a href="blog.html" style="color: #999; text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='#6155F1'" onmouseout="this.style.color='#999'">Blog</a>
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#CCC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span style="color: #6155F1; font-weight: 600;">Fundamentos de IA</span>
+    </div>
+
+    <div style="max-width: 800px;">
+      <!-- Tags -->
+      <div class="fade-up" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+        <a href="blog.html" class="tag-pill">Fundamentos de IA</a>
+        <a href="blog.html" class="tag-pill" style="background: #EBF4FF; color: #3E81E5;">Beginner</a>
+      </div>
+
+      <!-- Title -->
+      <h1 class="fade-up fade-up-1" style="font-family: 'Kanit', sans-serif; font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 800; color: #1C1C1C; letter-spacing: -0.04em; line-height: 1.15; margin-bottom: 1.125rem;">
+        ¿Qué es un Token de IA? La Guía Completa para Principiantes sobre los Modelos de Lenguaje de IA
+      </h1>
+
+      <!-- Meta row -->
+      <div class="fade-up fade-up-2" style="display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(97,85,241,0.12);">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #6155F1, #3E81E5); display: flex; align-items: center; justify-content: center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke="#fff" stroke-width="1.75"/></svg>
+          </div>
+          <span style="font-size: 0.85rem; font-weight: 600; color: #3C315B;">Editorial AI Token King</span>
+        </div>
+        <span style="font-size: 0.8rem; color: #999;">15 de abril de 2026</span>
+        <span style="font-size: 0.8rem; color: #999;">·</span>
+        <span style="font-size: 0.8rem; color: #999;">8 min de lectura</span>
+        <span style="font-size: 0.8rem; color: #999;">·</span>
+        <span style="font-size: 0.8rem; color: #999;">Fundamentos de IA</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════
+     MAIN POST LAYOUT
+═══════════════════════════════ -->
+<section style="padding: 3rem 1.5rem 5rem;">
+  <div class="post-layout" style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 280px; gap: 3.5rem; align-items: start;">
+
+    <!-- ── MAIN ARTICLE ── -->
+    <article>
+
+      <!-- Hero image -->
+      <div class="hero-img reveal" style="border-radius: 18px; overflow: hidden; height: 420px; margin-bottom: 2.5rem; position: relative;">
+        <img src="https://placehold.co/1200x840/6155F1/FFFFFF?text=Article+Hero+Image" alt="What Is an AI Token" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+        <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(97,85,241,0.4) 0%, transparent 50%);"></div>
+        <div style="position: absolute; inset: 0; background: rgba(97,85,241,0.15); mix-blend-mode: multiply;"></div>
+      </div>
+
+      <!-- Article body -->
+      <div class="article-body">
+
+        <h2 id="what-is-a-token">¿Qué es un Token de IA?</h2>
+        <p>Si alguna vez has usado ChatGPT, Claude o Gemini y te has preguntado por qué se te cobra por "token" en lugar de por palabra o por mensaje — no estás solo. Los tokens son la unidad fundamental de texto que procesan los modelos de lenguaje de IA, pero no se corresponden exactamente con palabras, caracteres u oraciones.</p>
+        <p>Piensa en un token como un fragmento de texto. En inglés, un token equivale aproximadamente a <strong>¾ de una palabra</strong> en promedio. La palabra "hamburger" podría dividirse en dos tokens: "ham" y "burger." Una palabra corta como "cat" suele ser un token. Un espacio antes de una palabra a menudo se incluye en el propio token.</p>
+
+        <blockquote>
+          "La regla general: 100 tokens ≈ 75 palabras en inglés. Para otros idiomas — especialmente chino, japonés o coreano — la proporción puede ser muy diferente."
+        </blockquote>
+
+        <h2 id="why-tokens-matter">Por Qué los Tokens Importan para el Costo y el Rendimiento</h2>
+        <p>Cada API de IA cobra según el recuento de tokens — tanto los tokens que <strong>envías</strong> (tu prompt) como los tokens que el modelo <strong>genera</strong> (su respuesta). Por eso entender los tokens es el concepto más importante para cualquiera que quiera usar APIs de IA sin recibir facturas inesperadas.</p>
+        <p>Aquí hay un desglose simple de cómo funcionan los costos de tokens:</p>
+        <ul>
+          <li><strong>Tokens de entrada</strong> — el texto que envías al modelo (tu pregunta, instrucciones, contexto)</li>
+          <li><strong>Tokens de salida</strong> — el texto que el modelo genera para ti (siempre con precio más alto)</li>
+          <li><strong>Ventana de contexto</strong> — el número máximo de tokens que un modelo puede "ver" a la vez, incluyendo tanto entrada como salida</li>
+        </ul>
+
+        <div class="callout">
+          <div style="display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.625rem;">
+            <div style="width: 28px; height: 28px; border-radius: 8px; background: #E2DFFE; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span style="font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 0.875rem; color: #3C315B;">Ejemplo Rápido</span>
+          </div>
+          <p style="margin: 0; font-size: 0.9rem; line-height: 1.7; color: #555;">Enviar un prompt de 500 palabras a GPT-4o cuesta aproximadamente $0.00167 en tokens de entrada. La respuesta de 300 palabras del modelo cuesta aproximadamente $0.004 en tokens de salida. Total: menos de $0.006 por intercambio — pero a escala con miles de usuarios, esto se acumula rápido.</p>
+        </div>
+
+        <h2 id="how-tokenization-works">Cómo Funciona Realmente la Tokenización</h2>
+        <p>Los modelos de IA no leen texto como los humanos. Antes de procesar tu entrada, el modelo la pasa por un <strong>tokenizador</strong> — un algoritmo que divide el texto en tokens basándose en un vocabulario predefinido.</p>
+        <p>El método de tokenización más común hoy en día se llama <strong>Codificación por Pares de Bytes (BPE)</strong>. Funciona comenzando con caracteres individuales y fusionando repetidamente los pares más comunes hasta alcanzar un tamaño de vocabulario objetivo (típicamente 50,000–100,000 tokens).</p>
+
+        <h3 id="why-languages-differ">Por Qué los Diferentes Idiomas Tienen Diferentes Recuentos de Tokens</h3>
+        <p>El inglés es relativamente eficiente en tokens porque el BPE se entrenó originalmente principalmente en texto en inglés. Los caracteres chinos, japoneses y coreanos son a menudo cada uno su propio token — lo que significa que la misma información expresada en chino puede usar 2–3 veces más tokens que en inglés, y costar proporcionalmente más.</p>
+        <p>Esta es una consideración crítica para cualquiera que construya aplicaciones de IA multilingüe o compare costos entre mercados de idiomas.</p>
+
+        <h2 id="context-windows">Ventana de Contextos: The Token Limit You Need to Know</h2>
+        <p>Cada modelo de IA tiene una <strong>ventana de contexto</strong> — el número máximo de tokens que puede procesar en una sola solicitud. Esto incluye todo tu historial de conversación, el prompt del sistema y la respuesta del modelo.</p>
+        <ul>
+          <li>GPT-4o: 128,000 tokens (~96,000 words)</li>
+          <li>Claude 3.5 Sonnet: 200,000 tokens (~150,000 words)</li>
+          <li>Gemini 1.5 Pro: 1,000,000 tokens (~750,000 words)</li>
+          <li>Llama 3.1 405B: 128,000 tokens</li>
+        </ul>
+        <p>Cuando tu conversación excede la ventana de contexto, el modelo trunca los mensajes más antiguos o genera un error. Por eso las conversaciones largas, el análisis de documentos grandes y las tareas complejas de múltiples turnos requieren una gestión cuidadosa de tokens.</p>
+
+        <div class="callout-accent">
+          <p style="margin: 0; font-size: 0.9rem; line-height: 1.7; color: #3C315B;"><strong>Consejo profesional:</strong> Una ventana de contexto más grande no siempre significa mejor rendimiento. Los modelos pueden perder el foco en los detalles enterrados en el medio de contextos muy largos — un fenómeno que los investigadores llaman el problema de "perdido en el medio".</p>
+        </div>
+
+        <h2 id="practical-implications">Implicaciones Prácticas para tu Trabajo</h2>
+        <p>Entender los tokens cambia cómo escribes prompts, eliges modelos y presupuestas el uso de IA. Aquí están las conclusiones más prácticas:</p>
+        <ol>
+          <li><strong>Be concise in your prompts.</strong> Every unnecessary word costs tokens. Limpiar, direct instructions are both cheaper and more effective.</li>
+          <li><strong>Elige modelos por tarea, no por marca.</strong> Un modelo económico como GPT-4o mini o Claude Haiku maneja tareas simples a una fracción del costo de los modelos insignia.</li>
+          <li><strong>Monitorea la longitud de la salida.</strong> Los tokens de salida cuestan más que los de entrada. Si no necesitas una respuesta larga, dile al modelo que sea breve.</li>
+          <li><strong>Usa plataformas agregadoras.</strong> Herramientas como AI Token King te permiten comparar precios en vivo entre modelos y enrutar tareas a la opción más rentable automáticamente.</li>
+        </ol>
+
+        <h2 id="next-steps">Qué Leer a Continuación</h2>
+        <p>Ahora que entiendes qué son los tokens, los próximos pasos naturales son aprender a calcular los costos de tokens para tu caso de uso específico y comparar qué modelos ofrecen el mejor valor para diferentes tipos de tareas.</p>
+        <p>Recomendamos leer la <a href="beginners-guide.html">Guía para Principiantes de AI Token</a> para un camino de aprendizaje estructurado, o ir directamente a la página de <a href="api-compare.html">Comparación de Modelos</a> para ver precios en vivo de más de 60 modelos.</p>
+
+      </div><!-- /article-body -->
+
+      <!-- Share row -->
+      <div class="reveal" style="display: flex; align-items: center; gap: 0.75rem; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid rgba(97,85,241,0.1); flex-wrap: wrap;">
+        <span style="font-size: 0.85rem; font-weight: 600; color: #3C315B;">Compartir este artículo:</span>
+        <a href="#" class="share-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          X / Twitter
+        </a>
+        <a href="#" class="share-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="1.75"/></svg>
+          LinkedIn
+        </a>
+        <a href="#" class="share-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Copiar Enlace
+        </a>
+      </div>
+
+    </article>
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="post-sidebar" style="position: sticky; top: 88px; display: flex; flex-direction: column; gap: 1.25rem;">
+
+      <!-- Table of contents -->
+      <div style="background: #fff; border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 10px rgba(97,85,241,0.08);">
+        <div style="font-family: 'Kanit', sans-serif; font-size: 0.72rem; font-weight: 700; color: #6155F1; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 1rem;">En Esta Página</div>
+        <nav style="display: flex; flex-direction: column; gap: 0.125rem;" id="toc-nav">
+          <a href="#what-is-a-token" class="sidebar-link active">¿Qué es un Token de IA?</a>
+          <a href="#why-tokens-matter" class="sidebar-link">Por Qué Importan los Tokens</a>
+          <a href="#how-tokenization-works" class="sidebar-link">Cómo Funciona la Tokenización</a>
+          <a href="#context-windows" class="sidebar-link">Ventana de Contextos</a>
+          <a href="#practical-implications" class="sidebar-link">Implicaciones Prácticas</a>
+          <a href="#next-steps" class="sidebar-link">Qué Leer a Continuación</a>
+        </nav>
+      </div>
+
+      <!-- CTA card -->
+      <div style="background: linear-gradient(135deg, #6155F1 0%, #3E81E5 100%); border-radius: 16px; padding: 1.5rem; color: #fff; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.07); border-radius: 50%;"></div>
+        <div style="font-family: 'Kanit', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; position: relative;">Prueba AI Token King</div>
+        <p style="font-size: 0.825rem; opacity: 0.88; line-height: 1.6; margin-bottom: 1.125rem; position: relative;">Compara precios en vivo de más de 60 modelos y calcula tus costos exactos de tokens antes de comprometerte.</p>
+        <a href="#" class="btn-primary" style="background: rgba(255,255,255,0.2); box-shadow: none; border: 1px solid rgba(255,255,255,0.35); font-size: 0.825rem; padding: 0.5rem 1rem; width: 100%; justify-content: center; position: relative;">
+          Compare Models
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+
+      <!-- Reading time / meta -->
+      <div style="background: #fff; border-radius: 16px; padding: 1.375rem; box-shadow: 0 2px 10px rgba(97,85,241,0.08);">
+        <div style="font-family: 'Kanit', sans-serif; font-size: 0.75rem; font-weight: 700; color: #3C315B; margin-bottom: 0.875rem; letter-spacing: 0.04em; text-transform: uppercase;">Info del Artículo</div>
+        <div style="display: flex; flex-direction: column; gap: 0.625rem;">
+          <div style="display: flex; align-items: center; gap: 0.625rem; font-size: 0.825rem; color: #666;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#999" stroke-width="1.75"/><path d="M12 6v6l4 2" stroke="#999" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            8 min de lectura
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.625rem; font-size: 0.825rem; color: #666;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#999" stroke-width="1.75"/><path d="M16 2v4M8 2v4M3 10h18" stroke="#999" stroke-width="1.75" stroke-linecap="round"/></svg>
+            April 15, 2026
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.625rem; font-size: 0.825rem; color: #666;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" stroke="#999" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="7" r="1" fill="#999"/></svg>
+            AI Fundamentals
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════
+     RELATED ARTICLES
+═══════════════════════════════ -->
+<section style="padding: 0 1.5rem 5rem;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem;">
+      <div style="font-family: 'Kanit', sans-serif; font-size: 1.25rem; font-weight: 700; color: #1C1C1C; letter-spacing: -0.02em;">Artículos Relacionados</div>
+      <a href="blog.html" style="font-size: 0.85rem; font-weight: 600; color: #6155F1; text-decoration: none; display: flex; align-items: center; gap: 0.375rem; transition: gap 0.18s ease;" onmouseover="this.style.gap='0.625rem'" onmouseout="this.style.gap='0.375rem'">
+        View all articles
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+
+    <div class="related-grid reveal" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+
+      <a href="#" class="related-card">
+        <div style="height: 160px; overflow: hidden; position: relative;">
+          <img src="https://placehold.co/600x320/3E81E5/FFFFFF?text=Token+Pricing" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s cubic-bezier(.22,1,.36,1);" class="related-img" />
+          <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(62,129,229,0.4) 0%, transparent 60%);"></div>
+        </div>
+        <div style="padding: 1.25rem;">
+          <span class="tag-pill" style="background: #EBF4FF; color: #3E81E5; margin-bottom: 0.75rem; display: inline-flex;">Token Pricing</span>
+          <h3 style="font-family: 'Kanit', sans-serif; font-size: 0.975rem; font-weight: 700; color: #1C1C1C; letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 0.5rem;">GPT-4o vs Claude 3.5 vs Gemini 1.5: Desglose Completo de Costos 2026</h3>
+          <span style="font-size: 0.775rem; color: #999;">18 abr 2026 · 7 min</span>
+        </div>
+      </a>
+
+      <a href="#" class="related-card">
+        <div style="height: 160px; overflow: hidden; position: relative;">
+          <img src="https://placehold.co/600x320/6155F1/FFFFFF?text=Context+Windows" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s cubic-bezier(.22,1,.36,1);" class="related-img" />
+          <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(97,85,241,0.4) 0%, transparent 60%);"></div>
+        </div>
+        <div style="padding: 1.25rem;">
+          <span class="tag-pill" style="margin-bottom: 0.75rem; display: inline-flex;">Fundamentos de IA</span>
+          <h3 style="font-family: 'Kanit', sans-serif; font-size: 0.975rem; font-weight: 700; color: #1C1C1C; letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 0.5rem;">Ventana de Contextos Explained: Why 128K Tokens Changes Everything</h3>
+          <span style="font-size: 0.775rem; color: #999;">24 mar 2026 · 6 min</span>
+        </div>
+      </a>
+
+      <a href="#" class="related-card">
+        <div style="height: 160px; overflow: hidden; position: relative;">
+          <img src="https://placehold.co/600x320/3C315B/E2DFFE?text=Token+Calculation" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s cubic-bezier(.22,1,.36,1);" class="related-img" />
+          <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(60,49,91,0.45) 0%, transparent 60%);"></div>
+        </div>
+        <div style="padding: 1.25rem;">
+          <span class="tag-pill" style="margin-bottom: 0.75rem; display: inline-flex;">Token Calculation</span>
+          <h3 style="font-family: 'Kanit', sans-serif; font-size: 0.975rem; font-weight: 700; color: #1C1C1C; letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 0.5rem;">How to Calcular Your Monthly AI API Costs Before You Commit</h3>
+          <span style="font-size: 0.775rem; color: #999;">10 abr 2026 · 6 min</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════
+     FOOTER
+═══════════════════════════════ -->
+<footer style="background: #1C1C1C; color: #999; padding: 3.5rem 1.5rem 2rem;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="footer-grid" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem;">
+
+      <div>
+        <div style="display: flex; align-items: center; gap: 0.625rem; margin-bottom: 1rem;">
+          <img src="../AI_Token_logoPNG.avif" alt="AI Token King" style="width: 32px; height: 32px; object-fit: contain;" />
+          <span style="font-family: 'Kanit', sans-serif; font-size: 1rem; font-weight: 700; color: #FFFFFF; letter-spacing: -0.02em;">AI Token King</span>
+        </div>
+        <p style="font-size: 0.875rem; line-height: 1.75; color: #666; max-width: 260px;">El centro definitivo en español para entender los tokens de IA, modelos y APIs. Gratis, siempre.</p>
+        <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem;">
+          <a href="#" style="width: 36px; height: 36px; background: #2A2A2A; border-radius: 8px; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.18s ease;" onmouseover="this.style.background='#6155F1'" onmouseout="this.style.background='#2A2A2A'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" stroke="#999" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="#" style="width: 36px; height: 36px; background: #2A2A2A; border-radius: 8px; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.18s ease;" onmouseover="this.style.background='#6155F1'" onmouseout="this.style.background='#2A2A2A'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" stroke="#999" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><circle cx="4" cy="4" r="2" stroke="#999" stroke-width="1.75"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family: 'Kanit', sans-serif; font-size: 0.875rem; font-weight: 700; color: #FFFFFF; margin-bottom: 1.125rem; letter-spacing: 0.02em; text-transform: uppercase;">Learn</div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.625rem;">
+          <li><a href="beginners-guide.html" style="font-size: 0.875rem; color: #666; text-decoration: none; transition: color 0.15s ease;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Guía para Principiantes</a></li>
+          <li><a href="use-cases.html" style="font-size: 0.875rem; color: #666; text-decoration: none; transition: color 0.15s ease;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Casos de Uso</a></li>
+          <li><a href="blog.html" style="font-size: 0.875rem; color: #E2DFFE; text-decoration: none; font-weight: 600;">Artículos del Blog</a></li>
+          <li><a href="user-guide.html" style="font-size: 0.875rem; color: #666; text-decoration: none; transition: color 0.15s ease;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Guía de Usuario</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div style="font-family: 'Kanit', sans-serif; font-size: 0.875rem; font-weight: 700; color: #FFFFFF; margin-bottom: 1.125rem; letter-spacing: 0.02em; text-transform: uppercase;">Compare</div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.625rem;">
+          <li><a href="api-compare.html" style="font-size: 0.875rem; color: #666; text-decoration: none; transition: color 0.15s ease;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Comparación de APIs</a></li>
+          <li><a href="api-compare.html" style="font-size: 0.875rem; color: #666; text-decoration: none; transition: color 0.15s ease;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Tipos de Modelos</a></li>
+          <li><a href="#" style="font-size: 0.875rem; color: #666; text-decoration: none; transition: color 0.15s ease;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Tablas de Precios</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div style="font-family: 'Kanit', sans-serif; font-size: 0.875rem; font-weight: 700; color: #FFFFFF; margin-bottom: 1.125rem; letter-spacing: 0.02em; text-transform: uppercase;">More</div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.625rem;">
+          <li><a href="ai-trends.html" style="font-size: 0.875rem; color: #666; text-decoration: none; transition: color 0.15s ease;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Tendencias IA</a></li>
+          <li><a href="compliance.html" style="font-size: 0.875rem; color: #666; text-decoration: none; transition: color 0.15s ease;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Cumplimiento</a></li>
+          <li><a href="https://www.aitokenking.com.tw/docs" target="_blank" rel="noopener noreferrer" style="font-size: 0.875rem; color: #666; text-decoration: none; transition: color 0.15s ease;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Documentación</a></li>
+        </ul>
+      </div>
+
+    </div>
+    <div style="border-top: 1px solid #2A2A2A; padding-top: 1.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+      <p style="font-size: 0.8rem; color: #555;">© 2026 AI Token King. All rights reserved.</p>
+      <div style="display: flex; gap: 1.5rem;">
+        <a href="#" style="font-size: 0.8rem; color: #555; text-decoration: none; transition: color 0.15s ease;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#555'">Política de Privacidad</a>
+        <a href="#" style="font-size: 0.8rem; color: #555; text-decoration: none; transition: color 0.15s ease;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#555'">Términos de Servicio</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ═══════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════ -->
+<script>
+  // Progreso de lectura bar
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const scrollTop = doc.scrollTop || document.body.scrollTop;
+    const scrollHeight = doc.scrollHeight - doc.clientHeight;
+    const pct = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+    document.getElementById('read-progress').style.width = pct + '%';
+  });
+
+  // Scroll-spy TOC
+  const sections = document.querySelectorAll('.article-body h2[id], .article-body h3[id]');
+  const tocLinks = document.querySelectorAll('#toc-nav .sidebar-link');
+  const tocObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        tocLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`#toc-nav .sidebar-link[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => tocObserver.observe(s));
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  // Related card image hover zoom
+  document.querySelectorAll('.related-card').forEach(card => {
+    const img = card.querySelector('.related-img');
+    if (!img) return;
+    card.addEventListener('mouseenter', () => { img.style.transform = 'scale(1.06)'; });
+    card.addEventListener('mouseleave', () => { img.style.transform = 'scale(1)'; });
+  });
+
+  // Copy link button
+  document.querySelectorAll('.share-btn').forEach(btn => {
+    if (btn.textContent.trim() === 'Copiar Enlace') {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          const orig = btn.innerHTML;
+          btn.innerHTML = '✓ ¡Copiado!';
+          setTimeout(() => { btn.innerHTML = orig; }, 2000);
+        });
+      });
+    }
+  });
+
+  // Dropdown menus
+  document.querySelectorAll('.nav-dropdown').forEach(dropdown => {
+    const btn = dropdown.querySelector('.nav-dropdown-btn');
+    const menu = dropdown.querySelector('.nav-dropdown-menu');
+    const chevron = dropdown.querySelector('.dropdown-chevron');
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = menu.style.display === 'block';
+      document.querySelectorAll('.nav-dropdown-menu').forEach(m => m.style.display = 'none');
+      document.querySelectorAll('.dropdown-chevron').forEach(c => c.style.transform = 'rotate(0deg)');
+      document.querySelectorAll('.nav-dropdown-btn').forEach(b => b.setAttribute('aria-expanded', 'false'));
+      if (!isOpen) {
+        menu.style.display = 'block';
+        chevron.style.transform = 'rotate(180deg)';
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.nav-dropdown-menu').forEach(m => m.style.display = 'none');
+    document.querySelectorAll('.dropdown-chevron').forEach(c => c.style.transform = 'rotate(0deg)');
+    document.querySelectorAll('.nav-dropdown-btn').forEach(b => b.setAttribute('aria-expanded', 'false'));
+  });
+
+  // Mobile nav
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  if (menuBtn) {
+    menuBtn.addEventListener('click', () => {
+      const nav = document.querySelector('.desktop-nav');
+      if (nav) nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
+    });
+  }
+
+  // Responsive footer
+  const style = document.createElement('style');
+  style.textContent = `
+    @media (max-width: 860px) { .footer-grid { grid-template-columns: 1fr 1fr !important; } }
+    @media (max-width: 540px) { .footer-grid { grid-template-columns: 1fr !important; } }
+    @media (max-width: 640px) { .related-grid { grid-template-columns: 1fr !important; } }
+    @media (max-width: 900px) { .related-grid { grid-template-columns: repeat(2,1fr) !important; } }
+  `;
+  document.head.appendChild(style);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+import type { Lang } from '../i18n/index';
+
+export interface Props {
+  title: string;
+  description?: string;
+  activePage?: string;
+  activeDropdown?: string;
+  lang?: Lang;
+}
+
+const {
+  title,
+  description = 'The definitive English-language guide to AI tokens, models, APIs, and costs.',
+  activePage = '',
+  activeDropdown = '',
+  lang = 'en',
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <script src="https://cdn.tailwindcss.com" is:inline></script>
+  <script is:inline>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              purple: '#6155F1',
+              blue: '#3E81E5',
+              black: '#000000',
+              gray: '#666666',
+              lightgray: '#999999',
+              pale: '#EBF4FF',
+              white: '#FFFFFF',
+              lavender: '#F5F2FF',
+              softpurple: '#E2DFFE',
+              darkpurple: '#3C315B',
+            }
+          },
+          fontFamily: {
+            heading: ['Kanit', 'sans-serif'],
+            body: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          letterSpacing: {
+            tightest: '-0.04em',
+            tighter: '-0.03em',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+  <Nav activePage={activePage} activeDropdown={activeDropdown} lang={lang} />
+  <main>
+    <slot />
+  </main>
+  <Footer lang={lang} />
+
+  <script is:inline>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // FAQ accordion
+    window.toggleFaq = function(btn) {
+      const answer = btn.nextElementSibling;
+      const chevron = btn.querySelector('.faq-chevron');
+      const isOpen = answer.classList.contains('open');
+      document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+      document.querySelectorAll('.faq-chevron').forEach(c => c.classList.remove('open'));
+      if (!isOpen) {
+        answer.classList.add('open');
+        chevron.classList.add('open');
+      }
+    };
+  </script>
+</body>
+</html>

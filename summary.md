@@ -221,6 +221,167 @@ Chinese screenshots used so far:
 
 ---
 
+## Session 10 Changes
+
+### Multilingual Astro Routing (the core architecture work this session)
+
+**Goal confirmed:** One site, multiple language paths (`/en/`, `/es/`). Same design and pages in every language. Blog filtered per language from Sanity. Language switcher in nav swaps the URL prefix.
+
+### i18n Foundation
+- Created `src/i18n/en.json` — all UI strings for English (nav, footer, blog, lang switcher)
+- Created `src/i18n/es.json` — Spanish equivalents of all keys
+- Created `src/i18n/index.ts` — exports `useTranslations(lang)` returning a `t(key)` accessor, `SUPPORTED_LANGS`, `isValidLang()`
+- `Lang` type = `'en' | 'es'`
+
+### Sanity Schema Update
+- Added `language` field (radio: `en` / `es`, required) to `studio/schemas/post.ts`
+- Deployed schema update via Sanity MCP — 1 type added to project `mq3wxr8n`
+- Updated `src/lib/sanity.ts`:
+  - `getAllPosts(lang)` — filters `language == $lang`
+  - `getPostBySlug(slug, lang)` — filters by slug AND language
+  - `getAllPostSlugs()` — returns `{ slug, lang }[]` for all posts (used by `getStaticPaths`)
+  - Added `language` to `SanityPost` interface
+- Patched all 3 existing blog posts to `language: "en"` and published them
+
+### Shared Components Updated
+- `BaseLayout.astro` — accepts `lang?: Lang` prop, sets `<html lang={lang}>`, passes to Nav + Footer
+- `Nav.astro` — accepts `lang` prop; all internal hrefs prefixed `/{lang}/`; language switcher dropdown (globe icon + EN/ES label, active language highlighted in `#F0EEFF`, other language links to `/{otherLang}/`); nav labels use `t('nav.*')`
+- `Footer.astro` — accepts `lang` prop; all hrefs prefixed `/{lang}/`; copy uses `t('footer.*')`
+
+### Page Routes Created
+| File | Route |
+|---|---|
+| `src/pages/index.astro` | `/` → 301 redirect to `/en/` |
+| `src/pages/[lang]/index.astro` | `/en/` and `/es/` homepages |
+| `src/pages/[lang]/blog/index.astro` | `/en/blog` and `/es/blog` — filtered by language |
+| `src/pages/[lang]/blog/[slug].astro` | `/en/blog/[slug]` and `/es/blog/[slug]` |
+
+- Old flat `src/pages/blog/` directory removed
+- Build verified: 8 pages generated, 0 errors
+- All routes smoke-tested: `/` → 301, `/en/`, `/en/blog`, `/es/blog`, `/en/blog/[slug]` → all 200
+
+### Build Output (confirmed working)
+```
+/en/blog/how-to-read-ai-token-pricing/
+/en/blog/how-are-ai-tokens-calcualted/
+/en/blog/what-is-ai-token/
+/en/blog/
+/es/blog/         ← shows "No posts yet" (no es posts in Sanity yet)
+/en/
+/es/
+/                 ← 301 → /en/
+```
+
+### Dev Server
+- `cd aitokenglobal-astro && npm run dev -- --port 4321`
+- May auto-assign 4322 if 4321 is taken — check terminal output
+- Preview: `http://localhost:4322/en/blog`
+
+---
+
+## Session 9 Changes
+
+### Language Subdirectory Setup
+- Created `en/` subdirectory: all 14 English HTML pages copied there with `../` relative paths for assets
+- Created `es/` subdirectory: all 14 pages fully translated to Spanish
+- Both directories are self-contained — internal links work within each subdirectory, assets reference `../` (project root)
+- All 14 files confirmed present in both `en/` and `es/`: `index.html`, `api-compare.html`, `ai-trends.html`, `user-guide.html`, `compliance.html`, `use-cases.html`, `beginners-guide.html`, `documentation.html`, `token-calculator.html`, `blog.html`, `blog-post.html`, `chatgpt-api.html`, `claude-api.html`, `gemini-api.html`
+
+### Translation Scripts
+- **`translate_all.py`** — generates all 14 es/ files from en/ source files; applies COMMON → BROAD_CONTENT → per-file → title fixes
+- **`translate_detailed.py`** — applies additional detailed per-page translations ON TOP of existing es/ files; reads/writes es/ directly
+  - Covers all 11 content-heavy pages: user-guide, compliance, use-cases, beginners-guide, chatgpt-api, claude-api, gemini-api, documentation, token-calculator, blog, blog-post
+  - Approach: pure `str.replace()`, no regex, safe to re-run (idempotent once replacements are applied)
+
+### Internal Link Verification
+- Ran automated link check on both `en/` and `es/` — all internal `.html` links resolve correctly, zero missing targets
+
+### Spanish Translation Scope
+- All visible UI text translated to natural Spanish
+- Brand name "AI Token King" kept as-is
+- Technical terms (API, token, SDK, BPE, etc.) kept in English per standard practice
+- `<html lang="en">` → `<html lang="es">` in all es/ files
+- Dates localized (e.g. "April 15, 2026" → "15 de abril de 2026")
+- Nav labels, section headings, body copy, FAQ, sidebar TOC, footer links, CTA buttons all translated
+
+---
+
+## Session 8 Changes
+
+### Astro Project Setup
+- Scaffolded Astro v6 project in `aitokenglobal-astro/` subfolder (minimal template, static output)
+- HTML prototype remains intact in project root — both coexist independently
+- Installed deps: `astro`, `@sanity/client`, `@portabletext/to-html`, `sanity`, `@sanity/vision`, `sanity-plugin-media`, `styled-components`
+
+### Astro File Structure
+```
+aitokenglobal-astro/
+  src/
+    styles/global.css       ← full design system (vars, buttons, cards, animations, prose)
+    layouts/BaseLayout.astro ← wraps every page (head, nav, footer, scroll reveal, FAQ JS)
+    components/Nav.astro    ← single nav component with active page + dropdown support
+    components/Footer.astro ← single footer component with all links wired
+    lib/sanity.ts           ← Sanity client (lazy init), getAllPosts, getPostBySlug, SanityPost type
+    pages/
+      index.astro           ← placeholder homepage (links to blog)
+      blog/
+        index.astro         ← blog index: featured post + grid, ordered by articleNumber asc
+        [slug].astro        ← dynamic post page: prose body, reading progress bar, sidebar, share row
+  studio/
+    sanity.config.ts        ← Studio config: structureTool, visionTool, media plugin, Find by # tool
+    sanity.cli.ts           ← CLI config (projectId: mq3wxr8n, dataset: production)
+    schemas/post.ts         ← Blog post schema
+    schemas/imageMeta.ts    ← Image asset extension (articleNumber field)
+    components/ArticleNumberFilter.tsx ← custom Studio tool: search posts by exact article number
+  public/
+    AI_Token_logoPNG.avif   ← brand logo
+  .env                      ← PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET
+```
+
+### Sanity CMS Setup
+- Created Sanity project: `AI Token Global` — project ID `mq3wxr8n`, dataset `production`
+- Sanity MCP server connected to Claude Code
+- Blog post schema fields: `title`, `articleNumber`, `slug`, `publishedAt`, `excerpt`, `coverImage`, `tags`, `body`
+- Body supports: rich text blocks (h2/h3/blockquote), inline images with alt/caption, code blocks
+- Post list preview shows `#N` article number as subtitle
+- Posts ordered by `articleNumber asc` in all queries
+
+### Sanity Studio Features
+- **Media Library** (`sanity-plugin-media`) — bulk-upload images, searchable by filename
+- **Image naming convention:** name files `1.jpg`, `2.jpg` etc. before uploading — filename = article number
+- **Cover Image picker** on each post opens the media library directly
+- **"Find by #" tool** — custom tab in Studio top nav, searches posts by exact `articleNumber` (isolated from full-text search so body content numbers don't interfere)
+
+### Blog Pipeline Verified
+- 3 articles published in Sanity and confirmed building correctly:
+  - `/blog/what-is-ai-token`
+  - `/blog/how-are-ai-tokens-calcualted` (typo in slug — fix in Sanity)
+  - `/blog/how-to-read-ai-token-pricing`
+- Cover images render edge-to-edge in featured card on blog index
+- Image block renderer handles inline body images (with caption support)
+- Google Drive URLs do NOT work as image sources — use Sanity media library instead
+
+### Dev Commands
+| Command | What it does |
+|---|---|
+| `cd aitokenglobal-astro && npm run dev` | Start Astro dev server → `http://localhost:4321` |
+| `cd aitokenglobal-astro && npm run build` | Build static site (fetches latest from Sanity) |
+| `cd aitokenglobal-astro/studio && npm run dev` | Start Sanity Studio → `http://localhost:3333` |
+
+### Content Decisions
+- Content (articles) lives in Sanity — not in GitHub. GitHub stores code only.
+- Sanity is the content backup. Run `sanity dataset export` for a local NDJSON dump.
+- Publish in Sanity → run build → deploy. Once Cloudflare Pages is connected, build triggers automatically.
+
+### Pending / Next Session
+- **Cloudflare Pages setup** — connect GitHub repo, configure build for `aitokenglobal-astro/` subfolder, get site live
+- **Sanity → Cloudflare deploy hook** — publish in Sanity → auto-rebuild → live site
+- **Bulk import script** — convert 200 articles (CSV/spreadsheet) to Sanity NDJSON format, import in one command
+- **Bulk image upload** — upload all article images named `1.jpg`, `2.jpg` etc. to Sanity media library
+- **Port full homepage + static pages** into Astro (currently only blog is in Astro)
+
+---
+
 ## Session 7 Changes
 
 ### GitHub Repository Setup

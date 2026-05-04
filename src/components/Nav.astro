@@ -1,0 +1,125 @@
+---
+import { useTranslations } from '../i18n/index';
+import type { Lang } from '../i18n/index';
+
+export interface Props {
+  activePage?: string;
+  activeDropdown?: string;
+  lang?: Lang;
+}
+const { activePage = '', activeDropdown = '', lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+const otherLang = lang === 'en' ? 'es' : 'en';
+const otherLangLabel = lang === 'en' ? 'Español' : 'English';
+const otherLangFlag = lang === 'en' ? '🇪🇸' : '🇺🇸';
+const currentFlag = lang === 'en' ? '🇺🇸' : '🇪🇸';
+---
+
+<header style="background: rgba(245,242,255,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(97,85,241,0.1); position: sticky; top: 0; z-index: 100;">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 2rem;">
+
+    <a href={`/${lang}/`} style="display: flex; align-items: center; gap: 0.625rem; text-decoration: none; flex-shrink: 0;">
+      <img src="/AI_Token_logoPNG.avif" alt="AI Token King Logo" style="width: 36px; height: 36px; object-fit: contain;" />
+      <span style="font-family: 'Kanit', sans-serif; font-size: 1.1rem; font-weight: 700; color: #3C315B; letter-spacing: -0.02em;">AI Token King</span>
+    </a>
+
+    <nav class="desktop-nav" style="display: flex; align-items: center; gap: 0.125rem; flex: 1; justify-content: center;">
+
+      <div class="nav-dropdown" style="position: relative;">
+        <button class={`nav-link nav-dropdown-btn${activeDropdown === 'resources' ? ' active' : ''}`} style="background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;" aria-expanded="false">
+          {t('nav.resources')}
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="transition: transform 0.2s ease;" class="dropdown-chevron"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="nav-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #fff; border-radius: 14px; box-shadow: 0 8px 32px rgba(97,85,241,0.14), 0 2px 8px rgba(0,0,0,0.07); padding: 0.5rem; min-width: 230px; z-index: 200; border: 1px solid rgba(97,85,241,0.1);">
+          <a href={`/${lang}/ai-trends`} class={`dropdown-item${activePage === 'ai-trends' ? ' active' : ''}`}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M3 6h18M3 18h12" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round"/></svg>
+            {t('nav.aiTrends')}
+          </a>
+          <a href={`/${lang}/user-guide`} class={`dropdown-item${activePage === 'user-guide' ? ' active' : ''}`}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="#6155F1"/></svg>
+            {t('nav.userGuide')}
+          </a>
+          <a href={`/${lang}/compliance`} class={`dropdown-item${activePage === 'compliance' ? ' active' : ''}`}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 01-2-2V7l4-4h10a2 2 0 012 2v14a2 2 0 01-2 2z" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 3v4H5M9 12h6M9 16h4" stroke="#6155F1" stroke-width="1.5" stroke-linecap="round"/></svg>
+            {t('nav.compliance')}
+          </a>
+          <a href={`/${lang}/token-calculator`} class={`dropdown-item${activePage === 'token-calculator' ? ' active' : ''}`}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="#6155F1" stroke-width="1.75"/><line x1="8" y1="8" x2="16" y2="8" stroke="#6155F1" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="12" x2="16" y2="12" stroke="#6155F1" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="16" x2="12" y2="16" stroke="#6155F1" stroke-width="1.5" stroke-linecap="round"/></svg>
+            {t('nav.tokenCalculator')}
+          </a>
+        </div>
+      </div>
+
+      <a href={`/${lang}/api-compare`} class={`nav-link${activePage === 'api-compare' ? ' active' : ''}`}>{t('nav.compareModels')}</a>
+      <a href={`/${lang}/use-cases`} class={`nav-link${activePage === 'use-cases' ? ' active' : ''}`}>{t('nav.useCases')}</a>
+      <a href={`/${lang}/beginners-guide`} class={`nav-link${activePage === 'beginners-guide' ? ' active' : ''}`}>{t('nav.beginnersGuide')}</a>
+      <a href={`/${lang}/blog`} class={`nav-link${activePage === 'blog' ? ' active' : ''}`}>{t('nav.blog')}</a>
+      <a href="https://www.aitokenking.com.tw/docs" class="nav-link" target="_blank" rel="noopener noreferrer">{t('nav.documentation')}</a>
+    </nav>
+
+    <div style="display: flex; align-items: center; gap: 0.625rem; flex-shrink: 0;">
+      <!-- Language switcher -->
+      <div class="nav-dropdown lang-switcher" style="position: relative;">
+        <button class="nav-dropdown-btn lang-btn" aria-expanded="false" aria-label={t('lang.selectLanguage')} style="display: flex; align-items: center; gap: 0.375rem; background: rgba(97,85,241,0.08); border: 1.5px solid rgba(97,85,241,0.18); border-radius: 10px; padding: 0.375rem 0.625rem; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; font-weight: 700; color: #3C315B; letter-spacing: 0.02em; transition: background-color 0.18s ease, border-color 0.18s ease;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><circle cx="12" cy="12" r="9" stroke="#6155F1" stroke-width="1.75"/><path d="M12 3c-2.5 2.5-4 5.5-4 9s1.5 6.5 4 9M12 3c2.5 2.5 4 5.5 4 9s-1.5 6.5-4 9M3 12h18" stroke="#6155F1" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span style="color:#6155F1;">{lang.toUpperCase()}</span>
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="none" class="dropdown-chevron" style="transition: transform 0.2s ease;"><path d="M4 6l4 4 4-4" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="nav-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 8px); right: 0; left: auto; transform: none; background: #fff; border-radius: 12px; box-shadow: 0 8px 28px rgba(97,85,241,0.16), 0 2px 8px rgba(0,0,0,0.07); padding: 0.375rem; min-width: 140px; z-index: 300; border: 1px solid rgba(97,85,241,0.12);">
+          <!-- Current language (active) -->
+          <a href={`/${lang}/`} style="display: flex; align-items: center; gap: 0.625rem; padding: 0.55rem 0.75rem; border-radius: 8px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.84rem; font-weight: 700; color: #6155F1; text-decoration: none; background: #F0EEFF;">
+            <span style="font-size: 1rem; line-height:1;">{currentFlag}</span>
+            {lang === 'en' ? t('lang.english') : t('lang.spanish')}
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="margin-left:auto;"><path d="M3 8h10M9 4l4 4-4 4" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <!-- Other language -->
+          <a href={`/${otherLang}/`} style="display: flex; align-items: center; gap: 0.625rem; padding: 0.55rem 0.75rem; border-radius: 8px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.84rem; font-weight: 500; color: #3C315B; text-decoration: none; transition: background-color 0.15s ease, color 0.15s ease;" onmouseover="this.style.background='#F5F2FF';this.style.color='#6155F1'" onmouseout="this.style.background='transparent';this.style.color='#3C315B'">
+            <span style="font-size: 1rem; line-height:1;">{otherLangFlag}</span>
+            {otherLangLabel}
+          </a>
+        </div>
+      </div>
+
+      <a href="https://www.aitokenking.com.tw/home" class="btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1.125rem;" target="_blank" rel="noopener noreferrer">
+        {t('nav.getStarted')}
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+
+    <button style="display: none; background: none; border: none; cursor: pointer; padding: 0.5rem;" aria-label="Menu" id="mobile-menu-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="#3C315B" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<script>
+  document.querySelectorAll('.nav-dropdown').forEach(dropdown => {
+    const btn = dropdown.querySelector('.nav-dropdown-btn');
+    const menu = dropdown.querySelector('.nav-dropdown-menu');
+    const chevron = dropdown.querySelector('.dropdown-chevron');
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = menu.style.display === 'block';
+      document.querySelectorAll('.nav-dropdown-menu').forEach(m => m.style.display = 'none');
+      document.querySelectorAll('.dropdown-chevron').forEach(c => c.style.transform = 'rotate(0deg)');
+      document.querySelectorAll('.nav-dropdown-btn').forEach(b => b.setAttribute('aria-expanded', 'false'));
+      if (!isOpen) {
+        menu.style.display = 'block';
+        chevron.style.transform = 'rotate(180deg)';
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.nav-dropdown-menu').forEach(m => m.style.display = 'none');
+    document.querySelectorAll('.dropdown-chevron').forEach(c => c.style.transform = 'rotate(0deg)');
+    document.querySelectorAll('.nav-dropdown-btn').forEach(b => b.setAttribute('aria-expanded', 'false'));
+  });
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  if (menuBtn) {
+    menuBtn.addEventListener('click', () => {
+      const nav = document.querySelector('.desktop-nav');
+      if (nav) nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
+    });
+  }
+</script>

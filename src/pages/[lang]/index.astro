@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { useTranslations, SUPPORTED_LANGS, isValidLang } from '../../i18n/index';
+import type { Lang } from '../../i18n/index';
+
+export async function getStaticPaths() {
+  return SUPPORTED_LANGS.map(lang => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+if (!isValidLang(lang)) return Astro.redirect('/en/');
+const t = useTranslations(lang as Lang);
+---
+
+<BaseLayout title="AI Token King — Your AI Knowledge Hub" activePage="" lang={lang as Lang}>
+  <div style="text-align: center; padding: 6rem 1.5rem; max-width: 600px; margin: 0 auto;">
+    <div class="section-label" style="margin-bottom: 1.5rem; display: inline-flex;">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+      Coming Soon
+    </div>
+    <h1 style="font-family: 'Kanit', sans-serif; font-size: 2.5rem; font-weight: 800; color: #1C1C1C; letter-spacing: -0.04em; margin-bottom: 1rem;">AI Token King</h1>
+    <p style="font-size: 1.05rem; line-height: 1.75; color: #666; margin-bottom: 2rem;">
+      The Astro-powered site is being set up. In the meantime, check out the blog.
+    </p>
+    <a href={`/${lang}/blog`} class="btn-primary">
+      {t('nav.blog')}
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+</BaseLayout>

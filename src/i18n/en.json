@@ -1,0 +1,54 @@
+{
+  "nav": {
+    "resources": "AI Resources",
+    "aiTrends": "AI Trends",
+    "userGuide": "AI Token King User Guide",
+    "compliance": "Business AI Compliance",
+    "tokenCalculator": "Token Calculator",
+    "compareModels": "Compare Models",
+    "useCases": "Use Cases",
+    "beginnersGuide": "Beginners Guide",
+    "blog": "Blog",
+    "documentation": "Documentation",
+    "getStarted": "Get Started"
+  },
+  "footer": {
+    "tagline": "The definitive English-language hub for understanding AI tokens, models, and APIs. Free, always.",
+    "learn": "Learn",
+    "compare": "Compare",
+    "more": "More",
+    "beginnersGuide": "Beginner's Guide",
+    "tokenCalculator": "Token Calculator",
+    "useCases": "Use Cases",
+    "userGuide": "User Guide",
+    "apiComparison": "API Comparison",
+    "chatgptApi": "ChatGPT API",
+    "claudeApi": "Claude API",
+    "geminiApi": "Gemini API",
+    "aiTrends": "AI Trends",
+    "compliance": "Enterprise Compliance",
+    "documentation": "Documentation",
+    "copyright": "© 2025 AI Token King. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "blog": {
+    "latestArticles": "Latest Articles",
+    "heroTitle": "AI Token King Blog",
+    "heroSubtitle": "Insights on AI tokens, model APIs, cost optimization, and the rapidly evolving AI ecosystem.",
+    "readArticle": "Read article",
+    "noPostsYet": "No posts yet. Check back soon!",
+    "backToBlog": "Back to Blog",
+    "share": "Share:",
+    "published": "Published",
+    "tags": "Tags",
+    "tryTitle": "Try AI Token King",
+    "tryCopy": "Compare models, calculate costs, and manage your AI usage — free.",
+    "tryButton": "Get Started"
+  },
+  "lang": {
+    "selectLanguage": "Select language",
+    "english": "English",
+    "spanish": "Español"
+  }
+}

@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vista General de Modelos IA — AI Token King</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #F5F2FF;
+      color: #1C1C1C;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Grain texture ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ── Nav links ── */
+    .nav-link {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #3C315B;
+      text-decoration: none;
+      padding: 0.375rem 0.75rem;
+      border-radius: 8px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .nav-link:hover { background-color: #E2DFFE; color: #6155F1; }
+    .nav-link.active { background-color: #E2DFFE; color: #6155F1; font-weight: 600; }
+    .nav-link:focus-visible { outline: 2px solid #6155F1; outline-offset: 2px; }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background-color: #6155F1; color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 600;
+      padding: 0.625rem 1.375rem; border-radius: 12px; border: none; cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgba(97,85,241,0.35), 0 1px 3px rgba(97,85,241,0.2);
+      transition: transform 0.18s cubic-bezier(.22,1,.36,1), box-shadow 0.18s cubic-bezier(.22,1,.36,1), background-color 0.18s ease;
+    }
+    .btn-primary:hover { background-color: #5448e0; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(97,85,241,0.45); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:focus-visible { outline: 2px solid #6155F1; outline-offset: 3px; }
+
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background-color: transparent; color: #6155F1;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.875rem; font-weight: 600;
+      padding: 0.5rem 1.125rem; border-radius: 10px; border: 1.5px solid #6155F1;
+      cursor: pointer; text-decoration: none;
+      transition: background-color 0.18s ease, transform 0.18s cubic-bezier(.22,1,.36,1);
+    }
+    .btn-secondary:hover { background-color: #F5F2FF; transform: translateY(-1px); }
+    .btn-secondary:active { transform: translateY(0); background-color: #E2DFFE; }
+    .btn-secondary:focus-visible { outline: 2px solid #6155F1; outline-offset: 3px; }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      background-color: transparent; color: #6155F1;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
+      padding: 0.4rem 0; border: none; cursor: pointer; text-decoration: none;
+      transition: opacity 0.15s ease;
+    }
+    .btn-ghost:hover { opacity: 0.75; }
+    .btn-ghost:focus-visible { outline: 2px solid #6155F1; border-radius: 4px; }
+
+    /* ── Cards ── */
+    .card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(97,85,241,0.07), 0 1px 2px rgba(0,0,0,0.04);
+      transition: transform 0.22s cubic-bezier(.22,1,.36,1), box-shadow 0.22s cubic-bezier(.22,1,.36,1);
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(97,85,241,0.13), 0 2px 6px rgba(0,0,0,0.05); }
+
+    .card-elevated {
+      background: #FFFFFF;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(97,85,241,0.1), 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    /* ── Section label pill ── */
+    .section-label {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      background: #E2DFFE; color: #6155F1;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0.3rem 0.875rem; border-radius: 100px;
+    }
+
+    /* ── Model row ── */
+    .model-row {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 0;
+      border-bottom: 1px solid #F4F2F4;
+      padding: 0.875rem 1.25rem;
+      align-items: start;
+      transition: background-color 0.15s ease;
+    }
+    .model-row:last-child { border-bottom: none; }
+    .model-row:hover { background-color: #FAFAFE; }
+
+    .model-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #3C315B;
+      padding-right: 1rem;
+      padding-top: 0.1rem;
+    }
+
+    .model-desc {
+      font-size: 0.85rem;
+      color: #666;
+      line-height: 1.65;
+    }
+
+    /* ── Section anchor cards ── */
+    .section-anchor-card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 1.75rem;
+      text-decoration: none;
+      display: block;
+      border: 2px solid transparent;
+      box-shadow: 0 2px 10px rgba(97,85,241,0.08), 0 1px 3px rgba(0,0,0,0.04);
+      transition: border-color 0.2s ease, transform 0.2s cubic-bezier(.22,1,.36,1), box-shadow 0.2s ease;
+    }
+    .section-anchor-card:hover {
+      border-color: #6155F1;
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(97,85,241,0.15);
+    }
+    .section-anchor-card:focus-visible { outline: 2px solid #6155F1; outline-offset: 3px; }
+
+    /* ── Icon box ── */
+    .icon-box {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: #F5F2FF;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ── Dropdown menu ── */
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.6rem 0.875rem;
+      border-radius: 9px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.855rem;
+      font-weight: 500;
+      color: #3C315B;
+      text-decoration: none;
+      transition: background-color 0.15s ease, color 0.15s ease;
+      white-space: nowrap;
+    }
+    .dropdown-item:hover { background-color: #F5F2FF; color: #6155F1; }
+    .dropdown-item:focus-visible { outline: 2px solid #6155F1; border-radius: 9px; }
+
+    /* ── FAQ ── */
+    .faq-item { border-bottom: 1px solid #EDEDEF; }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-question {
+      width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 0;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.975rem; font-weight: 600; color: #1C1C1C;
+      transition: color 0.18s ease;
+    }
+    .faq-question:hover { color: #6155F1; }
+    .faq-question:focus-visible { outline: 2px solid #6155F1; border-radius: 4px; }
+    .faq-answer {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(.22,1,.36,1), padding 0.2s ease;
+    }
+    .faq-answer.open { max-height: 600px; padding-bottom: 1.25rem; }
+    .faq-chevron { transition: transform 0.3s cubic-bezier(.22,1,.36,1); flex-shrink: 0; }
+    .faq-chevron.open { transform: rotate(180deg); }
+
+    /* ── Tag chips ── */
+    .tag {
+      display: inline-block;
+      background: #F5F2FF; color: #6155F1;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em;
+      padding: 0.2rem 0.55rem; border-radius: 6px; text-transform: uppercase;
+    }
+    .tag-blue { background: #EBF4FF; color: #3E81E5; }
+    .tag-green { background: #E8F5E9; color: #2E7D32; }
+    .tag-orange { background: #FFF3E0; color: #E65100; }
+
+    /* ── Sticky sidebar TOC ── */
+    .toc-link {
+      display: flex; align-items: center; gap: 0.625rem;
+      font-size: 0.85rem; font-weight: 500; color: #666;
+      text-decoration: none; padding: 0.5rem 0.75rem;
+      border-radius: 8px; border-left: 2px solid transparent;
+      transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+    }
+    .toc-link:hover { color: #6155F1; background-color: #F5F2FF; border-left-color: #6155F1; }
+    .toc-link.active { color: #6155F1; font-weight: 600; background-color: #F5F2FF; border-left-color: #6155F1; }
+    .toc-link:focus-visible { outline: 2px solid #6155F1; border-radius: 4px; }
+
+    /* ── Section dividers ── */
+    .section-header-bar {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      border-radius: 14px 14px 0 0;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #F5F2FF; }
+    ::-webkit-scrollbar-thumb { background: #C4BFF8; border-radius: 3px; }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.55s cubic-bezier(.22,1,.36,1) both; }
+    .delay-1 { animation-delay: 0.06s; }
+    .delay-2 { animation-delay: 0.12s; }
+    .delay-3 { animation-delay: 0.18s; }
+
+    @media (max-width: 1023px) {
+      .desktop-nav { display: none !important; }
+      .sidebar-col { display: none !important; }
+      .content-col { max-width: 100% !important; }
+    }
+    @media (max-width: 768px) {
+      .hero-3col { grid-template-columns: 1fr !important; }
+      .model-row { grid-template-columns: 1fr !important; gap: 0.25rem !important; }
+      .faq-grid { grid-template-columns: 1fr !important; }
+    }
+    /* ── Animated gradient hero ── */
+    .page-hero-bg { position: relative; overflow: hidden; background: linear-gradient(40deg, #2A1F5C, #0D1547); }
+    .page-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .page-hero-canvas .grad-blobs { width: 100%; height: 100%; filter: url(#page-goo) blur(40px); }
+    .page-hero-canvas .blob { position: absolute; border-radius: 50%; mix-blend-mode: hard-light; background: radial-gradient(circle at center, var(--blob-color) 0%, transparent 50%) no-repeat; width: 80%; height: 80%; top: calc(50% - 40%); left: calc(50% - 40%); }
+    .page-hero-canvas .blob-1 { --blob-color: rgba(97,85,241,1); animation: moveVertical 30s ease infinite; }
+    .page-hero-canvas .blob-2 { --blob-color: rgba(62,129,229,0.8); transform-origin: calc(50% - 400px); animation: moveInCircle 20s reverse infinite; }
+    .page-hero-canvas .blob-3 { --blob-color: rgba(86,247,253,0.8); transform-origin: calc(50% + 400px); animation: moveInCircle 40s linear infinite; }
+    .page-hero-canvas .blob-4 { --blob-color: rgba(180,100,241,0.8); transform-origin: calc(50% - 200px); animation: moveHorizontal 40s ease infinite; opacity: 0.7; }
+    .page-hero-canvas .blob-5 { --blob-color: rgba(30,80,200,0.8); transform-origin: calc(50% - 800px) calc(50% + 800px); animation: moveInCircle 20s ease infinite; }
+    .page-hero-canvas .blob-pointer { position: absolute; border-radius: 50%; mix-blend-mode: hard-light; background: radial-gradient(circle at center, rgba(140,100,255,0.8) 0%, transparent 50%) no-repeat; width: 100%; height: 100%; top: -50%; left: -50%; opacity: 0.7; }
+    @keyframes moveVertical { 0% { transform: translateY(-50%); } 50% { transform: translateY(50%); } 100% { transform: translateY(-50%); } }
+    @keyframes moveInCircle { 0% { transform: rotate(0deg); } 50% { transform: rotate(180deg); } 100% { transform: rotate(360deg); } }
+    @keyframes moveHorizontal { 0% { transform: translateX(-50%) translateY(-10%); } 50% { transform: translateX(50%) translateY(10%); } 100% { transform: translateX(-50%) translateY(-10%); } }
+    .page-hero-content { position: relative; z-index: 10; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     NAVIGATION
+════════════════════════════════════════════ -->
+<header style="background: rgba(245,242,255,0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(97,85,241,0.1); position: sticky; top: 0; z-index: 100;">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 2rem;">
+
+    <a href="index.html" style="display: flex; align-items: center; gap: 0.625rem; text-decoration: none; flex-shrink: 0;">
+      <img src="../AI_Token_logoPNG.avif" alt="AI Token King Logo" style="width: 36px; height: 36px; object-fit: contain;" />
+      <span style="font-family: 'Kanit', sans-serif; font-size: 1.1rem; font-weight: 700; color: #3C315B; letter-spacing: -0.02em;">AI Token King</span>
+    </a>
+
+    <nav class="desktop-nav" style="display: flex; align-items: center; gap: 0.125rem; flex: 1; justify-content: center;">
+
+      <!-- Dropdown: AI Resources -->
+      <div class="nav-dropdown" style="position: relative;">
+        <button class="nav-link nav-dropdown-btn" style="background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;" aria-expanded="false">
+          AI Resources
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="transition: transform 0.2s ease;" class="dropdown-chevron"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="nav-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #fff; border-radius: 14px; box-shadow: 0 8px 32px rgba(97,85,241,0.14), 0 2px 8px rgba(0,0,0,0.07); padding: 0.5rem; min-width: 230px; z-index: 200; border: 1px solid rgba(97,85,241,0.1);">
+          <a href="ai-trends.html" class="dropdown-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M3 6h18M3 18h12" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round"/></svg>
+            Tendencias IA
+          </a>
+          <a href="user-guide.html" class="dropdown-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="#6155F1"/></svg>
+            Guía de Usuario AI Token King
+          </a>
+          <a href="compliance.html" class="dropdown-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 01-2-2V7l4-4h10a2 2 0 012 2v14a2 2 0 01-2 2z" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 3v4H5M9 12h6M9 16h4" stroke="#6155F1" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Cumplimiento Empresarial IA
+          </a>
+        </div>
+      </div>
+
+      <a href="api-compare.html" class="nav-link active">Comparar Modelos</a>
+      <a href="use-cases.html" class="nav-link">Casos de Uso</a>
+      <a href="beginners-guide.html" class="nav-link">Guía para Principiantes</a>
+      <a href="blog.html" class="nav-link">Blog</a>
+      <a href="https://www.aitokenking.com.tw/docs" class="nav-link" target="_blank" rel="noopener noreferrer">Documentación</a>
+    </nav>
+
+    <div style="display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0;">
+      <a href="https://www.aitokenking.com.tw/home" class="btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1.125rem;" target="_blank" rel="noopener noreferrer">
+        Comenzar
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+
+<!-- ════════════════════════════════════════════
+     PAGE HERO
+════════════════════════════════════════════ -->
+<section class="page-hero-bg" style="padding: 3.5rem 1.5rem 3rem;">
+  <div class="page-hero-canvas" aria-hidden="true">
+    <svg style="display:none"><defs><filter id="page-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo"/><feBlend in="SourceGraphic" in2="goo"/></filter></defs></svg>
+    <div class="grad-blobs"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div><div class="blob blob-4"></div><div class="blob blob-5"></div><div class="blob-pointer" id="page-pointer"></div></div>
+  </div>
+  <div class="page-hero-content" style="max-width: 1200px; margin: 0 auto;">
+
+    <!-- Breadcrumb -->
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; font-size: 0.8rem; color: rgba(255,255,255,0.5);">
+      <a href="index.html" style="color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Inicio</a>
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span style="color: rgba(255,255,255,0.9); font-weight: 600;">Vista General de Modelos IA</span>
+    </div>
+
+    <div style="max-width: 720px;">
+      <div class="section-label fade-up" style="margin-bottom: 1.125rem; background: rgba(226,223,254,0.15); color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.15);">
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+        Referencia de Modelos
+      </div>
+      <h1 class="fade-up delay-1" style="font-family: 'Kanit', sans-serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; color: #ffffff; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 1rem;">
+        Vista General de Tipos de Modelos IA
+      </h1>
+      <p class="fade-up delay-2" style="font-size: 1rem; line-height: 1.75; color: rgba(255,255,255,0.7); max-width: 600px; margin-bottom: 0.75rem;">
+        Esta página cubre los <strong style="color: rgba(255,255,255,0.9);">modelos de texto, imagen y video</strong> más comunes para ayudarte a entender rápidamente las diferencias entre tipos de modelos y elegir el adecuado para tu primer uso.
+      </p>
+      <p class="fade-up delay-3" style="font-size: 0.9rem; color: rgba(255,255,255,0.5); line-height: 1.6;">
+        ¿No sabes por dónde empezar? Te recomendamos leer primero la guía para principiantes — te ayudará a tomar una decisión más informada.
+      </p>
+    </div>
+
+    <!-- 3-column type cards -->
+    <div class="hero-3col" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 2.5rem;">
+
+      <a href="#text-models" class="section-anchor-card">
+        <div style="display: flex; align-items: center; gap: 0.875rem; margin-bottom: 0.875rem;">
+          <div class="icon-box" style="background: linear-gradient(135deg, #6155F1, #3E81E5);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 10h12M4 14h8M4 18h10" stroke="#fff" stroke-width="1.75" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div style="font-family: 'Kanit', sans-serif; font-size: 1.05rem; font-weight: 700; color: #1C1C1C; letter-spacing: -0.02em;">Text Models</div>
+            <div style="font-size: 0.75rem; color: #999; margin-top: 0.1rem;">Lenguaje · Código · Razonamiento</div>
+          </div>
+        </div>
+        <p style="font-size: 0.85rem; color: #666; line-height: 1.65; margin-bottom: 1rem;">Ideal para redacción de artículos, servicio al cliente, preguntas y respuestas, procesamiento de documentos y asistencia en programación.</p>
+        <span class="btn-ghost">Ver Modelos de Texto →</span>
+      </a>
+
+      <a href="#image-models" class="section-anchor-card">
+        <div style="display: flex; align-items: center; gap: 0.875rem; margin-bottom: 0.875rem;">
+          <div class="icon-box" style="background: linear-gradient(135deg, #3E81E5, #56c7fd);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="#fff" stroke-width="1.75"/><circle cx="8.5" cy="8.5" r="1.5" fill="#fff"/><path d="M21 15l-5-5L5 21" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div style="font-family: 'Kanit', sans-serif; font-size: 1.05rem; font-weight: 700; color: #1C1C1C; letter-spacing: -0.02em;">Image Models</div>
+            <div style="font-size: 0.75rem; color: #999; margin-top: 0.1rem;">Generación · Edición · Diseño</div>
+          </div>
+        </div>
+        <p style="font-size: 0.85rem; color: #666; line-height: 1.65; margin-bottom: 1rem;">Ideal para generación de ilustraciones, recursos para redes sociales, arte conceptual y diseño visual.</p>
+        <span class="btn-ghost">Ver Modelos de Imagen →</span>
+      </a>
+
+      <a href="#video-models" class="section-anchor-card">
+        <div style="display: flex; align-items: center; gap: 0.875rem; margin-bottom: 0.875rem;">
+          <div class="icon-box" style="background: linear-gradient(135deg, #56c7fd, #6155F1);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="15" height="14" rx="2" stroke="#fff" stroke-width="1.75"/><path d="M17 9l5-3v12l-5-3V9z" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div style="font-family: 'Kanit', sans-serif; font-size: 1.05rem; font-weight: 700; color: #1C1C1C; letter-spacing: -0.02em;">Video Models</div>
+            <div style="font-size: 0.75rem; color: #999; margin-top: 0.1rem;">Generación · Animación · Clips</div>
+          </div>
+        </div>
+        <p style="font-size: 0.85rem; color: #666; line-height: 1.65; margin-bottom: 1rem;">Ideal para generación de videos cortos, contenido animado, anuncios dinámicos y gráficos en movimiento.</p>
+        <span class="btn-ghost">Ver Modelos de Video →</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     LIVE PRICING TOOL CALLOUT
+════════════════════════════════════════════ -->
+<section style="padding: 2.5rem 1.5rem 0;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <a href="https://www.aitokenking.com.tw/models" target="_blank" rel="noopener noreferrer" style="display: block; text-decoration: none; border-radius: 20px; overflow: hidden; background: linear-gradient(135deg, #2A1F5C 0%, #0D1547 60%, #1a2a6c 100%); padding: 2rem 2.5rem; position: relative;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 16px 40px rgba(42,31,92,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'" style="transition: transform 0.2s cubic-bezier(.22,1,.36,1), box-shadow 0.2s ease;">
+      <!-- Decorative blobs -->
+      <div style="position: absolute; inset: 0; pointer-events: none; overflow: hidden; border-radius: 20px;">
+        <div style="position: absolute; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(97,85,241,0.35) 0%, transparent 70%); top: -80px; right: 5%;"></div>
+        <div style="position: absolute; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(86,247,253,0.2) 0%, transparent 70%); bottom: -60px; right: 25%;"></div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 2rem; flex-wrap: wrap; position: relative;">
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+          <!-- Icon -->
+          <div style="width: 52px; height: 52px; border-radius: 14px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; flex-shrink: 0; backdrop-filter: blur(8px);">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M3 3h18v4H3zM3 10h18v4H3zM3 17h18v4H3z" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="5" r="1" fill="#a8a0ff"/><circle cx="7" cy="12" r="1" fill="#56F7FD"/><circle cx="7" cy="19" r="1" fill="#a8a0ff"/></svg>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.3rem;">
+              <span style="font-family: 'Kanit', sans-serif; font-size: 1.15rem; font-weight: 700; color: #ffffff; letter-spacing: -0.02em;">Precios en Vivo de Modelos API</span>
+              <span style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: rgba(86,247,253,0.2); color: #56F7FD; border: 1px solid rgba(86,247,253,0.3); padding: 0.15rem 0.5rem; border-radius: 100px;">Live</span>
+            </div>
+            <p style="font-size: 0.875rem; color: rgba(255,255,255,0.65); line-height: 1.6; max-width: 560px; margin: 0;">
+              Precios en tiempo real para 60+ modelos — incluyendo Claude, GPT, Gemini, DeepSeek y más. Compara los precios de AI Token King vs tarifas oficiales, filtra por Texto / Imagen / Video y prueba cualquier modelo directamente.
+            </p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.875rem; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 12px; white-space: nowrap; flex-shrink: 0; backdrop-filter: blur(8px);">
+          Ver Precios en Vivo
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     MAIN CONTENT + SIDEBAR LAYOUT
+════════════════════════════════════════════ -->
+<div style="max-width: 1200px; margin: 0 auto; padding: 3rem 1.5rem; display: grid; grid-template-columns: 1fr 240px; gap: 3rem; align-items: start;">
+
+  <!-- ── MAIN CONTENT COLUMN ── -->
+  <div class="content-col">
+
+    <!-- ══════════════════════════════
+         TEXT MODELS SECTION
+    ══════════════════════════════ -->
+    <section id="text-models" style="margin-bottom: 3rem; scroll-margin-top: 80px;">
+
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+        <div class="icon-box" style="background: linear-gradient(135deg, #6155F1, #3E81E5); width: 44px; height: 44px; border-radius: 12px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 10h12M4 14h8M4 18h10" stroke="#fff" stroke-width="1.75" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <h2 style="font-family: 'Kanit', sans-serif; font-size: 1.6rem; font-weight: 800; color: #1C1C1C; letter-spacing: -0.03em; line-height: 1.1;">Modelos de Texto</h2>
+          <p style="font-size: 0.82rem; color: #999; margin-top: 0.15rem;">El tipo de modelo de IA más utilizado para generación de contenido, traducción, resumen, programación e IA conversacional.</p>
+        </div>
+      </div>
+
+      <div class="card-elevated" style="overflow: hidden;">
+
+        <!-- Table header -->
+        <div style="display: grid; grid-template-columns: 220px 1fr; background: #FAFAFE; border-bottom: 1px solid #EDEDEF; padding: 0.625rem 1.25rem;">
+          <div style="font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #999;">Nombre del Modelo</div>
+          <div style="font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #999;">Mejor Para / Use Case</div>
+        </div>
+
+        <div class="model-row">
+          <div class="model-name">gpt-4o</div>
+          <div class="model-desc">Modelo insignia de propósito general. Ideal para razonamiento complejo, tareas de múltiples pasos y generación de contenido de alta calidad.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">gpt-4.5-nano</div>
+          <div class="model-desc">Modelo ligero de servicio al cliente. Rápido, de bajo costo y optimizado para tareas simples de alto volumen.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">gpt-5.3-chat</div>
+          <div class="model-desc">Conversación general, tareas de escritura diaria y diálogo interactivo de alta calidad.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">gpt-5.3-codex</div>
+          <div class="model-desc">Escritura de código, depuración, refactorización y asistencia en desarrollo.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">claude-opus-4.6</div>
+          <div class="model-desc">Contenido de formato largo, análisis en profundidad y tareas complejas de resolución de problemas y razonamiento.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">claude-sonnet-4.6</div>
+          <div class="model-desc">Procesamiento de documentos largos, redacción de informes, creación de contenido y preguntas y respuestas de conocimiento.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">deepseek-v3.2</div>
+          <div class="model-desc">Uso diario, generación de contenido general, recomendaciones y salida de texto de alta calidad a costo competitivo.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">doubao-seed-2.0-pro</div>
+          <div class="model-desc">Tareas integrales de texto — preguntas y respuestas generales y generación de documentos.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">doubao-seed-2.0-code</div>
+          <div class="model-desc">Asistencia en programación, generación de código, depuración y soporte de desarrollo.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">doubao-seed-2.0-lite</div>
+          <div class="model-desc">Generación de texto corto, respuestas rápidas y tareas de contenido ligero.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">doubao-seed-2.0-mini</div>
+          <div class="model-desc">Respuestas a preguntas básicas, generación ligera y tareas de contenido simples.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">gemini 3 pro</div>
+          <div class="model-desc">Comprensión multimodal, preguntas y respuestas complejas, escritura creativa y salida entre modalidades.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">gemini-3-flash-preview</div>
+          <div class="model-desc">Tareas multimodales rápidas, preguntas y respuestas inteligentes y salida ligera a velocidad.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">gemini-3.1-pro-preview</div>
+          <div class="model-desc">Razonamiento avanzado, tareas integrales y procesamiento de documentos de contexto largo.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">GLM-4.7</div>
+          <div class="model-desc">Conversación general, preguntas y respuestas y tareas de razonamiento.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">grok4.2</div>
+          <div class="model-desc">Preguntas y respuestas de texto general, generación de contenido y tareas integrales.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">Kimi-K2.5</div>
+          <div class="model-desc">Procesamiento de documentos largos, comprensión lectora y recuperación de información.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">MiniMax-M1</div>
+          <div class="model-desc">Servicio al cliente, generación de contenido y tareas rutinarias diarias.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">MiniMax-M2.7</div>
+          <div class="model-desc">Preguntas y respuestas integrales, generación de contenido y procesamiento de texto.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">qwen3-vl-chat</div>
+          <div class="model-desc">Comprensión de documentos, entrada visual de preguntas y respuestas y generación de contenido multimodal.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">qwen3-vl-plus</div>
+          <div class="model-desc">Tareas visuales más completas y razonamiento avanzado entre modalidades.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">qwen3.5</div>
+          <div class="model-desc">Tareas de texto general, generación de contenido y preguntas y respuestas combinadas.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">qwen3.5-flash</div>
+          <div class="model-desc">Salida rápida de bajo costo, preguntas y respuestas simples y generación de contenido ligero.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">qwen3.5-plus</div>
+          <div class="model-desc">Generación integral, refinamiento de contenido y optimización de tareas únicas.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">seed-2-0-mini</div>
+          <div class="model-desc">Preguntas y respuestas ligeras, generación simple y respuestas cortas rápidas.</div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ══════════════════════════════
+         IMAGE MODELS SECTION
+    ══════════════════════════════ -->
+    <section id="image-models" style="margin-bottom: 3rem; scroll-margin-top: 80px;">
+
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+        <div class="icon-box" style="background: linear-gradient(135deg, #3E81E5, #56c7fd); width: 44px; height: 44px; border-radius: 12px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="#fff" stroke-width="1.75"/><circle cx="8.5" cy="8.5" r="1.5" fill="#fff"/><path d="M21 15l-5-5L5 21" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 style="font-family: 'Kanit', sans-serif; font-size: 1.6rem; font-weight: 800; color: #1C1C1C; letter-spacing: -0.03em; line-height: 1.1;">Modelos de Imagen</h2>
+          <p style="font-size: 0.82rem; color: #999; margin-top: 0.15rem;">Principalmente utilizado para ilustración, recursos de redes sociales, borradores de diseño y creación de contenido visual. Esencial para cualquiera que necesite salida visual de alta calidad.</p>
+        </div>
+      </div>
+
+      <div class="card-elevated" style="overflow: hidden;">
+
+        <div style="display: grid; grid-template-columns: 220px 1fr; background: #FAFAFE; border-bottom: 1px solid #EDEDEF; padding: 0.625rem 1.25rem;">
+          <div style="font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #999;">Nombre del Modelo</div>
+          <div style="font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #999;">Mejor Para / Use Case</div>
+        </div>
+
+        <div class="model-row">
+          <div class="model-name">imagen 4 fast</div>
+          <div class="model-desc">Generación visual rápida y de alta calidad — conceptos de materiales, ilustraciones e imágenes para redes sociales.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">imagen-4-image-01</div>
+          <div class="model-desc">Generación de imágenes de alta calidad, conceptos creativos y borradores de diseño.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">kling-v3-omni-image</div>
+          <div class="model-desc">Generación integral de imágenes con múltiples aplicaciones de estilo y contenido visual rico.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">nano banana2</div>
+          <div class="model-desc">Generación ligera de imágenes con procesamiento rápido y salida veloz.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">qwen-image-2.0</div>
+          <div class="model-desc">Generación general de imágenes, recursos de ilustración y generación de imágenes visuales.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">qwen-image-2.0-pro</div>
+          <div class="model-desc">Generación de propuestas de diseño, salida de imágenes de alta calidad y elementos visuales avanzados.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">qwen-image-max</div>
+          <div class="model-desc">Imágenes insignia de alta calidad, recursos para redes sociales y contenido visual profesional.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">qwen-image-plus</div>
+          <div class="model-desc">Generación integral de imágenes para requisitos de diseño cotidiano.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">seedream-4.5</div>
+          <div class="model-desc">Generación de ilustraciones, visuales de marca, recursos de estilo y generación creativa de imágenes.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">seedream-5.0-lite</div>
+          <div class="model-desc">Generación rápida de imágenes, creación ligera de materiales y conceptos visuales simples.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">wan2.6-t2i</div>
+          <div class="model-desc">Generación de texto a imagen, ilustraciones de conceptos y creación de materiales.</div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ══════════════════════════════
+         VIDEO MODELS SECTION
+    ══════════════════════════════ -->
+    <section id="video-models" style="margin-bottom: 3rem; scroll-margin-top: 80px;">
+
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+        <div class="icon-box" style="background: linear-gradient(135deg, #56c7fd, #6155F1); width: 44px; height: 44px; border-radius: 12px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="15" height="14" rx="2" stroke="#fff" stroke-width="1.75"/><path d="M17 9l5-3v12l-5-3V9z" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 style="font-family: 'Kanit', sans-serif; font-size: 1.6rem; font-weight: 800; color: #1C1C1C; letter-spacing: -0.03em; line-height: 1.1;">Modelos de Video</h2>
+          <p style="font-size: 0.82rem; color: #999; margin-top: 0.15rem;">Principalmente utilizado para clips de video con IA, imagen a video y creación de contenido publicitario dinámico. Ideal para cualquiera que necesite contenido de movimiento generado por IA.</p>
+        </div>
+      </div>
+
+      <div class="card-elevated" style="overflow: hidden;">
+
+        <div style="display: grid; grid-template-columns: 220px 1fr; background: #FAFAFE; border-bottom: 1px solid #EDEDEF; padding: 0.625rem 1.25rem;">
+          <div style="font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #999;">Nombre del Modelo</div>
+          <div style="font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #999;">Mejor Para / Use Case</div>
+        </div>
+
+        <div class="model-row">
+          <div class="model-name">kling-v3</div>
+          <div class="model-desc">Generación de clips de video cortos, contenido dinámico y material publicitario de formato corto.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">seedance-1-5-pro</div>
+          <div class="model-desc">Texto a video, cortometrajes animados y contenido publicitario dinámico.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">seedance-2.0</div>
+          <div class="model-desc">Generación general de video, animaciones dinámicas y creación de contenido publicitario.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">veo 3.1</div>
+          <div class="model-desc">Generación de video de alta calidad con escenas realistas y salida visual cinematográfica.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">wan2.5-i2v-preview</div>
+          <div class="model-desc">Generación de imagen a video — da vida a imágenes estáticas con movimiento.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">wan2.6-i2v-flash</div>
+          <div class="model-desc">Conversión rápida de imagen a video con capacidades de generación de audio.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">wan2.6-r2v-flash</div>
+          <div class="model-desc">Conversión de imagen de referencia a video con salida de alta calidad.</div>
+        </div>
+        <div class="model-row">
+          <div class="model-name">wan2.6-t2v</div>
+          <div class="model-desc">Generación de texto a video, clips cortos y visualización basada en guiones.</div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ══════════════════════════════
+         FAQ SECTION
+    ══════════════════════════════ -->
+    <section id="faq" style="scroll-margin-top: 80px;">
+
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.75rem;">
+        <div class="icon-box" style="background: #E2DFFE; width: 44px; height: 44px; border-radius: 12px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#6155F1" stroke-width="1.75"/><path d="M12 8v4M12 16h.01" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <h2 style="font-family: 'Kanit', sans-serif; font-size: 1.6rem; font-weight: 800; color: #1C1C1C; letter-spacing: -0.03em; line-height: 1.1;">Preguntas Comunes About Model Types</h2>
+        </div>
+      </div>
+
+      <div class="card-elevated" style="padding: 0.5rem 2rem;">
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            1. Estoy usando IA por primera vez — ¿qué modelo debo ver?
+            <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#6155F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p style="font-size: 0.9rem; color: #666; line-height: 1.75; margin-bottom: 0.75rem;">Si estás comenzando con la IA, te recomendamos primero identificar qué quieres hacer — no solo memorizar nombres de modelos. Puedes ver las categorías de modelos (texto, imagen, video) y luego leer la guía para principiantes en AI Token King. Desde allí, puedes probar algunos modelos y comparar resultados antes de comprometerte.</p>
+            <p style="font-size: 0.9rem; color: #666; line-height: 1.75;">La guía para principiantes también incluye un árbol de decisión para ayudarte a elegir un punto de partida según tu objetivo específico.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            2. ¿Cuáles son las diferencias entre los modelos de texto, imagen y video?
+            <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#6155F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p style="font-size: 0.9rem; color: #666; line-height: 1.75; margin-bottom: 0.75rem;">Los tres tipos de modelos manejan tipos de salida fundamentalmente diferentes:</p>
+            <ul style="font-size: 0.9rem; color: #666; line-height: 1.75; margin-left: 1.25rem; list-style: disc;">
+              <li><strong style="color: #3C315B;">Modelos de texto</strong> — Leen texto de entrada, generan texto de salida. Usados para preguntas y respuestas, escritura, resumen, traducción y código.</li>
+              <li><strong style="color: #3C315B;">Modelos de imagen</strong> — Generan imágenes a partir de prompts de texto u otras imágenes. Usados para diseño, ilustración y contenido visual.</li>
+              <li><strong style="color: #3C315B;">Modelos de video</strong> — Generan clips de video cortos a partir de texto o imágenes. Usados para anuncios, animación y contenido social.</li>
+            </ul>
+            <p style="font-size: 0.9rem; color: #666; line-height: 1.75; margin-top: 0.75rem;">Los modelos de video son generalmente los más caros; los modelos de texto tienden a ser los más baratos y versátiles.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            3. La tabla muestra muchos modelos — ¿realmente necesito entenderlos todos?
+            <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#6155F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p style="font-size: 0.9rem; color: #666; line-height: 1.75;">No — no necesitas conocer cada modelo. Piénsalo como un menú: no necesitas probar todo, solo los platos que coinciden con lo que tienes ganas. Para la mayoría de los principiantes, elegir 2–3 modelos de la misma categoría y compararlos es más que suficiente. La tabla es una referencia, no un plan de estudios.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            4. Solo necesito creación de contenido — ¿qué categoría de modelo es mejor?
+            <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#6155F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p style="font-size: 0.9rem; color: #666; line-height: 1.75; margin-bottom: 0.75rem;">Si tu necesidad principal es contenido escrito (blogs, correos, guiones, SEO), comienza con <strong style="color: #3C315B;">modelos de texto</strong>. Recomendamos comenzar con modelos establecidos como GPT-4o o Claude Sonnet, ya que tienen la mejor documentación y mayor soporte de la comunidad.</p>
+            <p style="font-size: 0.9rem; color: #666; line-height: 1.75;">Una vez que te sientas cómodo con la generación de texto, puedes agregar modelos de imagen o video para recursos visuales. Pero para la creación de contenido puro, los modelos de texto solos cubrirán la gran mayoría de tus necesidades.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            5. ¿La elección de un modelo siempre depende del precio y el rendimiento?
+            <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#6155F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p style="font-size: 0.9rem; color: #666; line-height: 1.75; margin-bottom: 0.75rem;">No siempre. El precio y el rendimiento son importantes, pero otros factores también importan:</p>
+            <ul style="font-size: 0.9rem; color: #666; line-height: 1.75; margin-left: 1.25rem; list-style: disc;">
+              <li><strong style="color: #3C315B;">Ventana de contexto</strong> — ¿Cuánto texto puede manejar el modelo a la vez?</li>
+              <li><strong style="color: #3C315B;">Soporte de idiomas</strong> — Algunos modelos son más fuertes en idiomas específicos.</li>
+              <li><strong style="color: #3C315B;">Confiabilidad de la API</strong> — El tiempo de actividad, los límites de velocidad y la latencia importan para las aplicaciones en producción.</li>
+              <li><strong style="color: #3C315B;">Disponibilidad de ajuste fino</strong> — ¿Puedes personalizar el modelo para tu caso de uso?</li>
+            </ul>
+            <p style="font-size: 0.9rem; color: #666; line-height: 1.75; margin-top: 0.75rem;">AI Token King cubre todas estas dimensiones en nuestra herramienta de comparación — no solo el precio por token.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            6. ¿Podemos usar modelos de texto, imagen y video simultáneamente?
+            <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#6155F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p style="font-size: 0.9rem; color: #666; line-height: 1.75;">Sí — de hecho, muchos flujos de trabajo en producción encadenan múltiples tipos de modelos. Un patrón común: usar un modelo de texto para generar un guión o descripción, pasarlo a un modelo de imagen para crear visuales, luego alimentar la imagen a un modelo de video para animarla. Este enfoque de pipeline multi-modelo es cada vez más común para equipos de contenido y agencias.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div><!-- end content-col -->
+
+
+  <!-- ── STICKY SIDEBAR ── -->
+  <aside class="sidebar-col" style="position: sticky; top: 84px; align-self: start;">
+    <div class="card-elevated" style="padding: 1.25rem;">
+      <div style="font-family: 'Kanit', sans-serif; font-size: 0.78rem; font-weight: 700; color: #999; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 1rem; padding: 0 0.75rem;">En Esta Página</div>
+
+      <a href="#text-models" class="toc-link active" id="toc-text">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 10h12M4 14h8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+        Text Models
+        <span style="margin-left: auto; font-size: 0.7rem; background: #F5F2FF; color: #6155F1; padding: 0.1rem 0.45rem; border-radius: 5px; font-weight: 700;">25</span>
+      </a>
+      <a href="#image-models" class="toc-link" id="toc-image">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.75"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/></svg>
+        Image Models
+        <span style="margin-left: auto; font-size: 0.7rem; background: #EBF4FF; color: #3E81E5; padding: 0.1rem 0.45rem; border-radius: 5px; font-weight: 700;">11</span>
+      </a>
+      <a href="#video-models" class="toc-link" id="toc-video">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="15" height="14" rx="2" stroke="currentColor" stroke-width="1.75"/><path d="M17 9l5-3v12l-5-3V9z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Video Models
+        <span style="margin-left: auto; font-size: 0.7rem; background: #F5F2FF; color: #56c7fd; padding: 0.1rem 0.45rem; border-radius: 5px; font-weight: 700;">8</span>
+      </a>
+      <a href="#faq" class="toc-link" id="toc-faq">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.75"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+        FAQ
+      </a>
+
+      <!-- Quick tip box -->
+      <div style="margin-top: 1.25rem; background: #F5F2FF; border-radius: 12px; padding: 1rem; border-left: 3px solid #6155F1;">
+        <div style="font-size: 0.75rem; font-weight: 700; color: #6155F1; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.04em;">Consejo Rápido</div>
+        <p style="font-size: 0.78rem; color: #666; line-height: 1.6;">¿Nuevo en IA? Comienza con un modelo de texto como GPT-4o mini o Claude Haiku — bajo costo, fácil de probar y ampliamente documentado.</p>
+      </div>
+
+      <!-- CTA -->
+      <div style="margin-top: 1.25rem;">
+        <a href="https://www.aitokenking.com.tw/models" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 0.625rem 1rem;">
+          Comparar Precios
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+</div><!-- end grid -->
+
+
+<!-- ════════════════════════════════════════════
+     BOTTOM CTA BANNER
+════════════════════════════════════════════ -->
+<section style="padding: 0 1.5rem 4rem;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div style="background: linear-gradient(135deg, #6155F1 0%, #3E81E5 60%, #56c7fd 100%); border-radius: 24px; padding: 3rem 3rem; display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; position: relative; overflow: hidden;">
+      <div style="position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; border-radius: 50%; background: rgba(255,255,255,0.06); pointer-events: none;"></div>
+      <div style="position: absolute; bottom: -60px; left: -30px; width: 250px; height: 250px; border-radius: 50%; background: rgba(255,255,255,0.04); pointer-events: none;"></div>
+      <div style="position: relative; z-index: 1;">
+        <div style="font-family: 'Kanit', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 0.625rem;">
+          ¿Listo para comparar los precios de la API?
+        </div>
+        <p style="font-size: 0.95rem; color: rgba(255,255,255,0.85); line-height: 1.65;">
+          Ahora que conoces los tipos de modelos, ve exactamente cuánto cuesta cada uno por millón de tokens — y encuentra el que mejor se adapte a tu presupuesto.
+        </p>
+      </div>
+      <div style="position: relative; z-index: 1; display: flex; gap: 0.875rem; flex-shrink: 0; flex-wrap: wrap;">
+        <a href="https://www.aitokenking.com.tw/models" target="_blank" rel="noopener noreferrer" style="background: #fff; color: #6155F1; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 700; padding: 0.75rem 1.5rem; border-radius: 12px; text-decoration: none; white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,0.15); transition: transform 0.18s cubic-bezier(.22,1,.36,1);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+          View Tabla de Precios →
+        </a>
+        <a href="index.html" style="background: rgba(255,255,255,0.15); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 12px; text-decoration: none; white-space: nowrap; border: 1.5px solid rgba(255,255,255,0.3); transition: background-color 0.18s ease;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+          Back to Home
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════ -->
+<footer style="background: #1C1C1C; color: #999; padding: 3.5rem 1.5rem 2rem;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 0.625rem; margin-bottom: 1rem;">
+          <img src="../AI_Token_logoPNG.avif" alt="AI Token King" style="width: 32px; height: 32px; object-fit: contain;" />
+          <span style="font-family: 'Kanit', sans-serif; font-size: 1rem; font-weight: 700; color: #FFFFFF; letter-spacing: -0.02em;">AI Token King</span>
+        </div>
+        <p style="font-size: 0.875rem; line-height: 1.75; color: #666; max-width: 260px;">El centro definitivo en español para entender los tokens de IA, modelos y APIs. Gratis, siempre.</p>
+      </div>
+      <div>
+        <div style="font-family: 'Kanit', sans-serif; font-size: 0.875rem; font-weight: 700; color: #FFFFFF; margin-bottom: 1.125rem; letter-spacing: 0.02em; text-transform: uppercase;">Learn</div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.625rem;">
+          <li><a href="#" style="font-size: 0.875rem; color: #666; text-decoration: none;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">¿Qué es un Token?</a></li>
+          <li><a href="#" style="font-size: 0.875rem; color: #666; text-decoration: none;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Calculadora de Tokens</a></li>
+          <li><a href="#" style="font-size: 0.875rem; color: #666; text-decoration: none;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Guía para Principiantes</a></li>
+          <li><a href="#" style="font-size: 0.875rem; color: #666; text-decoration: none;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Casos de Uso</a></li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-family: 'Kanit', sans-serif; font-size: 0.875rem; font-weight: 700; color: #FFFFFF; margin-bottom: 1.125rem; letter-spacing: 0.02em; text-transform: uppercase;">Compare</div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.625rem;">
+          <li><a href="api-compare.html" style="font-size: 0.875rem; color: #E2DFFE; text-decoration: none; font-weight: 600;">Vista General de Modelos</a></li>
+          <li><a href="#" style="font-size: 0.875rem; color: #666; text-decoration: none;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Precios de API</a></li>
+          <li><a href="#" style="font-size: 0.875rem; color: #666; text-decoration: none;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Agregadores</a></li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-family: 'Kanit', sans-serif; font-size: 0.875rem; font-weight: 700; color: #FFFFFF; margin-bottom: 1.125rem; letter-spacing: 0.02em; text-transform: uppercase;">More</div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.625rem;">
+          <li><a href="#" style="font-size: 0.875rem; color: #666; text-decoration: none;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Blog</a></li>
+          <li><a href="#" style="font-size: 0.875rem; color: #666; text-decoration: none;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Preguntas Frecuentes</a></li>
+          <li><a href="#" style="font-size: 0.875rem; color: #666; text-decoration: none;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Acerca de</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="border-top: 1px solid #2A2A2A; padding-top: 1.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+      <p style="font-size: 0.8rem; color: #555;">© 2025 AI Token King. Todos los derechos reservados.</p>
+      <div style="display: flex; gap: 1.5rem;">
+        <a href="#" style="font-size: 0.8rem; color: #555; text-decoration: none;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#555'">Política de Privacidad</a>
+        <a href="#" style="font-size: 0.8rem; color: #555; text-decoration: none;" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#555'">Términos de Servicio</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+  // FAQ accordion
+  // Dropdown menus
+  document.querySelectorAll('.nav-dropdown').forEach(dropdown => {
+    const btn = dropdown.querySelector('.nav-dropdown-btn');
+    const menu = dropdown.querySelector('.nav-dropdown-menu');
+    const chevron = dropdown.querySelector('.dropdown-chevron');
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = menu.style.display === 'block';
+      document.querySelectorAll('.nav-dropdown-menu').forEach(m => m.style.display = 'none');
+      document.querySelectorAll('.dropdown-chevron').forEach(c => c.style.transform = 'rotate(0deg)');
+      document.querySelectorAll('.nav-dropdown-btn').forEach(b => b.setAttribute('aria-expanded', 'false'));
+      if (!isOpen) {
+        menu.style.display = 'block';
+        chevron.style.transform = 'rotate(180deg)';
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.nav-dropdown-menu').forEach(m => m.style.display = 'none');
+    document.querySelectorAll('.dropdown-chevron').forEach(c => c.style.transform = 'rotate(0deg)');
+    document.querySelectorAll('.nav-dropdown-btn').forEach(b => b.setAttribute('aria-expanded', 'false'));
+  });
+
+  function toggleFaq(btn) {
+    const answer = btn.nextElementSibling;
+    const chevron = btn.querySelector('.faq-chevron');
+    const isOpen = answer.classList.contains('open');
+    document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+    document.querySelectorAll('.faq-chevron').forEach(c => c.classList.remove('open'));
+    if (!isOpen) {
+      answer.classList.add('open');
+      chevron.classList.add('open');
+    }
+  }
+
+  // Active TOC highlight on scroll
+  const sections = ['text-models', 'image-models', 'video-models', 'faq'];
+  const tocLinks = { 'text-models': 'toc-text', 'image-models': 'toc-image', 'video-models': 'toc-video', 'faq': 'toc-faq' };
+
+  function updateToc() {
+    let current = 'text-models';
+    for (const id of sections) {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < 120) current = id;
+    }
+    document.querySelectorAll('.toc-link').forEach(l => l.classList.remove('active'));
+    const activeLink = document.getElementById(tocLinks[current]);
+    if (activeLink) activeLink.classList.add('active');
+  }
+
+  window.addEventListener('scroll', updateToc, { passive: true });
+  // Hero pointer blob
+  (function(){var h=document.querySelector('.page-hero-bg'),p=document.getElementById('page-pointer');if(!h||!p)return;var cx=0,cy=0,tx=0,ty=0;function m(){cx+=(tx-cx)/20;cy+=(ty-cy)/20;p.style.transform='translate('+Math.round(cx)+'px,'+Math.round(cy)+'px)';requestAnimationFrame(m);}h.addEventListener('mousemove',function(e){var r=h.getBoundingClientRect();tx=e.clientX-r.left;ty=e.clientY-r.top;});m();})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+{
+  "nav": {
+    "resources": "Recursos de IA",
+    "aiTrends": "Tendencias de IA",
+    "userGuide": "Guía de Usuario AI Token King",
+    "compliance": "Cumplimiento Empresarial de IA",
+    "tokenCalculator": "Calculadora de Tokens",
+    "compareModels": "Comparar Modelos",
+    "useCases": "Casos de Uso",
+    "beginnersGuide": "Guía para Principiantes",
+    "blog": "Blog",
+    "documentation": "Documentación",
+    "getStarted": "Comenzar"
+  },
+  "footer": {
+    "tagline": "La guía definitiva en español sobre tokens de IA, modelos y APIs. Gratis, siempre.",
+    "learn": "Aprender",
+    "compare": "Comparar",
+    "more": "Más",
+    "beginnersGuide": "Guía para Principiantes",
+    "tokenCalculator": "Calculadora de Tokens",
+    "useCases": "Casos de Uso",
+    "userGuide": "Guía de Usuario",
+    "apiComparison": "Comparación de APIs",
+    "chatgptApi": "API de ChatGPT",
+    "claudeApi": "API de Claude",
+    "geminiApi": "API de Gemini",
+    "aiTrends": "Tendencias de IA",
+    "compliance": "Cumplimiento Empresarial",
+    "documentation": "Documentación",
+    "copyright": "© 2025 AI Token King. Todos los derechos reservados.",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio"
+  },
+  "blog": {
+    "latestArticles": "Últimos Artículos",
+    "heroTitle": "Blog de AI Token King",
+    "heroSubtitle": "Perspectivas sobre tokens de IA, APIs de modelos, optimización de costos y el ecosistema de IA en rápida evolución.",
+    "readArticle": "Leer artículo",
+    "noPostsYet": "Sin artículos aún. ¡Vuelve pronto!",
+    "backToBlog": "Volver al Blog",
+    "share": "Compartir:",
+    "published": "Publicado",
+    "tags": "Etiquetas",
+    "tryTitle": "Prueba AI Token King",
+    "tryCopy": "Compara modelos, calcula costos y gestiona tu uso de IA — gratis.",
+    "tryButton": "Comenzar"
+  },
+  "lang": {
+    "selectLanguage": "Seleccionar idioma",
+    "english": "English",
+    "spanish": "Español"
+  }
+}

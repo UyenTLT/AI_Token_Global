@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@sanity/vision": "^5.23.0",
+    "puppeteer": "^24.42.0",
+    "sanity": "^5.23.0"
+  }
+}

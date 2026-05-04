@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guía de la API de ChatGPT — AI Token King</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = { theme: { extend: { colors: { brand: { purple: '#6155F1', blue: '#3E81E5', lavender: '#F5F2FF', softpurple: '#E2DFFE', darkpurple: '#3C315B' } }, fontFamily: { heading: ['Kanit','sans-serif'], body: ['Plus Jakarta Sans','sans-serif'] } } } }
+  </script>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:#F5F2FF;color:#1C1C1C;-webkit-font-smoothing:antialiased}
+    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.4}
+    .nav-link{font-family:'Plus Jakarta Sans',sans-serif;font-size:.875rem;font-weight:500;color:#3C315B;text-decoration:none;padding:.375rem .75rem;border-radius:8px;transition:background-color .2s ease,color .2s ease}
+    .nav-link:hover{background-color:#E2DFFE;color:#6155F1}
+    .nav-link:focus-visible{outline:2px solid #6155F1;outline-offset:2px}
+    .nav-link.active{color:#6155F1;background-color:#EDE9FF;font-weight:600}
+    .dropdown-item{display:flex;align-items:center;gap:.625rem;padding:.6rem .875rem;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.855rem;font-weight:500;color:#3C315B;text-decoration:none;transition:background-color .15s ease,color .15s ease;white-space:nowrap}
+    .dropdown-item:hover{background-color:#F5F2FF;color:#6155F1}
+    .btn-primary{display:inline-flex;align-items:center;gap:.5rem;background:#6155F1;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.9rem;font-weight:600;padding:.625rem 1.375rem;border-radius:12px;text-decoration:none;box-shadow:0 2px 12px rgba(97,85,241,.25);transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s ease}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(97,85,241,.35)}
+    .btn-primary:active{transform:translateY(0)}
+    .section-label{display:inline-flex;align-items:center;gap:.5rem;background:#E2DFFE;color:#6155F1;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.375rem .875rem;border-radius:100px}
+    .sidebar-link{display:block;padding:.45rem .875rem;border-radius:7px;font-size:.845rem;font-weight:500;color:#666;text-decoration:none;transition:background-color .15s ease,color .15s ease}
+    .sidebar-link:hover{background:#F5F2FF;color:#6155F1}
+    .sidebar-link.active{background:#E2DFFE;color:#6155F1;font-weight:600}
+    .article-body h2{font-family:'Kanit',sans-serif;font-size:1.4rem;font-weight:800;color:#1C1C1C;letter-spacing:-.03em;line-height:1.2;margin-top:2.5rem;margin-bottom:.75rem;padding-top:2rem;border-top:1px solid rgba(97,85,241,.1)}
+    .article-body h2:first-child{margin-top:0;padding-top:0;border-top:none}
+    .article-body h3{font-family:'Kanit',sans-serif;font-size:1.05rem;font-weight:700;color:#1C1C1C;letter-spacing:-.02em;margin-top:1.5rem;margin-bottom:.5rem}
+    .article-body p{font-size:.95rem;line-height:1.85;color:#444;margin-bottom:1rem}
+    .article-body ul,.article-body ol{padding-left:1.375rem;margin-bottom:1rem}
+    .article-body li{font-size:.95rem;line-height:1.8;color:#444;margin-bottom:.3rem}
+    .article-body strong{color:#1C1C1C;font-weight:700}
+    .article-body a{color:#6155F1;text-decoration:underline;text-underline-offset:3px}
+    .article-body a:hover{color:#4e44d4}
+    .faq-answer{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.22,1,.36,1)}
+    .faq-answer.open{max-height:400px}
+    .faq-chevron{transition:transform .25s ease}
+    .faq-chevron.open{transform:rotate(180deg)}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    .fade-up{animation:fadeUp .6s cubic-bezier(.22,1,.36,1) both}
+    .fade-up-1{animation-delay:.06s}.fade-up-2{animation-delay:.12s}
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity .55s cubic-bezier(.22,1,.36,1),transform .55s cubic-bezier(.22,1,.36,1)}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    @media(max-width:1023px){.desktop-nav{display:none!important}#mobile-menu-btn{display:flex!important}}
+    @media(max-width:1060px){.post-layout{grid-template-columns:1fr!important}.post-sidebar{display:none!important}}
+  </style>
+</head>
+<body>
+
+<header style="background:rgba(245,242,255,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(97,85,241,.1);position:sticky;top:0;z-index:100">
+  <div style="max-width:1200px;margin:0 auto;padding:0 1.5rem;height:64px;display:flex;align-items:center;justify-content:space-between;gap:2rem">
+    <a href="index.html" style="display:flex;align-items:center;gap:.625rem;text-decoration:none;flex-shrink:0">
+      <img src="../AI_Token_logoPNG.avif" alt="AI Token King Logo" style="width:36px;height:36px;object-fit:contain"/>
+      <span style="font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;color:#3C315B;letter-spacing:-.02em">AI Token King</span>
+    </a>
+    <nav class="desktop-nav" style="display:flex;align-items:center;gap:.125rem;flex:1;justify-content:center">
+      <div class="nav-dropdown" style="position:relative">
+        <button class="nav-link nav-dropdown-btn" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:.3rem" aria-expanded="false">
+          AI Resources
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="transition:transform .2s ease" class="dropdown-chevron"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="nav-dropdown-menu" style="display:none;position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(97,85,241,.14),0 2px 8px rgba(0,0,0,.07);padding:.5rem;min-width:230px;z-index:200;border:1px solid rgba(97,85,241,.1)">
+          <a href="ai-trends.html" class="dropdown-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M3 6h18M3 18h12" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round"/></svg>Tendencias IA</a>
+          <a href="user-guide.html" class="dropdown-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="#6155F1"/></svg>AI Token King User Guide</a>
+          <a href="compliance.html" class="dropdown-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 01-2-2V7l4-4h10a2 2 0 012 2v14a2 2 0 01-2 2z" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 3v4H5M9 12h6M9 16h4" stroke="#6155F1" stroke-width="1.5" stroke-linecap="round"/></svg>Business AI Compliance</a>
+        </div>
+      </div>
+      <a href="api-compare.html" class="nav-link active">Comparar Modelos</a>
+      <a href="use-cases.html" class="nav-link">Casos de Uso</a>
+      <a href="beginners-guide.html" class="nav-link">Guía para Principiantes</a>
+      <a href="blog.html" class="nav-link">Blog</a>
+      <a href="https://www.aitokenking.com.tw/docs" class="nav-link" target="_blank" rel="noopener noreferrer">Documentación</a>
+    </nav>
+    <div style="display:flex;align-items:center;gap:.75rem;flex-shrink:0">
+      <a href="https://www.aitokenking.com.tw/home" class="btn-primary" style="font-size:.85rem;padding:.5rem 1.125rem;" target="_blank" rel="noopener noreferrer">Get Started <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+    <button style="display:none;background:none;border:none;cursor:pointer;padding:.5rem" aria-label="Menu" id="mobile-menu-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="#3C315B" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section style="background:linear-gradient(135deg,rgba(97,85,241,.08) 0%,rgba(62,129,229,.06) 100%),#F5F2FF;padding:3rem 1.5rem 2.5rem">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1.75rem;font-size:.8rem;color:#999;flex-wrap:wrap">
+      <a href="index.html" style="color:#999;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#6155F1'" onmouseout="this.style.color='#999'">Inicio</a>
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#CCC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <a href="api-compare.html" style="color:#999;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#6155F1'" onmouseout="this.style.color='#999'">Comparar Modelos</a>
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#CCC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span style="color:#6155F1;font-weight:600">API de ChatGPT</span>
+    </div>
+    <div style="background:linear-gradient(135deg,#6155F1 0%,#3E81E5 100%);border-radius:16px;padding:2rem 2.5rem;margin-bottom:2rem">
+      <h1 class="fade-up" style="font-family:'Kanit',sans-serif;font-size:clamp(1.5rem,3vw,2rem);font-weight:800;color:#fff;letter-spacing:-.03em;margin-bottom:.5rem">Guía de la API de ChatGPT</h1>
+      <p class="fade-up fade-up-1" style="font-size:.925rem;color:rgba(255,255,255,.85);line-height:1.7;max-width:580px">Entiende rápidamente qué es la API de ChatGPT, los casos de uso comunes y cómo funcionan los costos y los AI Tokens.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN LAYOUT -->
+<section style="padding:2.5rem 1.5rem 5rem">
+  <div class="post-layout" style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 280px;gap:3rem;align-items:start">
+
+    <article class="article-body">
+
+      <h2 id="overview">Guía de la API de ChatGPT</h2>
+      <p>Si estás mirando la API de ChatGPT, las tres cosas más importantes que debes entender de antemano son: qué puede hacer realmente, qué situaciones se adaptan y cómo funcionan los costos. Esta página te da una visión clara de los puntos clave de la API de ChatGPT, los casos de uso comunes y la estructura de costos — para que puedas hacer una comparación informada.</p>
+      <p>Si aún no estás familiarizado con los conceptos básicos de los tokens de IA, comienza primero con <a href="beginners-guide.html">Conceptos Básicos de AI Token</a>.</p>
+
+      <h2 id="what-is">¿Qué es la API de ChatGPT?</h2>
+      <p>La API de ChatGPT (impulsada por OpenAI) es una forma de conectar las capacidades del modelo a sitios web, aplicaciones, herramientas o flujos de trabajo automatizados. Puedes usar la API para enviar prompts, recibir respuestas de texto o estructuradas, generar contenido desde el contexto y construir productos impulsados por IA sobre los modelos de OpenAI.</p>
+      <p>Si aún no tienes claro la terminología básica, puedes ver <a href="beginners-guide.html">¿Qué es un AI Token?</a></p>
+      <p>A diferencia de la interfaz de consumidor de ChatGPT, la API no está vinculada a ningún modelo único — te permite elegir programáticamente qué modelo llamar, pasar instrucciones del sistema, controlar el formato de respuesta y gestionar el historial de conversación tú mismo.</p>
+
+      <h2 id="use-cases">¿Para Qué se Usa Comúnmente?</h2>
+      <p>Las aplicaciones más comunes de la API de ChatGPT se centran en tareas de comprensión y generación de texto: automatización de servicio al cliente y soporte, resumen de contenido, traducción, preguntas y respuestas automatizadas, procesamiento de documentos, integración de herramientas y asistentes de base de conocimiento interno.</p>
+      <p>Su versatilidad significa que a menudo es la primera API de modelo a la que recurren los desarrolladores — no porque siempre sea la mejor opción, sino porque maneja una amplia gama de tareas basadas en texto sin necesitar configuración especializada.</p>
+
+      <h2 id="pricing">¿Cómo Funciona el Precio?</h2>
+      <p>Al usar la API de ChatGPT, no puedes simplemente mirar el precio superficial. Más importante aún, necesitas entender los AI Tokens — el contenido de entrada, el contenido de salida, la longitud de respuesta, el tipo de tarea y el contexto de conversación afectan cómo se consumen los tokens. El mismo prompt puede costar muy diferente dependiendo de cómo lo estructures.</p>
+      <p>If you're not yet familiar with how tokens work, read <a href="beginners-guide.html">AI Token Basics</a> and <a href="api-compare.html">How to Calcular GPT Token Costs</a> before comparing ChatGPT API pricing — otherwise the numbers won't tell you much.</p>
+
+      <h3 id="pricing-reference">Referencia de Precios</h3>
+      <ul>
+        <li><strong>GPT-4o:</strong> $2.50 / 1M input tokens · $10.00 / 1M output tokens</li>
+        <li><strong>GPT-4o mini:</strong> $0.15 / 1M input tokens · $0.60 / 1M output tokens</li>
+        <li><strong>GPT-4 Turbo:</strong> $10.00 / 1M input tokens · $30.00 / 1M output tokens</li>
+        <li><strong>o1:</strong> $15.00 / 1M input tokens · $60.00 / 1M output tokens</li>
+      </ul>
+      <p>Para una comparación completa en vivo de todos los modelos, consulta la <a href="api-compare.html">página de Comparación de Modelos</a>.</p>
+
+      <h2 id="who-fits">¿Para Quién es Particularmente Adecuado?</h2>
+      <p>Si eres nuevo en las APIs de modelos, la API de ChatGPT es a menudo el punto de partida más accesible — está ampliamente documentada, tiene la comunidad de desarrolladores más grande y se integra fácilmente con la mayoría de herramientas y frameworks. También es adecuada para equipos que quieren construir flujos de automatización impulsados por IA o características de sitios web sin una curva de aprendizaje pronunciada.</p>
+      <p>También es una buena opción para cualquiera que quiera entender el consumo de tokens de la API de ChatGPT y la lógica de costos, ya que muchas herramientas y plataformas la usan como línea de base de referencia.</p>
+
+      <h2 id="comparison-tips">Al Comparar, ¿Qué Debes Mirar?</h2>
+      <p>Al comparar la API de ChatGPT con otros modelos, las cosas más importantes a evaluar son la calidad de salida, la estabilidad, el precio, la complejidad de integración y el costo a largo plazo a escala. Para la mayoría de las personas, la comparación real no es un nombre de modelo único — es si esta API puede manejar tu carga de trabajo real dentro de tu presupuesto.</p>
+      <p>También puedes compararlo con otros modelos principales en la página de <a href="api-compare.html">Comparación ChatGPT, Claude, Gemini</a> — eso te da una imagen mucho más clara para construir una evaluación completa.</p>
+
+      <h2 id="further-reading">Lecturas Adicionales</h2>
+      <ul>
+        <li><a href="beginners-guide.html">¿Qué es un AI Token?</a></li>
+        <li><a href="beginners-guide.html">How to Calcular AI Token Costs</a></li>
+        <li><a href="api-compare.html">ChatGPT, Claude, Gemini — ¿Cuál es la Diferencia?</a></li>
+        <li><a href="api-compare.html">Comparación Completa de Modelos</a></li>
+      </ul>
+
+      <!-- FAQ -->
+      <h2 id="faq">Preguntas Comunes</h2>
+
+      <div style="border-top:1px solid rgba(97,85,241,.1)">
+        <div style="border-bottom:1px solid rgba(97,85,241,.08)">
+          <button onclick="toggleFaq(this)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:1.125rem 0;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.925rem;font-weight:600;color:#1C1C1C">
+            ¿Cuál es la diferencia entre la API de ChatGPT y el producto de chat regular?
+            <svg class="faq-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-answer"><p style="padding-bottom:1.125rem;font-size:.9rem;line-height:1.8;color:#555">La interfaz de consumidor está diseñada para uso humano directo. La API de ChatGPT es para conectarse a sitios web, aplicaciones, herramientas o flujos de trabajo automatizados — las capacidades del modelo se pueden invocar programáticamente e integrar en tus propios productos.</p></div>
+        </div>
+        <div style="border-bottom:1px solid rgba(97,85,241,.08)">
+          <button onclick="toggleFaq(this)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:1.125rem 0;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.925rem;font-weight:600;color:#1C1C1C">
+            ¿Cómo se calcula el precio de la API de ChatGPT?
+            <svg class="faq-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-answer"><p style="padding-bottom:1.125rem;font-size:.9rem;line-height:1.8;color:#555">Se factura por tokens de entrada y salida por separado. El costo real está influenciado por la longitud de respuesta, el tamaño de la ventana de contexto y el tipo de tarea — no solo el precio superficial por millón de tokens.</p></div>
+        </div>
+        <div style="border-bottom:1px solid rgba(97,85,241,.08)">
+          <button onclick="toggleFaq(this)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:1.125rem 0;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.925rem;font-weight:600;color:#1C1C1C">
+            ¿Es la API de ChatGPT adecuada para principiantes?
+            <svg class="faq-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-answer"><p style="padding-bottom:1.125rem;font-size:.9rem;line-height:1.8;color:#555">Si eres nuevo en las APIs de modelos, la API de ChatGPT es generalmente el punto de entrada más accesible — pero aún recomendamos entender los AI Tokens y la lógica de costos antes de sumergirte en el uso.</p></div>
+        </div>
+        <div>
+          <button onclick="toggleFaq(this)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:1.125rem 0;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.925rem;font-weight:600;color:#1C1C1C">
+            ¿La API de ChatGPT es siempre mejor que otros modelos?
+            <svg class="faq-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-answer"><p style="padding-bottom:1.125rem;font-size:.9rem;line-height:1.8;color:#555">No necesariamente. La comparación real es sobre la adecuación al caso de uso, el presupuesto, la calidad de salida, el enfoque de integración y el costo a largo plazo — no solo el reconocimiento de marca. Consulta la <a href="api-compare.html">comparación completa</a> para una vista lado a lado.</p></div>
+        </div>
+      </div>
+
+    </article>
+
+    <!-- SIDEBAR -->
+    <aside class="post-sidebar" style="position:sticky;top:88px;display:flex;flex-direction:column;gap:1.25rem">
+      <div style="background:#fff;border-radius:16px;padding:1.5rem;box-shadow:0 2px 10px rgba(97,85,241,.08)">
+        <div style="font-family:'Kanit',sans-serif;font-size:.72rem;font-weight:700;color:#6155F1;letter-spacing:.07em;text-transform:uppercase;margin-bottom:1rem">En Esta Página</div>
+        <nav style="display:flex;flex-direction:column;gap:.125rem" id="toc-nav">
+          <a href="#overview" class="sidebar-link active">Resumen</a>
+          <a href="#what-is" class="sidebar-link">¿Qué es la API de ChatGPT?</a>
+          <a href="#use-cases" class="sidebar-link">Common Casos de Uso</a>
+          <a href="#pricing" class="sidebar-link">Cómo Funciona el Precio</a>
+          <a href="#who-fits" class="sidebar-link">Para Quién Es</a>
+          <a href="#comparison-tips" class="sidebar-link">Consejos de Comparación</a>
+          <a href="#faq" class="sidebar-link">Preguntas Comunes</a>
+        </nav>
+      </div>
+      <div style="background:linear-gradient(135deg,#6155F1 0%,#3E81E5 100%);border-radius:16px;padding:1.5rem;color:#fff">
+        <div style="font-family:'Kanit',sans-serif;font-size:1rem;font-weight:700;margin-bottom:.5rem">Comparar Todos los Modelos</div>
+        <p style="font-size:.825rem;opacity:.88;line-height:1.6;margin-bottom:1.125rem">Ve ChatGPT, Claude y Gemini lado a lado en precio, ventana de contexto y adecuación al caso de uso.</p>
+        <a href="api-compare.html" class="btn-primary" style="background:rgba(255,255,255,.2);box-shadow:none;border:1px solid rgba(255,255,255,.35);font-size:.825rem;padding:.5rem 1rem;width:100%;justify-content:center">Ver Comparación Completa <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div style="background:#fff;border-radius:16px;padding:1.375rem;box-shadow:0 2px 10px rgba(97,85,241,.08)">
+        <div style="font-family:'Kanit',sans-serif;font-size:.75rem;font-weight:700;color:#3C315B;margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.04em">También Compara</div>
+        <div style="display:flex;flex-direction:column;gap:.5rem">
+          <a href="claude-api.html" style="font-size:.85rem;color:#6155F1;text-decoration:none;font-weight:600;display:flex;align-items:center;gap:.375rem" onmouseover="this.style.gap='.625rem'" onmouseout="this.style.gap='.375rem'">Guía de la API de Claude <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          <a href="gemini-api.html" style="font-size:.85rem;color:#3E81E5;text-decoration:none;font-weight:600;display:flex;align-items:center;gap:.375rem" onmouseover="this.style.gap='.625rem'" onmouseout="this.style.gap='.375rem'">Guía de la API de Gemini <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</section>
+
+<footer style="background:#1C1C1C;color:#999;padding:3.5rem 1.5rem 2rem">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="footer-grid" style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem">
+      <div>
+        <div style="display:flex;align-items:center;gap:.625rem;margin-bottom:1rem"><img src="../AI_Token_logoPNG.avif" alt="AI Token King" style="width:32px;height:32px;object-fit:contain"/><span style="font-family:'Kanit',sans-serif;font-size:1rem;font-weight:700;color:#fff;letter-spacing:-.02em">AI Token King</span></div>
+        <p style="font-size:.875rem;line-height:1.75;color:#666;max-width:260px">El centro definitivo en español para entender los tokens de IA, modelos y APIs. Gratis, siempre.</p>
+      </div>
+      <div>
+        <div style="font-family:'Kanit',sans-serif;font-size:.875rem;font-weight:700;color:#fff;margin-bottom:1.125rem;letter-spacing:.02em;text-transform:uppercase">Learn</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:.625rem">
+          <li><a href="beginners-guide.html" style="font-size:.875rem;color:#666;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Guía para Principiantes</a></li>
+          <li><a href="use-cases.html" style="font-size:.875rem;color:#666;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Casos de Uso</a></li>
+          <li><a href="blog.html" style="font-size:.875rem;color:#E2DFFE;text-decoration:none;font-weight:600">Blog Articles</a></li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-family:'Kanit',sans-serif;font-size:.875rem;font-weight:700;color:#fff;margin-bottom:1.125rem;letter-spacing:.02em;text-transform:uppercase">Compare</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:.625rem">
+          <li><a href="api-compare.html" style="font-size:.875rem;color:#666;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Comparación de APIs</a></li>
+          <li><a href="chatgpt-api.html" style="font-size:.875rem;color:#E2DFFE;text-decoration:none;font-weight:600">ChatGPT API</a></li>
+          <li><a href="claude-api.html" style="font-size:.875rem;color:#666;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Claude API</a></li>
+          <li><a href="gemini-api.html" style="font-size:.875rem;color:#666;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Gemini API</a></li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-family:'Kanit',sans-serif;font-size:.875rem;font-weight:700;color:#fff;margin-bottom:1.125rem;letter-spacing:.02em;text-transform:uppercase">More</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:.625rem">
+          <li><a href="ai-trends.html" style="font-size:.875rem;color:#666;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Tendencias IA</a></li>
+          <li><a href="compliance.html" style="font-size:.875rem;color:#666;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Compliance</a></li>
+          <li><a href="https://www.aitokenking.com.tw/docs" target="_blank" rel="noopener noreferrer" style="font-size:.875rem;color:#666;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#666'">Documentación</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="border-top:1px solid #2A2A2A;padding-top:1.75rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+      <p style="font-size:.8rem;color:#555">© 2026 AI Token King. All rights reserved.</p>
+      <div style="display:flex;gap:1.5rem">
+        <a href="#" style="font-size:.8rem;color:#555;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#555'">Política de Privacidad</a>
+        <a href="#" style="font-size:.8rem;color:#555;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#E2DFFE'" onmouseout="this.style.color='#555'">Términos de Servicio</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function toggleFaq(btn){const a=btn.nextElementSibling,c=btn.querySelector('.faq-chevron'),o=a.classList.contains('open');document.querySelectorAll('.faq-answer').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.faq-chevron').forEach(x=>x.classList.remove('open'));if(!o){a.classList.add('open');c.classList.add('open')}}
+  const revealEls=document.querySelectorAll('.reveal');const ro=new IntersectionObserver((e)=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('visible');ro.unobserve(x.target)}})},{threshold:.1});revealEls.forEach(el=>ro.observe(el));
+  const sections=document.querySelectorAll('.article-body h2[id]');const tocLinks=document.querySelectorAll('#toc-nav .sidebar-link');const to=new IntersectionObserver((e)=>{e.forEach(x=>{if(x.isIntersecting){tocLinks.forEach(l=>l.classList.remove('active'));const a=document.querySelector('#toc-nav .sidebar-link[href="#'+x.target.id+'"]');if(a)a.classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});sections.forEach(s=>to.observe(s));
+  document.querySelectorAll('.nav-dropdown').forEach(d=>{const b=d.querySelector('.nav-dropdown-btn'),m=d.querySelector('.nav-dropdown-menu'),c=d.querySelector('.dropdown-chevron');b.addEventListener('click',e=>{e.stopPropagation();const o=m.style.display==='block';document.querySelectorAll('.nav-dropdown-menu').forEach(x=>x.style.display='none');document.querySelectorAll('.dropdown-chevron').forEach(x=>x.style.transform='rotate(0deg)');document.querySelectorAll('.nav-dropdown-btn').forEach(x=>x.setAttribute('aria-expanded','false'));if(!o){m.style.display='block';c.style.transform='rotate(180deg)';b.setAttribute('aria-expanded','true')}})});
+  document.addEventListener('click',()=>{document.querySelectorAll('.nav-dropdown-menu').forEach(m=>m.style.display='none');document.querySelectorAll('.dropdown-chevron').forEach(c=>c.style.transform='rotate(0deg)')});
+  const mb=document.getElementById('mobile-menu-btn');if(mb)mb.addEventListener('click',()=>{const n=document.querySelector('.desktop-nav');if(n)n.style.display=n.style.display==='flex'?'none':'flex'});
+  const s=document.createElement('style');s.textContent='@media(max-width:860px){.footer-grid{grid-template-columns:1fr 1fr!important}}@media(max-width:540px){.footer-grid{grid-template-columns:1fr!important}}';document.head.appendChild(s);
+</script>
+</body>
+</html>
