@@ -4,6 +4,8 @@ import { visionTool } from '@sanity/vision';
 import { media, mediaAssetSource } from 'sanity-plugin-media';
 import { postSchema } from './schemas/post';
 import { imageMetaSchema } from './schemas/imageMeta';
+import { faqItemSchema } from './schemas/faqItem';
+import { aiTrendsPageSchema } from './schemas/aiTrendsPage';
 import { ArticleNumberFilter } from './components/ArticleNumberFilter';
 
 export default defineConfig({
@@ -28,6 +30,6 @@ export default defineConfig({
     },
   ],
   schema: {
-    types: [postSchema, imageMetaSchema],
+    types: [postSchema, imageMetaSchema, faqItemSchema, aiTrendsPageSchema],
   },
 });

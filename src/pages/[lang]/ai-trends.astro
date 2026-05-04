@@ -1,0 +1,301 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAiTrendsPage } from '../../lib/sanity';
+import { useTranslations, SUPPORTED_LANGS, isValidLang } from '../../i18n/index';
+import type { Lang } from '../../i18n/index';
+import type { AiTrendsPageData, TrendCard, AudienceCard } from '../../lib/sanity';
+import { toHTML } from '@portabletext/to-html';
+
+export async function getStaticPaths() {
+  return SUPPORTED_LANGS.map(lang => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+if (!isValidLang(lang)) return Astro.redirect('/en/ai-trends');
+const t = useTranslations(lang as Lang);
+
+const page: AiTrendsPageData | null = await getAiTrendsPage(lang);
+
+// Portable Text → HTML with brand-styled bold
+const ptOptions = {
+  components: {
+    marks: {
+      strong: ({ children }: any) => `<strong style="color:#3C315B;font-weight:700;">${children}</strong>`,
+      em:     ({ children }: any) => `<em>${children}</em>`,
+    },
+  },
+};
+function pt(blocks: any): string {
+  if (!blocks) return '';
+  return toHTML(blocks, ptOptions);
+}
+
+// Accent color → visual style tokens
+const ACCENT: Record<string, { iconGrad: string; tagBg: string; tagColor: string; quoteBg: string; quoteColor: string }> = {
+  '#6155F1': { iconGrad: 'linear-gradient(135deg,#6155F1,#8B7FF5)', tagBg: '#F5F2FF', tagColor: '#6155F1', quoteBg: '#F5F2FF', quoteColor: '#6155F1' },
+  '#3E81E5': { iconGrad: 'linear-gradient(135deg,#3E81E5,#56c7fd)', tagBg: '#EBF4FF', tagColor: '#3E81E5', quoteBg: '#EBF4FF', quoteColor: '#3E81E5' },
+  '#0ABFBC': { iconGrad: 'linear-gradient(135deg,#0ABFBC,#3E81E5)', tagBg: '#E0FAF9', tagColor: '#0ABFBC', quoteBg: '#E0FAF9', quoteColor: '#0ABFBC' },
+  '#F59E0B': { iconGrad: 'linear-gradient(135deg,#F59E0B,#FBBF24)', tagBg: '#FEF3C7', tagColor: '#D97706', quoteBg: '#FEF3C7', quoteColor: '#D97706' },
+  '#F43F5E': { iconGrad: 'linear-gradient(135deg,#F43F5E,#FB7185)', tagBg: '#FFF1F2', tagColor: '#F43F5E', quoteBg: '#FFF1F2', quoteColor: '#F43F5E' },
+};
+
+// SVG icons per card index (structural, same across all languages)
+const CARD_ICONS = [
+  `<path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="#fff" stroke-width="1.75" stroke-linecap="round"/>`,
+  `<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>`,
+  `<rect x="3" y="3" width="7" height="7" rx="1.5" stroke="#fff" stroke-width="1.75"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="#fff" stroke-width="1.75"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="#fff" stroke-width="1.75"/><path d="M14 17.5h7M17.5 14v7" stroke="#fff" stroke-width="1.75" stroke-linecap="round"/>`,
+  `<circle cx="12" cy="12" r="3" stroke="#fff" stroke-width="1.75"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="#fff" stroke-width="1.75" stroke-linecap="round"/>`,
+  `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>`,
+];
+
+// Audience card icon colors (structural)
+const AUDIENCE_COLORS = ['#6155F1', '#3E81E5', '#F43F5E'];
+const AUDIENCE_BG = ['#F5F2FF', '#EBF4FF', '#FFF1F2'];
+const AUDIENCE_ICONS = [
+  `<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.75"/>`,
+  `<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.75"/>`,
+  `<rect x="2" y="7" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.75"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2M12 12v4M10 14h4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>`,
+];
+---
+
+<BaseLayout
+  title={`${page?.heroHeadline ?? 'AI Trends'} — AI Token King`}
+  description={page?.heroSubtitle ?? ''}
+  activePage="ai-trends"
+  activeDropdown="resources"
+  lang={lang as Lang}
+>
+
+  <!-- ── Hero ─────────────────────────────────────────── -->
+  <section class="hero-bg" style="padding: 3.5rem 1.5rem 3rem;">
+    <div class="hero-bg-canvas" aria-hidden="true">
+      <svg style="display:none"><defs><filter id="hero-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo"/><feBlend in="SourceGraphic" in2="goo"/></filter></defs></svg>
+      <div class="grad-blobs">
+        <div class="blob blob-1"></div><div class="blob blob-2"></div>
+        <div class="blob blob-3"></div><div class="blob blob-4"></div>
+      </div>
+    </div>
+    <div class="hero-bg-content" style="max-width: 1200px; margin: 0 auto;">
+      <!-- Breadcrumb -->
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1.75rem;font-size:0.8rem;color:rgba(255,255,255,0.5);">
+        <a href={`/${lang}/`} style="color:rgba(255,255,255,0.5);text-decoration:none;" class="breadcrumb-link">Home</a>
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span style="color:rgba(255,255,255,0.5);">{t('nav.resources')}</span>
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span style="color:rgba(255,255,255,0.9);font-weight:600;">{t('nav.aiTrends')}</span>
+      </div>
+
+      <div style="max-width:760px;">
+        <div class="section-label fade-up" style="margin-bottom:1.125rem;background:rgba(226,223,254,0.15);color:rgba(255,255,255,0.9);border:1px solid rgba(255,255,255,0.15);">
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+          Trend Watch
+        </div>
+        <h1 class="fade-up fade-up-1" style="font-family:'Kanit',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:800;color:#fff;letter-spacing:-0.04em;line-height:1.1;margin-bottom:1.125rem;">
+          {page?.heroHeadline}
+        </h1>
+        {page?.heroSubtitle && (
+          <p class="fade-up fade-up-2" style="font-size:1.05rem;line-height:1.75;color:rgba(255,255,255,0.7);max-width:640px;margin-bottom:0.625rem;">
+            {page.heroSubtitle}
+          </p>
+        )}
+        {page?.heroSubtitle2 && (
+          <p class="fade-up fade-up-3" style="font-size:0.925rem;line-height:1.7;color:rgba(255,255,255,0.5);max-width:600px;" set:html={pt(page.heroSubtitle2)} />
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Intro ─────────────────────────────────────────── -->
+  <section style="padding:3.5rem 1.5rem;background:#FFFFFF;">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+        <div class="icon-box" style="background:linear-gradient(135deg,#6155F1,#3E81E5);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M2 12h2m16 0h2M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" stroke="#fff" stroke-width="1.75" stroke-linecap="round"/><circle cx="12" cy="12" r="4" stroke="#fff" stroke-width="1.75"/></svg>
+        </div>
+        <h2 style="font-family:'Kanit',sans-serif;font-size:1.6rem;font-weight:800;color:#1C1C1C;letter-spacing:-0.03em;">{page?.introTitle}</h2>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start;" class="intro-grid">
+        <div class="prose-intro" set:html={pt(page?.introParagraphs)} />
+        <div style="background:linear-gradient(135deg,#F5F2FF 0%,#EBF4FF 100%);border-radius:20px;padding:1.75rem;">
+          <div style="font-family:'Kanit',sans-serif;font-size:0.75rem;font-weight:700;color:#6155F1;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:1.25rem;">
+            {page?.summaryTitle}
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.875rem;">
+            {page?.summaryPoints?.map((point, i) => {
+              const dotColors = ['#6155F1','#3E81E5','#0ABFBC','#F59E0B','#F43F5E'];
+              return (
+                <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+                  <div style={`width:6px;height:6px;border-radius:50%;background:${dotColors[i % dotColors.length]};flex-shrink:0;margin-top:0.45rem;`}></div>
+                  <span style="font-size:0.875rem;color:#3C315B;line-height:1.6;">{point}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 5 Trend Cards ──────────────────────────────────── -->
+  <section style="padding:3.5rem 1.5rem;background:#F5F2FF;">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="text-align:center;margin-bottom:2.75rem;">
+        <div class="section-label" style="display:inline-flex;margin-bottom:1rem;">
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+          {page?.trendsSectionLabel}
+        </div>
+        <h2 style="font-family:'Kanit',sans-serif;font-size:2rem;font-weight:800;color:#1C1C1C;letter-spacing:-0.03em;line-height:1.15;">
+          {page?.trendsSectionTitle}
+        </h2>
+      </div>
+
+      <!-- Top row: cards 0–2 -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:1.25rem;" class="trends-grid-3">
+        {page?.trendCards?.slice(0, 3).map((card: TrendCard, i: number) => {
+          const s = ACCENT[card.accentColor] ?? ACCENT['#6155F1'];
+          return (
+            <div class="trend-card reveal" style={`border-left-color:${card.accentColor};animation-delay:${i * 0.08}s;`}>
+              <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.125rem;">
+                <div class="icon-box" style={`background:${s.iconGrad};`}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" set:html={CARD_ICONS[i]} />
+                </div>
+                <span class="tag" style={`background:${s.tagBg};color:${s.tagColor};`}>{card.tag}</span>
+              </div>
+              <h3 style="font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.02em;line-height:1.3;margin-bottom:0.875rem;">{card.title}</h3>
+              <div class="prose-card" style="margin-bottom:1rem;" set:html={pt(card.body)} />
+              {card.pullQuote && (
+                <div style={`background:${s.quoteBg};border-radius:10px;padding:0.875rem 1rem;font-size:0.82rem;color:${s.quoteColor};font-weight:600;line-height:1.5;`}>
+                  {card.pullQuote}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <!-- Bottom row: cards 3–4 -->
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;" class="trends-grid-2">
+        {page?.trendCards?.slice(3).map((card: TrendCard, i: number) => {
+          const s = ACCENT[card.accentColor] ?? ACCENT['#6155F1'];
+          const idx = i + 3;
+          return (
+            <div class="trend-card reveal" style={`border-left-color:${card.accentColor};animation-delay:${i * 0.08}s;`}>
+              <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.125rem;">
+                <div class="icon-box" style={`background:${s.iconGrad};`}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" set:html={CARD_ICONS[idx]} />
+                </div>
+                <span class="tag" style={`background:${s.tagBg};color:${s.tagColor};`}>{card.tag}</span>
+              </div>
+              <h3 style="font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.02em;line-height:1.3;margin-bottom:0.875rem;">{card.title}</h3>
+              <div class="prose-card" set:html={pt(card.body)} />
+              {card.pullQuote && (
+                <div style={`background:${s.quoteBg};border-radius:10px;padding:0.875rem 1rem;font-size:0.82rem;color:${s.quoteColor};font-weight:600;line-height:1.5;margin-top:1rem;`}>
+                  {card.pullQuote}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Audience ───────────────────────────────────────── -->
+  <section style="padding:3.5rem 1.5rem;background:#FFFFFF;">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;">
+        <div class="icon-box" style="background:linear-gradient(135deg,#6155F1,#3E81E5);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke="#fff" stroke-width="1.75"/></svg>
+        </div>
+        <h2 style="font-family:'Kanit',sans-serif;font-size:1.6rem;font-weight:800;color:#1C1C1C;letter-spacing:-0.03em;line-height:1.1;">{page?.audienceSectionTitle}</h2>
+      </div>
+
+      {page?.audienceIntro && (
+        <div class="prose-intro" style="max-width:780px;margin-bottom:2.5rem;" set:html={pt(page.audienceIntro)} />
+      )}
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;" class="relevance-grid">
+        {page?.audienceCards?.map((card: AudienceCard, i: number) => (
+          <div class="card" style="padding:1.5rem;">
+            <div style={`width:40px;height:40px;border-radius:10px;background:${AUDIENCE_BG[i % 3]};display:flex;align-items:center;justify-content:center;margin-bottom:1rem;color:${AUDIENCE_COLORS[i % 3]};`}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" set:html={AUDIENCE_ICONS[i % 3]} />
+            </div>
+            <div style="font-family:'Kanit',sans-serif;font-size:1rem;font-weight:700;color:#1C1C1C;margin-bottom:0.5rem;">{card.audience}</div>
+            <div class="prose-small" set:html={pt(card.body)} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Sources ────────────────────────────────────────── -->
+  <section style="padding:3.5rem 1.5rem;background:#F5F2FF;">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+        <div class="icon-box" style="background:#E2DFFE;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h2 style="font-family:'Kanit',sans-serif;font-size:1.6rem;font-weight:800;color:#1C1C1C;letter-spacing:-0.03em;">{page?.sourcesTitle}</h2>
+      </div>
+      {page?.sourcesNote && (
+        <p style="font-size:0.95rem;line-height:1.8;color:#555;max-width:720px;margin-bottom:1.5rem;">{page.sourcesNote}</p>
+      )}
+      <a href="#" class="btn-download">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        2031 Data, Analytics &amp; AI Top 10 Predictions (PDF)
+      </a>
+    </div>
+  </section>
+
+  <!-- ── FAQ (rendered only if content exists) ─────────── -->
+  {page?.faq && page.faq.length > 0 && (
+    <section style="padding:3.5rem 1.5rem;background:#FFFFFF;">
+      <div style="max-width:800px;margin:0 auto;">
+        <h2 style="font-family:'Kanit',sans-serif;font-size:1.75rem;font-weight:800;color:#1C1C1C;letter-spacing:-0.03em;margin-bottom:2rem;">FAQ</h2>
+        {page.faq.map(item => (
+          <div style="border-bottom:1px solid #E2DFFE;">
+            <button class="faq-btn" onclick="toggleFaq(this)" style="width:100%;text-align:left;padding:1.25rem 0;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;">
+              <span style="font-family:'Kanit',sans-serif;font-size:1rem;font-weight:700;color:#1C1C1C;">{item.question}</span>
+              <svg class="faq-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer" style="overflow:hidden;max-height:0;transition:max-height 0.3s ease;">
+              <div class="prose-small" style="padding-bottom:1.25rem;" set:html={pt(item.answer)} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+</BaseLayout>
+
+<style>
+  .breadcrumb-link:hover { color: rgba(255,255,255,0.9) !important; }
+
+  .prose-intro p  { font-size: 0.95rem; line-height: 1.8; color: #555; margin-bottom: 1.25rem; }
+  .prose-intro p:last-child { margin-bottom: 0; }
+  .prose-card p   { font-size: 0.875rem; color: #555; line-height: 1.75; margin-bottom: 0.75rem; }
+  .prose-card p:last-child { margin-bottom: 0; }
+  .prose-small p  { font-size: 0.85rem; color: #666; line-height: 1.7; margin: 0; }
+
+  .trend-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(97,85,241,0.08), 0 1px 3px rgba(0,0,0,0.04);
+    border-left: 4px solid #6155F1;
+    padding: 1.75rem;
+    transition: transform 0.22s cubic-bezier(.22,1,.36,1), box-shadow 0.22s cubic-bezier(.22,1,.36,1);
+  }
+  .trend-card:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(97,85,241,0.14), 0 2px 8px rgba(0,0,0,0.06); }
+
+  .icon-box { width: 44px; height: 44px; border-radius: 12px; background: #F5F2FF; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .tag { display: inline-block; background: #F5F2FF; color: #6155F1; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em; padding: 0.2rem 0.55rem; border-radius: 6px; text-transform: uppercase; }
+
+  @media (max-width: 768px) {
+    .intro-grid      { grid-template-columns: 1fr !important; }
+    .trends-grid-3   { grid-template-columns: 1fr !important; }
+    .trends-grid-2   { grid-template-columns: 1fr !important; }
+    .relevance-grid  { grid-template-columns: 1fr !important; }
+  }
+</style>
