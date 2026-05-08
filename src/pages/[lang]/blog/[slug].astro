@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getAllPostSlugs, getPostBySlug } from '../../../lib/sanity';
-import { useTranslations, SUPPORTED_LANGS, isValidLang } from '../../../i18n/index';
+import { useTranslations, LANG_META, isValidLang } from '../../../i18n/index';
 import type { Lang } from '../../../i18n/index';
 import type { SanityPost } from '../../../lib/sanity';
 import { toHTML } from '@portabletext/to-html';
@@ -22,8 +22,7 @@ const post: SanityPost | null = await getPostBySlug(slug as string, lang);
 if (!post) return Astro.redirect(`/${lang}/blog`);
 
 function formatDate(iso: string) {
-  const locale = lang === 'es' ? 'es-ES' : 'en-US';
-  return new Date(iso).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' });
+  return new Date(iso).toLocaleDateString(LANG_META[lang as Lang].locale, { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 const bodyHtml = post.body ? toHTML(post.body, {

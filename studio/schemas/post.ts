@@ -1,5 +1,6 @@
 import { defineField, defineType } from 'sanity';
 import { mediaAssetSource } from 'sanity-plugin-media';
+import { STUDIO_LANGUAGES } from '../config/languages';
 
 export const postSchema = defineType({
   name: 'post',
@@ -55,10 +56,7 @@ export const postSchema = defineType({
       type: 'string',
       description: 'Which language site this post belongs to',
       options: {
-        list: [
-          { title: 'English', value: 'en' },
-          { title: 'Español', value: 'es' },
-        ],
+        list: [...STUDIO_LANGUAGES],
         layout: 'radio',
       },
       validation: Rule => Rule.required(),

@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity';
+import { STUDIO_LANGUAGES } from '../config/languages';
 
 const ACCENT_COLORS = [
   { title: 'Purple',  value: '#6155F1' },
@@ -20,7 +21,7 @@ export const aiTrendsPageSchema = defineType({
       name: 'language',
       title: 'Language',
       type: 'string',
-      options: { list: [{ title: 'English', value: 'en' }, { title: 'Español', value: 'es' }], layout: 'radio' },
+      options: { list: [...STUDIO_LANGUAGES], layout: 'radio' },
       validation: Rule => Rule.required(),
     }),
 
