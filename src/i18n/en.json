@@ -44,14 +44,25 @@
     "tags": "Tags",
     "tryTitle": "Try AI Token King",
     "tryCopy": "Compare models, calculate costs, and manage your AI usage — free.",
-    "tryButton": "Get Started"
+    "tryButton": "Get Started",
+    "copyLink": "Copy link",
+    "copied": "Copied!"
   },
   "lang": {
     "selectLanguage": "Select language",
     "english": "English",
     "spanish": "Español"
   },
+  "meta": {
+    "defaultDescription": "The definitive English-language guide to AI tokens, models, APIs, and costs."
+  },
+  "common": {
+    "home": "Home",
+    "comingSoon": "Coming Soon",
+    "comingText": "The Astro-powered site is being set up. In the meantime, check out the blog."
+  },
   "aiTrends": {
+    "heroLabel": "Trend Watch",
     "sourcesDownloadLabel": "Original Source Download",
     "relatedLabel": "Related on AI Token King",
     "related1Tag": "Tokens",

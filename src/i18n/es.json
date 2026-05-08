@@ -44,14 +44,25 @@
     "tags": "Etiquetas",
     "tryTitle": "Prueba AI Token King",
     "tryCopy": "Compara modelos, calcula costos y gestiona tu uso de IA — gratis.",
-    "tryButton": "Comenzar"
+    "tryButton": "Comenzar",
+    "copyLink": "Copiar enlace",
+    "copied": "¡Copiado!"
   },
   "lang": {
     "selectLanguage": "Seleccionar idioma",
     "english": "English",
     "spanish": "Español"
   },
+  "meta": {
+    "defaultDescription": "La guía definitiva en español sobre tokens de IA, modelos y APIs. Gratis, siempre."
+  },
+  "common": {
+    "home": "Inicio",
+    "comingSoon": "Próximamente",
+    "comingText": "El sitio está siendo configurado. Mientras tanto, visita el blog."
+  },
   "aiTrends": {
+    "heroLabel": "Tendencias IA",
     "sourcesDownloadLabel": "Descarga de Fuente Original",
     "relatedLabel": "Relacionado en AI Token King",
     "related1Tag": "Tokens",

@@ -15,6 +15,7 @@ if (!isValidLang(lang)) return Astro.redirect('/en/ai-trends');
 const t = useTranslations(lang as Lang);
 
 const page: AiTrendsPageData | null = await getAiTrendsPage(lang);
+if (!page) return Astro.redirect(`/${lang}/`);
 
 // Portable Text → HTML with brand-styled bold
 const ptOptions = {
@@ -59,8 +60,9 @@ const AUDIENCE_ICONS = [
 ---
 
 <BaseLayout
-  title={`${page?.heroHeadline ?? 'AI Trends'} — AI Token King`}
-  description={page?.heroSubtitle ?? ''}
+  title={`${page.heroHeadline} — AI Token King`}
+  description={page.heroSubtitle ?? ''}
+  seo={page.seo}
   activePage="ai-trends"
   activeDropdown="resources"
   lang={lang as Lang}
@@ -78,7 +80,7 @@ const AUDIENCE_ICONS = [
     <div class="hero-bg-content" style="max-width: 1200px; margin: 0 auto;">
       <!-- Breadcrumb -->
       <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1.75rem;font-size:0.8rem;color:rgba(255,255,255,0.5);">
-        <a href={`/${lang}/`} style="color:rgba(255,255,255,0.5);text-decoration:none;" class="breadcrumb-link">Home</a>
+        <a href={`/${lang}/`} style="color:rgba(255,255,255,0.5);text-decoration:none;" class="breadcrumb-link">{t('common.home')}</a>
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span style="color:rgba(255,255,255,0.5);">{t('nav.resources')}</span>
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -88,7 +90,7 @@ const AUDIENCE_ICONS = [
       <div style="max-width:760px;">
         <div class="section-label fade-up" style="margin-bottom:1.125rem;background:rgba(226,223,254,0.15);color:rgba(255,255,255,0.9);border:1px solid rgba(255,255,255,0.15);">
           <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
-          Trend Watch
+          {t('aiTrends.heroLabel')}
         </div>
         <h1 class="fade-up fade-up-1" style="font-family:'Kanit',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:800;color:#fff;letter-spacing:-0.04em;line-height:1.1;margin-bottom:1.125rem;">
           {page?.heroHeadline}

@@ -1,5 +1,12 @@
 import { createClient } from '@sanity/client';
 
+export interface SeoData {
+  seoTitle?: string;
+  seoDescription?: string;
+  ogImage?: { asset: { url: string } };
+  noindex?: boolean;
+}
+
 export interface SanityPost {
   _id: string;
   title: string;
@@ -37,6 +44,7 @@ export interface FaqItem {
 }
 
 export interface AiTrendsPageData {
+  seo?: SeoData;
   heroHeadline: string;
   heroSubtitle: string;
   heroSubtitle2: PortableTextBlock;
@@ -100,6 +108,7 @@ export async function getAiTrendsPage(lang: string): Promise<AiTrendsPageData | 
   if (!client) return null;
   return client.fetch(
     `*[_type == "aiTrendsPage" && language == $lang][0] {
+      seo { seoTitle, seoDescription, ogImage { asset -> { url } }, noindex },
       heroHeadline, heroSubtitle, heroSubtitle2,
       introTitle, introParagraphs,
       summaryTitle, summaryPoints,

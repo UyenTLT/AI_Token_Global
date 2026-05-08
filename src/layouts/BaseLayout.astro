@@ -2,11 +2,15 @@
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
+import { useTranslations, SUPPORTED_LANGS, LANG_META } from '../i18n/index';
 import type { Lang } from '../i18n/index';
+import type { SeoData } from '../lib/sanity';
 
 export interface Props {
   title: string;
   description?: string;
+  seo?: SeoData;
+  noindex?: boolean;
   activePage?: string;
   activeDropdown?: string;
   lang?: Lang;
@@ -14,11 +18,27 @@ export interface Props {
 
 const {
   title,
-  description = 'The definitive English-language guide to AI tokens, models, APIs, and costs.',
+  description,
+  seo,
+  noindex = false,
   activePage = '',
   activeDropdown = '',
   lang = 'en',
 } = Astro.props;
+
+const t = useTranslations(lang as Lang);
+const siteOrigin = (Astro.site ?? new URL('https://aitokenglobal.com')).origin;
+const canonicalURL = new URL(Astro.url.pathname, siteOrigin).href;
+
+const seoTitle = seo?.seoTitle ?? title;
+const seoDescription = seo?.seoDescription ?? description ?? t('meta.defaultDescription');
+const ogImageUrl = seo?.ogImage?.asset?.url ?? `${siteOrigin}/AI_Token_logoPNG.avif`;
+const shouldNoindex = seo?.noindex ?? noindex;
+
+const hreflangs = SUPPORTED_LANGS.map(l => ({
+  lang: l,
+  url: new URL(Astro.url.pathname.replace(`/${lang}/`, `/${l}/`), siteOrigin).href,
+}));
 ---
 
 <!DOCTYPE html>
@@ -26,10 +46,43 @@ const {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{title}</title>
-  <meta name="description" content={description} />
+
+  <!-- Primary meta -->
+  <title>{seoTitle}</title>
+  <meta name="description" content={seoDescription} />
+  {shouldNoindex && <meta name="robots" content="noindex, nofollow" />}
+
+  <!-- Canonical + hreflang -->
+  <link rel="canonical" href={canonicalURL} />
+  {hreflangs.map(h => <link rel="alternate" hreflang={h.lang} href={h.url} />)}
+  <link rel="alternate" hreflang="x-default" href={hreflangs.find(h => h.lang === 'en')?.url ?? canonicalURL} />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:title" content={seoTitle} />
+  <meta property="og:description" content={seoDescription} />
+  <meta property="og:image" content={ogImageUrl} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content={LANG_META[lang as Lang].locale.replace('-', '_')} />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={seoTitle} />
+  <meta name="twitter:description" content={seoDescription} />
+  <meta name="twitter:image" content={ogImageUrl} />
+
+  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <script src="https://cdn.tailwindcss.com" is:inline></script>
+
+  <!-- Google Fonts (non-blocking) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" />
+
+  <!-- Tailwind CDN (defer — full build-step migration is Task #9) -->
+  <script defer src="https://cdn.tailwindcss.com" is:inline></script>
   <script is:inline>
     tailwind.config = {
       theme: {
@@ -62,11 +115,11 @@ const {
   </script>
 </head>
 <body>
-  <Nav activePage={activePage} activeDropdown={activeDropdown} lang={lang} />
+  <Nav activePage={activePage} activeDropdown={activeDropdown} lang={lang as Lang} />
   <main>
     <slot />
   </main>
-  <Footer lang={lang} />
+  <Footer lang={lang as Lang} />
 
   <script is:inline>
     // Scroll reveal
@@ -80,7 +133,7 @@ const {
     }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    // FAQ accordion
+    // FAQ accordion — toggles .open class; CSS handles show/hide
     window.toggleFaq = function(btn) {
       const answer = btn.nextElementSibling;
       const chevron = btn.querySelector('.faq-chevron');
