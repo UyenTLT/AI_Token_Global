@@ -1,0 +1,15 @@
+---
+import { SUPPORTED_LANGS } from '../../i18n/index';
+import type { Lang } from '../../i18n/index';
+import { getApiModelPage } from '../../lib/sanity';
+import ApiModelPage from '../../components/ApiModelPage.astro';
+
+export async function getStaticPaths() {
+  return SUPPORTED_LANGS.map(lang => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const page = await getApiModelPage('chatgpt', lang as Lang);
+if (!page) return Astro.redirect(`/${lang}/`);
+---
+<ApiModelPage page={page} lang={lang as Lang} modelSlug="chatgpt" />
