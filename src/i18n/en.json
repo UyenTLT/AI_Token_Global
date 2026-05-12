@@ -59,7 +59,8 @@
   "common": {
     "home": "Home",
     "comingSoon": "Coming Soon",
-    "comingText": "The Astro-powered site is being set up. In the meantime, check out the blog."
+    "comingText": "The Astro-powered site is being set up. In the meantime, check out the blog.",
+    "onThisPage": "On This Page"
   },
   "aiTrends": {
     "heroLabel": "Trend Watch",

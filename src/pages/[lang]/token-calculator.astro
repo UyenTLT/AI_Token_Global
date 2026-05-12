@@ -1,0 +1,276 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SUPPORTED_LANGS, isValidLang, useTranslations } from '../../i18n/index';
+import type { Lang } from '../../i18n/index';
+import { getTokenCalculatorPage } from '../../lib/sanity';
+import { toHTML } from '@portabletext/to-html';
+
+export async function getStaticPaths() {
+  return SUPPORTED_LANGS.map(lang => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+if (!isValidLang(lang)) return Astro.redirect('/en/');
+
+const page = await getTokenCalculatorPage(lang as Lang);
+if (!page) return Astro.redirect(`/${lang}/`);
+
+const t = useTranslations(lang as Lang);
+
+function pt(blocks: any[] | undefined): string {
+  if (!blocks?.length) return '';
+  return toHTML(blocks, {
+    components: {
+      marks: {
+        strong: ({ children }) => `<strong style="font-weight:700;color:#1C1C1C;">${children}</strong>`,
+        em:     ({ children }) => `<em>${children}</em>`,
+      },
+    },
+  });
+}
+---
+
+<BaseLayout
+  title={page.seo?.seoTitle ?? page.heroHeadline}
+  description={page.seo?.seoDescription ?? ''}
+  noindex={page.seo?.noindex ?? false}
+  lang={lang as Lang}
+  seo={page.seo}
+>
+
+  <!-- Hero -->
+  <section class="hero-bg" style="padding: 3.5rem 1.5rem 3rem; background: linear-gradient(40deg, #2A1F5C, #0D1547);">
+    <div class="hero-bg-canvas" aria-hidden="true">
+      <svg style="display:none"><defs><filter id="hero-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo"/><feBlend in="SourceGraphic" in2="goo"/></filter></defs></svg>
+      <div class="grad-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="blob blob-4"></div>
+        <div class="blob blob-5"></div>
+      </div>
+    </div>
+    <div class="hero-bg-content" style="max-width:1200px;margin:0 auto;text-align:center;">
+      {page.heroLabel && (
+        <div class="section-label fade-up" style="margin-bottom:1.25rem;background:rgba(226,223,254,0.15);color:rgba(255,255,255,0.9);border:1px solid rgba(255,255,255,0.15);">
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.5 5 5.5.8-4 3.9.9 5.5L8 13.5l-4.9 2.6.9-5.5L0 6.8l5.5-.8z"/></svg>
+          {page.heroLabel}
+        </div>
+      )}
+      <h1 class="fade-up" style="font-family:'Kanit',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:800;color:#fff;letter-spacing:-0.04em;line-height:1.1;margin-bottom:1.125rem;animation-delay:0.07s;">
+        {page.heroHeadline}
+      </h1>
+      {page.heroSubtitle && (
+        <p class="fade-up" style="font-size:1.05rem;line-height:1.75;color:rgba(255,255,255,0.7);max-width:640px;margin:0 auto;animation-delay:0.14s;">
+          {page.heroSubtitle}
+        </p>
+      )}
+    </div>
+  </section>
+
+  <!-- Calculator Widget -->
+  <section style="padding: 3rem 1.5rem 2rem;">
+    <div style="max-width:900px;margin:0 auto;">
+      <div class="card-elevated reveal" style="padding:2rem 2.25rem;">
+
+        <!-- Input area -->
+        <div style="margin-bottom:1.5rem;">
+          <label for="textInput" style="display:block;font-family:'Kanit',sans-serif;font-size:1rem;font-weight:700;color:#1C1C1C;margin-bottom:0.75rem;">
+            Paste or type your text below
+          </label>
+          <div style="position:relative;">
+            <textarea
+              id="textInput"
+              placeholder="Enter your text here..."
+              style="width:100%;min-height:160px;padding:1rem 1.125rem;border:1.5px solid rgba(97,85,241,0.2);border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.95rem;color:#1C1C1C;background:#FAFAFA;resize:vertical;outline:none;transition:border-color 0.18s ease;line-height:1.65;"
+              onfocus="this.style.borderColor='#6155F1'" onblur="this.style.borderColor='rgba(97,85,241,0.2)'"
+            ></textarea>
+            <div id="charCount" style="position:absolute;bottom:0.625rem;right:0.875rem;font-size:0.75rem;color:#999;">0 characters</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:2rem;">
+          <button id="calculateBtn" type="button" class="btn-primary" style="flex:1;min-width:140px;justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 7H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M17 3h4m0 0v4m0-4l-6 6M11 4H4a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Calculate Tokens
+          </button>
+          <button id="clearBtn" type="button" style="padding:0.625rem 1.25rem;border-radius:12px;border:1.5px solid rgba(97,85,241,0.2);background:transparent;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.875rem;font-weight:600;color:#666;cursor:pointer;transition:background-color 0.18s ease,color 0.18s ease;" onmouseover="this.style.background='#F5F2FF';this.style.color='#6155F1'" onmouseout="this.style.background='transparent';this.style.color='#666'">
+            Clear
+          </button>
+        </div>
+
+        <!-- Results -->
+        <div id="results" style="display:none;">
+          <h2 style="font-family:'Kanit',sans-serif;font-size:1.4rem;font-weight:800;color:#1C1C1C;letter-spacing:-0.03em;margin-bottom:1.25rem;">Estimation Results</h2>
+
+          <!-- Summary banner -->
+          <div id="resultSummary" style="background:linear-gradient(135deg,rgba(97,85,241,0.08),rgba(62,129,229,0.06));border:1px solid rgba(97,85,241,0.15);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;flex-wrap:wrap;gap:1.25rem 2rem;">
+            <div>
+              <div style="font-size:0.72rem;font-weight:700;color:#6155F1;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;">Chinese Chars</div>
+              <div id="chineseCount" style="font-family:'Kanit',sans-serif;font-size:2rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.03em;">0</div>
+            </div>
+            <div>
+              <div style="font-size:0.72rem;font-weight:700;color:#3E81E5;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;">English Words</div>
+              <div id="englishCount" style="font-family:'Kanit',sans-serif;font-size:2rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.03em;">0</div>
+            </div>
+            <div>
+              <div style="font-size:0.72rem;font-weight:700;color:#0ABFBC;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;">Symbols</div>
+              <div id="symbolCount" style="font-family:'Kanit',sans-serif;font-size:2rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.03em;">0</div>
+            </div>
+            <div style="border-left:2px solid rgba(97,85,241,0.15);padding-left:2rem;">
+              <div style="font-size:0.72rem;font-weight:700;color:#6155F1;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;">Est. Input Tokens</div>
+              <div id="inputToken" style="font-family:'Kanit',sans-serif;font-size:2rem;font-weight:700;color:#6155F1;letter-spacing:-0.03em;">0</div>
+            </div>
+          </div>
+
+          <!-- Cost breakdown -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;" class="cost-grid">
+
+            <div style="background:#fff;border-radius:14px;padding:1.25rem;box-shadow:0 2px 8px rgba(97,85,241,0.07);border-top:3px solid #74AA9C;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.875rem;">
+                <div style="width:24px;height:24px;border-radius:6px;background:#74AA9C20;display:flex;align-items:center;justify-content:center;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#74AA9C;"></div>
+                </div>
+                <span style="font-family:'Kanit',sans-serif;font-size:0.875rem;font-weight:700;color:#1C1C1C;">OpenAI GPT-4o</span>
+              </div>
+              <div style="font-size:0.72rem;color:#999;margin-bottom:0.25rem;">$2.50 / 1M tokens (input)</div>
+              <div id="openaiCost" style="font-family:'Kanit',sans-serif;font-size:1.5rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.02em;">$0.000000</div>
+            </div>
+
+            <div style="background:#fff;border-radius:14px;padding:1.25rem;box-shadow:0 2px 8px rgba(97,85,241,0.07);border-top:3px solid #D4A17A;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.875rem;">
+                <div style="width:24px;height:24px;border-radius:6px;background:#D4A17A20;display:flex;align-items:center;justify-content:center;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#D4A17A;"></div>
+                </div>
+                <span style="font-family:'Kanit',sans-serif;font-size:0.875rem;font-weight:700;color:#1C1C1C;">Claude 3.5 Sonnet</span>
+              </div>
+              <div style="font-size:0.72rem;color:#999;margin-bottom:0.25rem;">$3.00 / 1M tokens (input)</div>
+              <div id="claudeCost" style="font-family:'Kanit',sans-serif;font-size:1.5rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.02em;">$0.000000</div>
+            </div>
+
+            <div style="background:#fff;border-radius:14px;padding:1.25rem;box-shadow:0 2px 8px rgba(97,85,241,0.07);border-top:3px solid #4285F4;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.875rem;">
+                <div style="width:24px;height:24px;border-radius:6px;background:#4285F420;display:flex;align-items:center;justify-content:center;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#4285F4;"></div>
+                </div>
+                <span style="font-family:'Kanit',sans-serif;font-size:0.875rem;font-weight:700;color:#1C1C1C;">Gemini 1.5 Pro</span>
+              </div>
+              <div style="font-size:0.72rem;color:#999;margin-bottom:0.25rem;">$1.25 / 1M tokens (input)</div>
+              <div id="geminiCost" style="font-family:'Kanit',sans-serif;font-size:1.5rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.02em;">$0.000000</div>
+            </div>
+
+          </div>
+
+          <p style="font-size:0.78rem;color:#999;margin-top:1rem;line-height:1.6;">
+            * Estimates only. Actual token counts may vary by model tokenizer. Prices are approximate and subject to change — verify at each provider's pricing page.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  {page.faq && page.faq.length > 0 && (
+    <section style="padding: 0 1.5rem 3rem;">
+      <div style="max-width:900px;margin:0 auto;">
+        {page.faqSectionLabel && (
+          <div class="section-label reveal" style="margin-bottom:1rem;">{page.faqSectionLabel}</div>
+        )}
+        <h2 class="reveal" style="font-family:'Kanit',sans-serif;font-size:2rem;font-weight:800;color:#1C1C1C;letter-spacing:-0.04em;line-height:1.15;margin-bottom:1rem;">
+          {page.faqTitle ?? 'About the Token Calculator'}
+        </h2>
+        {page.faqIntro && <p class="reveal" style="font-size:0.95rem;color:#555;line-height:1.75;margin-bottom:1.5rem;">{page.faqIntro}</p>}
+        <div style="background:#fff;border-radius:16px;padding:0.5rem 1.75rem;box-shadow:0 2px 8px rgba(97,85,241,0.07);">
+          {page.faq.map(item => (
+            <div class="faq-item">
+              <button class="faq-question" onclick="window.toggleFaq(this)">
+                <span>{item.question}</span>
+                <svg class="faq-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="faq-answer">
+                <div style="padding-bottom:1.25rem;font-size:0.9rem;line-height:1.75;color:#555;" set:html={pt(item.answer)} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- CTA Banner -->
+  {page.ctaTitle && (
+    <section style="padding: 0 1.5rem 5rem;">
+      <div style="max-width:900px;margin:0 auto;">
+        <div class="reveal" style="background:linear-gradient(135deg,#3C315B 0%,#6155F1 100%);border-radius:20px;padding:2.25rem 2.5rem;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.05);"></div>
+          <div style="position:relative;">
+            <h3 style="font-family:'Kanit',sans-serif;font-size:1.4rem;font-weight:800;color:#fff;letter-spacing:-0.03em;margin-bottom:0.75rem;">{page.ctaTitle}</h3>
+            {page.ctaBody && <p style="font-size:0.9rem;color:rgba(255,255,255,0.8);line-height:1.7;margin-bottom:1.5rem;max-width:520px;">{page.ctaBody}</p>}
+            <a href={`/${lang}/api-compare`} class="btn-primary" style="background:rgba(255,255,255,0.18);box-shadow:none;border:1px solid rgba(255,255,255,0.3);color:#fff;">
+              Compare Models
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+</BaseLayout>
+
+<style is:global>
+  @media (max-width: 640px) {
+    .cost-grid { grid-template-columns: 1fr !important; }
+  }
+</style>
+
+<script is:inline>
+  /* Reveal */
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  /* Character counter */
+  const textarea = document.getElementById('textInput');
+  const charCountEl = document.getElementById('charCount');
+  textarea.addEventListener('input', function() {
+    charCountEl.textContent = this.value.length + ' characters';
+  });
+
+  /* Clear */
+  document.getElementById('clearBtn').addEventListener('click', function() {
+    textarea.value = '';
+    charCountEl.textContent = '0 characters';
+    document.getElementById('results').style.display = 'none';
+  });
+
+  /* Calculate */
+  document.getElementById('calculateBtn').addEventListener('click', function() {
+    var text = textarea.value;
+    if (!text.trim()) return;
+
+    var chineseChars = (text.match(/[一-鿿㐀-䶿\u{20000}-\u{2a6df}\u{2a700}-\u{2b73f}\u{2b740}-\u{2b81f}\u{2b820}-\u{2ceaf}豈-﫿㌀-㏿︰-﹏豈-﫿⾀0-⾡f]/gu) || []).length;
+    var symbols = (text.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/g) || []).length;
+    var cleanedText = text.replace(/[一-鿿㐀-䶿\u{20000}-\u{2a6df}\u{2a700}-\u{2b73f}\u{2b740}-\u{2b81f}\u{2b820}-\u{2ceaf}豈-﫿㌀-㏿︰-﹏豈-﫿⾀0-⾡f]/gu, ' ');
+    var englishWords = cleanedText.trim() ? (cleanedText.trim().split(/\s+/).filter(function(w) { return w.length > 0; })).length : 0;
+
+    var tokens = Math.round(chineseChars * 1.5 + englishWords * 1.1 + symbols * 0.3);
+
+    document.getElementById('chineseCount').textContent = chineseChars.toLocaleString();
+    document.getElementById('englishCount').textContent = englishWords.toLocaleString();
+    document.getElementById('symbolCount').textContent = symbols.toLocaleString();
+    document.getElementById('inputToken').textContent = tokens.toLocaleString();
+
+    var openaiCost = (tokens / 1000000) * 2.50;
+    var claudeCost = (tokens / 1000000) * 3.00;
+    var geminiCost = (tokens / 1000000) * 1.25;
+
+    document.getElementById('openaiCost').textContent = '$' + openaiCost.toFixed(6);
+    document.getElementById('claudeCost').textContent = '$' + claudeCost.toFixed(6);
+    document.getElementById('geminiCost').textContent = '$' + geminiCost.toFixed(6);
+
+    document.getElementById('results').style.display = 'block';
+  });
+</script>

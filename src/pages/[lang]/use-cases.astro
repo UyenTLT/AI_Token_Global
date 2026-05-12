@@ -1,0 +1,128 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SUPPORTED_LANGS, isValidLang, useTranslations } from '../../i18n/index';
+import type { Lang } from '../../i18n/index';
+import { getUseCasesPage } from '../../lib/sanity';
+import { toHTML } from '@portabletext/to-html';
+
+export async function getStaticPaths() {
+  return SUPPORTED_LANGS.map(lang => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+if (!isValidLang(lang)) return Astro.redirect('/en/');
+
+const page = await getUseCasesPage(lang as Lang);
+if (!page) return Astro.redirect(`/${lang}/`);
+
+const t = useTranslations(lang as Lang);
+
+function pt(blocks: any[] | undefined): string {
+  if (!blocks?.length) return '';
+  return toHTML(blocks, {
+    components: {
+      marks: {
+        strong: ({ children }) => `<strong style="font-weight:700;color:#1C1C1C;">${children}</strong>`,
+        em:     ({ children }) => `<em>${children}</em>`,
+        link:   ({ value, children }) => `<a href="${value?.href ?? '#'}" style="color:#6155F1;text-decoration:underline;text-underline-offset:3px;" target="${value?.href?.startsWith('http') ? '_blank' : '_self'}" rel="noopener noreferrer">${children}</a>`,
+      },
+    },
+  });
+}
+
+const CARD_ACCENTS = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#F43F5E', '#8B5CF6', '#EC4899', '#10B981', '#F97316'];
+---
+
+<BaseLayout
+  title={page.seo?.seoTitle ?? page.heroHeadline}
+  description={page.seo?.seoDescription ?? ''}
+  noindex={page.seo?.noindex ?? false}
+  lang={lang as Lang}
+  seo={page.seo}
+>
+
+  <!-- Hero -->
+  <section class="hero-bg" style="padding: 3.5rem 1.5rem 3rem; background: linear-gradient(40deg, #2A1F5C, #0D1547);">
+    <div class="hero-bg-canvas" aria-hidden="true">
+      <svg style="display:none"><defs><filter id="hero-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo"/><feBlend in="SourceGraphic" in2="goo"/></filter></defs></svg>
+      <div class="grad-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="blob blob-4"></div>
+        <div class="blob blob-5"></div>
+      </div>
+    </div>
+    <div class="hero-bg-content" style="max-width:1200px;margin:0 auto;text-align:center;">
+      {page.heroLabel && (
+        <div class="section-label fade-up" style="margin-bottom:1.25rem;background:rgba(226,223,254,0.15);color:rgba(255,255,255,0.9);border:1px solid rgba(255,255,255,0.15);">
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.5 5 5.5.8-4 3.9.9 5.5L8 13.5l-4.9 2.6.9-5.5L0 6.8l5.5-.8z"/></svg>
+          {page.heroLabel}
+        </div>
+      )}
+      <h1 class="fade-up" style="font-family:'Kanit',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:800;color:#fff;letter-spacing:-0.04em;line-height:1.1;margin-bottom:1.125rem;animation-delay:0.07s;">
+        {page.heroHeadline}
+      </h1>
+      {page.heroSubtitle && (
+        <p class="fade-up" style="font-size:1.05rem;line-height:1.75;color:rgba(255,255,255,0.7);max-width:640px;margin:0 auto;animation-delay:0.14s;">
+          {page.heroSubtitle}
+        </p>
+      )}
+    </div>
+  </section>
+
+  <!-- Use Case Cards Grid -->
+  {page.useCases && page.useCases.length > 0 && (
+    <section style="padding: 3rem 1.5rem 4rem;">
+      <div style="max-width:1200px;margin:0 auto;">
+        <div class="uc-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem;">
+          {page.useCases.map((uc, i) => (
+            <div class="card-elevated reveal" style="padding:1.5rem 1.625rem;">
+              <div style={`width:40px;height:40px;border-radius:12px;background:${CARD_ACCENTS[i % 9]}18;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;`}>
+                <div style={`width:10px;height:10px;border-radius:50%;background:${CARD_ACCENTS[i % 9]};`}></div>
+              </div>
+              <h2 style="font-family:'Kanit',sans-serif;font-size:1.05rem;font-weight:700;color:#1C1C1C;margin-bottom:0.5rem;letter-spacing:-0.02em;">{uc.title}</h2>
+              {uc.description && <p style="font-size:0.875rem;line-height:1.7;color:#555;margin:0 0 0.625rem;">{uc.description}</p>}
+              {uc.commonDirections && (
+                <div style={`font-size:0.75rem;font-weight:600;color:${CARD_ACCENTS[i % 9]};margin-top:auto;padding-top:0.5rem;border-top:1px solid ${CARD_ACCENTS[i % 9]}20;`}>
+                  {uc.commonDirections}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Footer Note -->
+  {page.footerNoteBody && (
+    <section style="padding: 0 1.5rem 4rem;">
+      <div style="max-width:800px;margin:0 auto;">
+        <div class="reveal" style="background:linear-gradient(135deg,rgba(97,85,241,0.06),rgba(62,129,229,0.04));border-radius:14px;padding:1.5rem 1.75rem;border:1px solid rgba(97,85,241,0.1);">
+          <div class="prose-article" set:html={pt(page.footerNoteBody)} />
+        </div>
+      </div>
+    </section>
+  )}
+
+</BaseLayout>
+
+<style is:global>
+  .prose-article p { font-size: 0.925rem; line-height: 1.8; color: #3C315B; margin-bottom: 0.875rem; }
+  .prose-article p:last-child { margin-bottom: 0; }
+  .prose-article strong { font-weight: 700; color: #1C1C1C; }
+  @media (max-width: 900px) {
+    .uc-grid { grid-template-columns: 1fr 1fr !important; }
+  }
+  @media (max-width: 640px) {
+    .uc-grid { grid-template-columns: 1fr !important; }
+  }
+</style>
+
+<script is:inline>
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>

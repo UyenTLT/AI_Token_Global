@@ -59,7 +59,8 @@
   "common": {
     "home": "Inicio",
     "comingSoon": "Próximamente",
-    "comingText": "El sitio está siendo configurado. Mientras tanto, visita el blog."
+    "comingText": "El sitio está siendo configurado. Mientras tanto, visita el blog.",
+    "onThisPage": "En esta página"
   },
   "aiTrends": {
     "heroLabel": "Tendencias IA",

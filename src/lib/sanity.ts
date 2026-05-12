@@ -241,3 +241,295 @@ export async function getApiComparePage(lang: string): Promise<ApiComparePageDat
   );
 }
 
+// ── Beginners Guide Page ──────────────────────────────────────────────────
+
+export interface ReadingStep {
+  _key: string;
+  stepLabel?: string;
+  title: string;
+  body?: PortableTextBlock;
+  linkLabel?: string;
+  linkUrl?: string;
+}
+
+export interface StuckCallout {
+  _key: string;
+  title: string;
+  body?: PortableTextBlock;
+}
+
+export interface NextRead {
+  _key: string;
+  title: string;
+  excerpt?: string;
+  url?: string;
+}
+
+export interface BeginnersGuidePage {
+  _id: string;
+  language: string;
+  heroLabel?: string;
+  heroHeadline: string;
+  heroSubtitle?: string;
+  stepsTitle?: string;
+  stepsIntroBody?: PortableTextBlock;
+  readingSteps?: ReadingStep[];
+  stuckTitle?: string;
+  stuckBody?: PortableTextBlock;
+  stuckCallouts?: StuckCallout[];
+  faqTitle?: string;
+  faq?: FaqItem[];
+  nextReadsTitle?: string;
+  nextReadsIntroBody?: PortableTextBlock;
+  nextReads?: NextRead[];
+  ctaTitle?: string;
+  ctaBody?: string;
+  seo?: SeoData;
+}
+
+export async function getBeginnersGuidePage(lang: string): Promise<BeginnersGuidePage | null> {
+  const client = getClient();
+  if (!client) return null;
+  return client.fetch(
+    `*[_type == "beginnersGuidePage" && language == $lang][0] {
+      _id, language, heroLabel, heroHeadline, heroSubtitle,
+      stepsTitle, stepsIntroBody,
+      readingSteps[] { _key, stepLabel, title, body, linkLabel, linkUrl },
+      stuckTitle, stuckBody,
+      stuckCallouts[] { _key, title, body },
+      faqTitle,
+      faq[] { _key, question, answer },
+      nextReadsTitle, nextReadsIntroBody,
+      nextReads[] { _key, title, excerpt, url },
+      ctaTitle, ctaBody,
+      seo { seoTitle, seoDescription, ogImage { asset -> { url } }, noindex }
+    }`,
+    { lang }
+  );
+}
+
+// ── User Guide Page ───────────────────────────────────────────────────────
+
+export interface FeatureCard {
+  _key: string;
+  title: string;
+  body?: PortableTextBlock;
+}
+
+export interface ModelCard {
+  _key: string;
+  name: string;
+  description?: string;
+}
+
+export interface AudienceCardGuide {
+  _key: string;
+  role: string;
+  body?: PortableTextBlock;
+}
+
+export interface GuideStep {
+  _key: string;
+  title: string;
+  body?: PortableTextBlock;
+}
+
+export interface UserGuidePage {
+  _id: string;
+  language: string;
+  heroLabel?: string;
+  heroHeadline: string;
+  heroSubtitle?: string;
+  heroSubtitle2?: string;
+  whatIsTitle?: string;
+  whatIsBody?: PortableTextBlock;
+  problemsTitle?: string;
+  problemsBody?: PortableTextBlock;
+  featuresTitle?: string;
+  features?: FeatureCard[];
+  modelsTitle?: string;
+  models?: ModelCard[];
+  useCasesTitle?: string;
+  useCasesBody?: PortableTextBlock;
+  audienceTitle?: string;
+  audience?: AudienceCardGuide[];
+  openclawTitle?: string;
+  openclawBody?: PortableTextBlock;
+  gettingStartedTitle?: string;
+  steps?: GuideStep[];
+  faqTitle?: string;
+  faq?: FaqItem[];
+  seo?: SeoData;
+}
+
+export async function getUserGuidePage(lang: string): Promise<UserGuidePage | null> {
+  const client = getClient();
+  if (!client) return null;
+  return client.fetch(
+    `*[_type == "userGuidePage" && language == $lang][0] {
+      _id, language, heroLabel, heroHeadline, heroSubtitle, heroSubtitle2,
+      whatIsTitle, whatIsBody,
+      problemsTitle, problemsBody,
+      featuresTitle,
+      features[] { _key, title, body },
+      modelsTitle,
+      models[] { _key, name, description },
+      useCasesTitle, useCasesBody,
+      audienceTitle,
+      audience[] { _key, role, body },
+      openclawTitle, openclawBody,
+      gettingStartedTitle,
+      steps[] { _key, title, body },
+      faqTitle,
+      faq[] { _key, question, answer },
+      seo { seoTitle, seoDescription, ogImage { asset -> { url } }, noindex }
+    }`,
+    { lang }
+  );
+}
+
+// ── Use Cases Page ────────────────────────────────────────────────────────
+
+export interface UseCaseCard {
+  _key: string;
+  title: string;
+  description?: string;
+  commonDirections?: string;
+}
+
+export interface UseCasesPage {
+  _id: string;
+  language: string;
+  heroLabel?: string;
+  heroHeadline: string;
+  heroSubtitle?: string;
+  useCases?: UseCaseCard[];
+  footerNoteBody?: PortableTextBlock;
+  seo?: SeoData;
+}
+
+export async function getUseCasesPage(lang: string): Promise<UseCasesPage | null> {
+  const client = getClient();
+  if (!client) return null;
+  return client.fetch(
+    `*[_type == "useCasesPage" && language == $lang][0] {
+      _id, language, heroLabel, heroHeadline, heroSubtitle,
+      useCases[] { _key, title, description, commonDirections },
+      footerNoteBody,
+      seo { seoTitle, seoDescription, ogImage { asset -> { url } }, noindex }
+    }`,
+    { lang }
+  );
+}
+
+// ── Token Calculator Page ─────────────────────────────────────────────────
+
+export interface TokenCalculatorPage {
+  _id: string;
+  language: string;
+  heroLabel?: string;
+  heroHeadline: string;
+  heroSubtitle?: string;
+  faqSectionLabel?: string;
+  faqTitle?: string;
+  faqIntro?: string;
+  faq?: FaqItem[];
+  ctaTitle?: string;
+  ctaBody?: string;
+  seo?: SeoData;
+}
+
+export async function getTokenCalculatorPage(lang: string): Promise<TokenCalculatorPage | null> {
+  const client = getClient();
+  if (!client) return null;
+  return client.fetch(
+    `*[_type == "tokenCalculatorPage" && language == $lang][0] {
+      _id, language, heroLabel, heroHeadline, heroSubtitle,
+      faqSectionLabel, faqTitle, faqIntro,
+      faq[] { _key, question, answer },
+      ctaTitle, ctaBody,
+      seo { seoTitle, seoDescription, ogImage { asset -> { url } }, noindex }
+    }`,
+    { lang }
+  );
+}
+
+// ── Compliance Page ───────────────────────────────────────────────────────
+
+export interface BlockerItem {
+  _key: string;
+  text: string;
+}
+
+export interface SolutionCard {
+  _key: string;
+  title: string;
+  body?: PortableTextBlock;
+}
+
+export interface AudienceItem {
+  _key: string;
+  role: string;
+  description?: string;
+}
+
+export interface RoleCard {
+  _key: string;
+  title: string;
+  body?: PortableTextBlock;
+}
+
+export interface CompliancePage {
+  _id: string;
+  language: string;
+  heroLabel?: string;
+  heroHeadline: string;
+  heroSubtitle?: string;
+  blockersTitle?: string;
+  blockersIntroBody?: PortableTextBlock;
+  blockerItems?: BlockerItem[];
+  proposalTitle?: string;
+  proposalBody?: string;
+  proposalCtaLabel?: string;
+  proposalCtaUrl?: string;
+  solutionTitle?: string;
+  solutions?: SolutionCard[];
+  audienceTitle?: string;
+  audienceItems?: AudienceItem[];
+  audienceFootnote?: PortableTextBlock;
+  roleTitle?: string;
+  roles?: RoleCard[];
+  faqTitle?: string;
+  faq?: FaqItem[];
+  sidebarCtaTitle?: string;
+  sidebarCtaBody?: string;
+  sidebarCtaLabel?: string;
+  sidebarCtaUrl?: string;
+  seo?: SeoData;
+}
+
+export async function getCompliancePage(lang: string): Promise<CompliancePage | null> {
+  const client = getClient();
+  if (!client) return null;
+  return client.fetch(
+    `*[_type == "compliancePage" && language == $lang][0] {
+      _id, language, heroLabel, heroHeadline, heroSubtitle,
+      blockersTitle, blockersIntroBody,
+      blockerItems[] { _key, text },
+      proposalTitle, proposalBody, proposalCtaLabel, proposalCtaUrl,
+      solutionTitle,
+      solutions[] { _key, title, body },
+      audienceTitle,
+      audienceItems[] { _key, role, description },
+      audienceFootnote,
+      roleTitle,
+      roles[] { _key, title, body },
+      faqTitle,
+      faq[] { _key, question, answer },
+      sidebarCtaTitle, sidebarCtaBody, sidebarCtaLabel, sidebarCtaUrl,
+      seo { seoTitle, seoDescription, ogImage { asset -> { url } }, noindex }
+    }`,
+    { lang }
+  );
+}
+
