@@ -19,16 +19,20 @@
 - **Pre-flight #0f:** Visual/Mobile/A11y system — mobile nav rebuilt (opacity/pointer-events toggle), FAQ accordion fixed (`window.toggleFaq`, `faqReveal` keyframe), progress bar switched to `transform: scaleX()`, Footer contrast fixed (`#666` → `#999`), `prefers-reduced-motion` block added to `global.css`, `CLAUDE.md` responsive rules documented
 - **Task #5 Batch A (code complete):** All 4 API pages ported to Astro — `api-compare`, `chatgpt-api`, `claude-api`, `gemini-api`; schemas built (`apiModelPage`, `apiComparePage`); shared `ApiModelPage.astro` template; thin page wrappers; GROQ fetchers in `sanity.ts`
 - **chatgpt-api EN content:** Sanity document published and verified — page builds to 43 KB with 7 article sections, 4 FAQs, sidebar with TOC + compare card
+- **Task #5 Batch B (code complete):** All 5 guide pages ported to Astro — `beginners-guide`, `user-guide`, `use-cases`, `token-calculator`, `compliance`; 5 Sanity schemas created and registered; GROQ fetchers + TypeScript interfaces added to `sanity.ts`; `common.onThisPage` i18n key added to EN + ES; `npm run build` passes (28 pages, 0 errors)
+- **Task #5 Batch C (code complete):** Homepage (`/en/`, `/es/`) fully ported — 8 sections (Hero with animated blobs, Token Explainer, 8 Topics grid, API Chooser, Comparison Table, 3 Steps, Blog Placeholders, FAQ accordion); `homePageSchema` added to Sanity (`studio/schemas/homePage.ts`); `getHomePage()` GROQ fetcher + `HomePageData` interface added to `sanity.ts`; `home` i18n namespace (~60 keys) added to `en.json` + `es.json`; Sanity fallback to i18n strings so page renders without a CMS document; `noindex: false` default; `npm run build` passes (28 pages, 0 errors); DOM audit passes all 12 checks for both EN + ES
 
-**In progress / remaining for Task #5 Batch A**
-- Enter EN content for `claude-api`, `gemini-api`, `api-compare` in Sanity
+**In progress / remaining for Task #5**
+- Enter EN content for `claude-api`, `gemini-api`, `api-compare` in Sanity (Batch A)
+- Enter EN content for all 5 Batch B pages in Sanity
+- Enter EN + ES homepage content in Sanity (Batch C)
+- Enter ES content for all Batch A + Batch B pages
 - Phone review of `/en/chatgpt-api/` (pending — user to review before continuing)
-- Enter ES content for all 4 Batch A pages
 
-**Next, in order** *(updated 2026-05-11)*
-1. **Task #5 Batch A content** — phone review chatgpt-api → enter claude/gemini/api-compare EN content → ES content for all 4
-2. **Task #5 Batch B** — `beginners-guide`, `user-guide`, `use-cases`, `token-calculator`, `compliance`
-3. **Task #5 Batch C** — Homepage (`/en/`, `/es/`) — most complex, last
+**Next, in order** *(updated 2026-05-13)*
+1. **Task #5 Batch A content** — enter claude/gemini/api-compare EN content → ES content for all 4
+2. **Task #5 Batch B content** — enter EN + ES content for all 5 Batch B pages in Sanity
+3. **Task #5 Batch C content** — enter EN + ES homepage content in Sanity
 4. **Task #6** — Bulk migration scripts (`upload-images.js`, `convert-articles.js`) plus EN + ES content entry. Parallel to #5. Compresses ~80–120 hr of manual entry into ~10–13 hr.
 5. **Task #8** — Deploy to AWS Amplify, env vars, Sanity webhook, debounce + alerts + budget alarm.
 6. **Task #9 (remainder)** — Astro `<Image>` migration, Tailwind CDN → build-step, font preconnect, JSON-LD, Lighthouse mobile baseline. Post-deploy polish.
@@ -55,16 +59,23 @@ aitokenglobal/              ← repo root = Astro project
       BaseLayout.astro      ← wraps every page; canonical, hreflang, OG tags, Google Fonts <link>
     lib/
       sanity.ts             ← Sanity client (useCdn: false), getAllPosts, getPostBySlug,
-                               getAiTrendsPage, getApiModelPage, getApiComparePage, all TS interfaces
+                               getAiTrendsPage, getApiModelPage, getApiComparePage,
+                               getBeginnersGuidePage, getUserGuidePage, getUseCasesPage,
+                               getTokenCalculatorPage, getCompliancePage, all TS interfaces
     pages/
       index.astro           ← / → 301 redirect to /en/
       [lang]/
-        index.astro         ← /en/ and /es/ homepages (placeholder "Coming Soon")
+        index.astro         ← /en/ and /es/ homepages (DONE — 8 sections, Sanity-powered with i18n fallback)
         ai-trends.astro     ← /en/ai-trends and /es/ai-trends (DONE — Sanity-powered)
-        api-compare.astro   ← /en/api-compare (code done, awaiting Sanity content)
-        chatgpt-api.astro   ← /en/chatgpt-api (DONE — EN content live)
-        claude-api.astro    ← /en/claude-api (code done, awaiting Sanity content)
-        gemini-api.astro    ← /en/gemini-api (code done, awaiting Sanity content)
+        api-compare.astro     ← /en/api-compare (code done, awaiting Sanity content)
+        chatgpt-api.astro     ← /en/chatgpt-api (DONE — EN content live)
+        claude-api.astro      ← /en/claude-api (code done, awaiting Sanity content)
+        gemini-api.astro      ← /en/gemini-api (code done, awaiting Sanity content)
+        beginners-guide.astro ← /en/beginners-guide (code done, awaiting Sanity content)
+        user-guide.astro      ← /en/user-guide (code done, awaiting Sanity content)
+        use-cases.astro       ← /en/use-cases (code done, awaiting Sanity content)
+        token-calculator.astro← /en/token-calculator (code done, calc widget hardcoded in Astro)
+        compliance.astro      ← /en/compliance (code done, awaiting Sanity content)
         blog/
           index.astro       ← /en/blog and /es/blog
           [slug].astro      ← /en/blog/[slug] and /es/blog/[slug]
@@ -78,8 +89,14 @@ aitokenglobal/              ← repo root = Astro project
       faqItem.ts            ← reusable FAQ object type (question + portableText answer)
       imageMeta.ts          ← image asset extension (articleNumber field)
       apiModelPage.ts       ← shared schema for chatgpt/claude/gemini guide pages
-      apiComparePage.ts     ← schema for api-compare overview page
-    sanity.config.ts        ← registers all 6 schema types
+      apiComparePage.ts      ← schema for api-compare overview page
+      beginnersGuidePage.ts  ← schema for beginners-guide (reading steps, stuck callouts, next reads)
+      userGuidePage.ts       ← schema for user-guide (features, models, audience, steps)
+      useCasesPage.ts        ← schema for use-cases (9 use-case cards + footer note)
+      tokenCalculatorPage.ts ← schema for token-calculator (hero + FAQ + CTA; JS widget is hardcoded)
+      compliancePage.ts      ← schema for compliance (blockers, proposal CTA, solutions, audience, roles)
+      homePage.ts            ← schema for homepage (hero, stats, FAQ, SEO)
+    sanity.config.ts         ← registers all 12 schema types
     sanity.cli.ts
   public/
     AI_Token_logoPNG.avif
@@ -176,7 +193,12 @@ The logo (`AI_Token_logoPNG.avif` + "AI Token King" text) is the home button —
 | `/en/claude-api` | ⏳ | Code ready, awaiting EN Sanity content |
 | `/en/gemini-api` | ⏳ | Code ready, awaiting EN Sanity content |
 | `/en/api-compare` | ⏳ | Code ready, awaiting EN Sanity content |
-| All other pages | ❌ Not started | Still in `archive/` as HTML prototypes |
+| `/en/beginners-guide` | ⏳ | Code ready, awaiting EN Sanity content |
+| `/en/user-guide` | ⏳ | Code ready, awaiting EN Sanity content |
+| `/en/use-cases` | ⏳ | Code ready, awaiting EN Sanity content |
+| `/en/token-calculator` | ⏳ | Code ready; calc widget is live (hardcoded JS), awaiting FAQ/CTA in Sanity |
+| `/en/compliance` | ⏳ | Code ready, awaiting EN Sanity content |
+| `/en/` and `/es/` | ⚠️ Placeholder | Batch C — homepage not yet built |
 
 ---
 
@@ -188,14 +210,14 @@ The logo (`AI_Token_logoPNG.avif` + "AI Token King" text) is the home button —
 - `claude-api` — Claude API Guide
 - `gemini-api` — Gemini API Guide
 
-**Batch B** — Guide pages (use existing `faqItem` schema):
-- `beginners-guide`
-- `user-guide`
-- `use-cases`
-- `token-calculator`
-- `compliance`
+**Batch B** — Guide pages ✅ Code complete (all 5):
+- `beginners-guide` — sidebar layout, reading steps, stuck callouts, FAQ, next reads
+- `user-guide` — sidebar layout, 8 content sections, numbered steps, audience grid
+- `use-cases` — full-width 3-column card grid (no sidebar)
+- `token-calculator` — hardcoded JS calculator widget + Sanity FAQ/CTA (no sidebar)
+- `compliance` — sidebar layout, blockers bullets, proposal CTA, solution cards, audience, roles
 
-**Batch C** — Homepage (most complex, save for last)
+**Batch C** — Homepage (most complex, save for last) ❌ Not started
 
 ---
 
@@ -322,7 +344,7 @@ import { toHTML } from '@portabletext/to-html';
 | 2 | Fix Nav language switcher to be dynamic | ✅ Done |
 | 3 | Design Sanity schema POC for one page (AI Trends) | ✅ Done |
 | 4 | Implement Sanity POC: schema + Astro fetch + EN/ES content | ✅ Done |
-| 5 | Port remaining 10 pages using Sanity singleton pattern | ⏳ Batch A code done, content in progress |
+| 5 | Port remaining 10 pages using Sanity singleton pattern | ⏳ Batch A + B code done; Batch C (homepage) next; content entry pending all pages |
 | 6 | Enter EN + ES content into Sanity for all pages | ⏳ Parallel to #5 |
 | 7 | Update `go-live-guide.md` for AWS Amplify | ✅ Done |
 | 8 | Deploy to AWS Amplify with Sanity webhook | ⏳ Pending |

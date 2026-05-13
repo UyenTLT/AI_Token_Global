@@ -13,6 +13,7 @@ import { userGuidePageSchema } from './schemas/userGuidePage';
 import { useCasesPageSchema } from './schemas/useCasesPage';
 import { tokenCalculatorPageSchema } from './schemas/tokenCalculatorPage';
 import { compliancePageSchema } from './schemas/compliancePage';
+import { homePageSchema } from './schemas/homePage';
 import { ArticleNumberFilter } from './components/ArticleNumberFilter';
 
 export default defineConfig({
@@ -37,6 +38,6 @@ export default defineConfig({
     },
   ],
   schema: {
-    types: [postSchema, imageMetaSchema, faqItemSchema, aiTrendsPageSchema, apiModelPageSchema, apiComparePageSchema, beginnersGuidePageSchema, userGuidePageSchema, useCasesPageSchema, tokenCalculatorPageSchema, compliancePageSchema],
+    types: [postSchema, imageMetaSchema, faqItemSchema, aiTrendsPageSchema, apiModelPageSchema, apiComparePageSchema, beginnersGuidePageSchema, userGuidePageSchema, useCasesPageSchema, tokenCalculatorPageSchema, compliancePageSchema, homePageSchema],
   },
 });

@@ -533,3 +533,36 @@ export async function getCompliancePage(lang: string): Promise<CompliancePage | 
   );
 }
 
+// ── Home Page ─────────────────────────────────────────────────────────────
+
+export interface HeroStat {
+  statNumber: string;
+  statLabel: string;
+}
+
+export interface HomePageData {
+  heroHeadline?: string;
+  heroAccentText?: string;
+  heroSubtitle?: string;
+  heroStats?: HeroStat[];
+  faqTitle?: string;
+  faqSubtitle?: string;
+  faq?: FaqItem[];
+  seo?: SeoData;
+}
+
+export async function getHomePage(lang: string): Promise<HomePageData | null> {
+  const client = getClient();
+  if (!client) return null;
+  return client.fetch(
+    `*[_type == "homePage" && language == $lang][0] {
+      heroHeadline, heroAccentText, heroSubtitle,
+      heroStats[] { statNumber, statLabel },
+      faqTitle, faqSubtitle,
+      faq[] { _key, question, answer },
+      seo { seoTitle, seoDescription, ogImage { asset -> { url } }, noindex }
+    }`,
+    { lang }
+  );
+}
+
