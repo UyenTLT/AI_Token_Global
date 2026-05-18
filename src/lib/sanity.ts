@@ -60,6 +60,9 @@ export interface AiTrendsPageData {
   audienceCards: AudienceCard[];
   sourcesTitle: string;
   sourcesNote: string;
+  downloadTitle?: string;
+  downloadMeta?: string;
+  downloadUrl?: string;
   faq: FaqItem[];
 }
 
@@ -117,6 +120,7 @@ export async function getAiTrendsPage(lang: string): Promise<AiTrendsPageData | 
       audienceSectionTitle, audienceIntro,
       audienceCards[] { _key, audience, body },
       sourcesTitle, sourcesNote,
+      downloadTitle, downloadMeta, downloadUrl,
       faq[] { _key, question, answer }
     }`,
     { lang }
@@ -545,6 +549,7 @@ export interface HomePageData {
   heroAccentText?: string;
   heroSubtitle?: string;
   heroStats?: HeroStat[];
+  tokenBody2?: PortableTextBlock;
   faqTitle?: string;
   faqSubtitle?: string;
   faq?: FaqItem[];
@@ -558,6 +563,7 @@ export async function getHomePage(lang: string): Promise<HomePageData | null> {
     `*[_type == "homePage" && language == $lang][0] {
       heroHeadline, heroAccentText, heroSubtitle,
       heroStats[] { statNumber, statLabel },
+      tokenBody2,
       faqTitle, faqSubtitle,
       faq[] { _key, question, answer },
       seo { seoTitle, seoDescription, ogImage { asset -> { url } }, noindex }

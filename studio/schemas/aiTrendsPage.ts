@@ -94,6 +94,9 @@ export const aiTrendsPageSchema = defineType({
     // ── Sources section ───────────────────────────────
     defineField({ name: 'sourcesTitle', title: 'Sources Section Title', type: 'string' }),
     defineField({ name: 'sourcesNote',  title: 'Sources Note',          type: 'text', rows: 4 }),
+    defineField({ name: 'downloadTitle', title: 'Download Card — Title', type: 'string', description: 'e.g. "2031 Data, Analytics & AI Top 10 Predictions"' }),
+    defineField({ name: 'downloadMeta',  title: 'Download Card — Meta',  type: 'string', description: 'e.g. "Gartner Report · PDF"' }),
+    defineField({ name: 'downloadUrl',   title: 'Download Card — URL',   type: 'url',    description: 'Link for the download button. Leave blank to hide the card.' }),
 
     // ── FAQ (pattern ready for other pages) ───────────
     defineField({

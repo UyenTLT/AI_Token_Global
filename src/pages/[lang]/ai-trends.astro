@@ -245,18 +245,20 @@ const AUDIENCE_ICONS = [
       )}
       <div style="margin-bottom:2rem;">
         <div style="font-size:0.85rem;font-weight:700;color:#3C315B;margin-bottom:0.875rem;letter-spacing:0.02em;text-transform:uppercase;font-family:'Kanit',sans-serif;">{t('aiTrends.sourcesDownloadLabel')}</div>
-        <a href="#" class="cta-download">
-          <div class="cta-download-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="cta-download-text">
-            <div class="cta-download-title">2031 Data, Analytics &amp; AI Top 10 Predictions</div>
-            <div class="cta-download-meta">Gartner Report · PDF</div>
-          </div>
-          <div class="cta-download-arrow">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-        </a>
+        {page?.downloadTitle && (
+          <a href={page.downloadUrl ?? '#'} class="cta-download">
+            <div class="cta-download-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="cta-download-text">
+              <div class="cta-download-title">{page.downloadTitle}</div>
+              {page.downloadMeta && <div class="cta-download-meta">{page.downloadMeta}</div>}
+            </div>
+            <div class="cta-download-arrow">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </a>
+        )}
       </div>
 
       <!-- Related articles -->

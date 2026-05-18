@@ -184,7 +184,10 @@ const noindex  = page?.seo?.noindex ?? false;
           {t('home.tokenBody1')}
         </p>
         <p class="reveal" style="font-size: 0.95rem; line-height: 1.75; color: #666666; margin-bottom: 1.75rem;">
-          Every API call you make is billed in tokens: <strong style="color: #3C315B;">input tokens</strong> (what you send) and <strong style="color: #3C315B;">output tokens</strong> (what the model generates). Mastering token math is essential for anyone building with AI.
+          {page?.tokenBody2
+            ? <Fragment set:html={pt(page.tokenBody2)} />
+            : 'Every API call you make is billed in tokens: input tokens (what you send) and output tokens (what the model generates). Mastering token math is essential for anyone building with AI.'
+          }
         </p>
         <div class="reveal" style="display: flex; gap: 0.875rem; flex-wrap: wrap; align-items: center;">
           <a href={`/${lang}/beginners-guide`} class="btn-primary">{t('home.tokenCtaPrimary')} →</a>

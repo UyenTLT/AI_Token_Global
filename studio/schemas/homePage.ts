@@ -36,6 +36,15 @@ export const homePageSchema = defineType({
       }],
     }),
 
+    // ── Token explainer ──────────────────────────────────
+    defineField({
+      name: 'tokenBody2',
+      title: 'Token Explainer — Second Paragraph',
+      type: 'array',
+      of: [{ type: 'block' }],
+      description: 'Second paragraph in the "What is a Token?" section. Supports bold/italic.',
+    }),
+
     // ── FAQ ─────────────────────────────────────────────
     defineField({ name: 'faqTitle',    title: 'FAQ Section Title',    type: 'string', initialValue: 'Frequently Asked Questions' }),
     defineField({ name: 'faqSubtitle', title: 'FAQ Section Subtitle', type: 'string', initialValue: "Everything you've been wondering about AI tokens, APIs, and costs — answered." }),
