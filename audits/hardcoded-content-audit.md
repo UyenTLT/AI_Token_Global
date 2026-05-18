@@ -1,5 +1,7 @@
 # Hardcoded Content Audit — 2026-05-18
 
+> ✓ Resolved 2026-05-18 via commits 968d3d8 (t() call replacements across all [lang] pages and components) and accfe84 (~60 new keys added to en.json and es.json). Schema items deferred to follow-up task: `homePage.tokenBody2` paragraph, `aiTrendsPage.downloadTitle`, `aiTrendsPage.downloadMeta`, `aiTrendsPage.downloadUrl`.
+
 ## Summary
 - Total findings: 79
 - Pages with issues: 11 / 13 (blog/index.astro and blog/[slug].astro are clean; chatgpt-api, claude-api, gemini-api are thin wrappers — violations are in ApiModelPage.astro)
