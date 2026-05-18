@@ -10,7 +10,8 @@
     "beginnersGuide": "Beginners Guide",
     "blog": "Blog",
     "documentation": "Documentation",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "toggleMobileMenu": "Toggle mobile menu"
   },
   "footer": {
     "tagline": "The definitive English-language hub for understanding AI tokens, models, and APIs. Free, always.",
@@ -137,7 +138,23 @@
     "blogLabel": "Latest Articles",
     "blogHeading": "Learn From Our Blog",
     "blogCtaBtn": "Explore All Articles",
-    "faqCommonLabel": "Common Questions"
+    "faqCommonLabel": "Common Questions",
+    "seoTitleFallback": "AI Token King — Your AI Knowledge Hub",
+    "tokenBreakdownTokensLabel": "Tokens",
+    "tokenBreakdownCharsLabel": "Characters",
+    "tableCellModel": "Model",
+    "tableCellInput": "Input",
+    "tableCellOutput": "Output",
+    "compareColModel": "Model",
+    "compareColProvider": "Provider",
+    "compareColContext": "Context Window",
+    "compareColInput": "Input (per 1M tokens)",
+    "compareColOutput": "Output (per 1M tokens)",
+    "compareColModality": "Modality",
+    "modalityText": "Text",
+    "modalityVision": "Vision",
+    "modalityAudio": "Audio",
+    "readMore": "Read More"
   },
   "aiTrends": {
     "heroLabel": "Trend Watch",
@@ -151,6 +168,76 @@
     "related2Meta": "Compare Models →",
     "related3Tag": "Costs",
     "related3Title": "How Much Does 1,000 AI API Calls Actually Cost?",
-    "related3Meta": "6 min read"
+    "related3Meta": "6 min read",
+    "faqHeading": "FAQ"
+  },
+  "apiModel": {
+    "sectionLabel": "API Guide",
+    "pricingReferenceLabel": "Pricing Reference",
+    "viewFullComparison": "View full model comparison",
+    "furtherReadingFallback": "Further Reading",
+    "faqFallback": "Common Questions",
+    "compareAllModelsTitle": "Compare All Models",
+    "compareAllModelsBody": "Full live pricing for 60+ text, image, and video models.",
+    "viewAllModelsBtn": "View All Models",
+    "alsoCompareTitle": "Also Compare"
+  },
+  "apiCompare": {
+    "sectionLabel": "Model Reference",
+    "viewLivePricingFallback": "View Live Pricing",
+    "textModelsFallback": "Text Models",
+    "imageModelsFallback": "Image Models",
+    "videoModelsFallback": "Video Models",
+    "tableColModelName": "Model Name",
+    "tableColBestFor": "Best For / Use Case",
+    "faqFallback": "Common Questions About Model Types",
+    "viewPricingTableBtn": "View Pricing Table",
+    "backToHomeBtn": "Back to Home"
+  },
+  "beginners": {
+    "readingOrderFallback": "If You're New, Read in This Order",
+    "stuckFallback": "Where Most Beginners Get Stuck",
+    "faqFallback": "Common Questions",
+    "nextReadsFallback": "Recommended Next Reads",
+    "sidebarCtaTitle": "Compare AI Models",
+    "sidebarCtaBody": "Full live pricing for 60+ text, image, and video models."
+  },
+  "calculator": {
+    "inputLabel": "Paste or type your text below",
+    "inputPlaceholder": "Enter your text here...",
+    "charCountInitial": "0 characters",
+    "charCountSuffix": " characters",
+    "calculateBtn": "Calculate Tokens",
+    "clearBtn": "Clear",
+    "resultsHeading": "Estimation Results",
+    "chineseCharsLabel": "Chinese Chars",
+    "englishWordsLabel": "English Words",
+    "symbolsLabel": "Symbols",
+    "estInputTokensLabel": "Est. Input Tokens",
+    "priceNoteOpenai": "$2.50 / 1M tokens (input)",
+    "priceNoteClaude": "$3.00 / 1M tokens (input)",
+    "priceNoteGemini": "$1.25 / 1M tokens (input)",
+    "disclaimer": "* Estimates only. Actual token counts may vary by model tokenizer. Prices are approximate and subject to change — verify at each provider's pricing page.",
+    "faqFallback": "About the Token Calculator"
+  },
+  "compliance": {
+    "blockersFallback": "Where Enterprises Get Stuck with AI",
+    "enterpriseProposalLabel": "Enterprise Proposal",
+    "proposalCtaFallback": "View Enterprise Proposal",
+    "solutionTitleFallback": "What the Solution Covers",
+    "audienceFallback": "Who Is This For?",
+    "roleFallback": "AI Token King's Role",
+    "faqFallback": "Common Questions",
+    "sidebarCtaTitleFallback": "Enterprise Inquiry",
+    "sidebarCtaLabelFallback": "Contact Enterprise Sales"
+  },
+  "userGuide": {
+    "featuresFallback": "Core Features",
+    "modelsFallback": "Supported AI Models",
+    "audienceFallback": "Who Is It For?",
+    "gettingStartedFallback": "How to Get Started",
+    "faqFallback": "Common Questions",
+    "sidebarCtaTitle": "Get Started Free",
+    "sidebarCtaBody": "Start using AI Token King to manage and optimize your AI usage."
   }
 }

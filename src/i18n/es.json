@@ -10,7 +10,8 @@
     "beginnersGuide": "Guía para Principiantes",
     "blog": "Blog",
     "documentation": "Documentación",
-    "getStarted": "Comenzar"
+    "getStarted": "Comenzar",
+    "toggleMobileMenu": "Abrir menú móvil"
   },
   "footer": {
     "tagline": "La guía definitiva en español sobre tokens de IA, modelos y APIs. Gratis, siempre.",
@@ -137,7 +138,23 @@
     "blogLabel": "Últimos Artículos",
     "blogHeading": "Aprende con Nuestro Blog",
     "blogCtaBtn": "Explorar Todos los Artículos",
-    "faqCommonLabel": "Preguntas Frecuentes"
+    "faqCommonLabel": "Preguntas Frecuentes",
+    "seoTitleFallback": "AI Token King — Tu Centro de Conocimiento en IA",
+    "tokenBreakdownTokensLabel": "Tokens",
+    "tokenBreakdownCharsLabel": "Caracteres",
+    "tableCellModel": "Modelo",
+    "tableCellInput": "Entrada",
+    "tableCellOutput": "Salida",
+    "compareColModel": "Modelo",
+    "compareColProvider": "Proveedor",
+    "compareColContext": "Ventana de Contexto",
+    "compareColInput": "Entrada (por 1M tokens)",
+    "compareColOutput": "Salida (por 1M tokens)",
+    "compareColModality": "Modalidad",
+    "modalityText": "Texto",
+    "modalityVision": "Visión",
+    "modalityAudio": "Audio",
+    "readMore": "Leer Más"
   },
   "aiTrends": {
     "heroLabel": "Tendencias IA",
@@ -151,6 +168,76 @@
     "related2Meta": "Comparar Modelos →",
     "related3Tag": "Costos",
     "related3Title": "¿Cuánto Cuestan Realmente 1,000 Llamadas a la API de IA?",
-    "related3Meta": "6 min de lectura"
+    "related3Meta": "6 min de lectura",
+    "faqHeading": "Preguntas Frecuentes"
+  },
+  "apiModel": {
+    "sectionLabel": "Guía de API",
+    "pricingReferenceLabel": "Referencia de Precios",
+    "viewFullComparison": "Ver comparación completa de modelos",
+    "furtherReadingFallback": "Lecturas Adicionales",
+    "faqFallback": "Preguntas Frecuentes",
+    "compareAllModelsTitle": "Comparar Todos los Modelos",
+    "compareAllModelsBody": "Precios actualizados de más de 60 modelos de texto, imagen y video.",
+    "viewAllModelsBtn": "Ver Todos los Modelos",
+    "alsoCompareTitle": "También Compara"
+  },
+  "apiCompare": {
+    "sectionLabel": "Referencia de Modelos",
+    "viewLivePricingFallback": "Ver Precios en Vivo",
+    "textModelsFallback": "Modelos de Texto",
+    "imageModelsFallback": "Modelos de Imagen",
+    "videoModelsFallback": "Modelos de Video",
+    "tableColModelName": "Nombre del Modelo",
+    "tableColBestFor": "Mejor Para / Caso de Uso",
+    "faqFallback": "Preguntas Frecuentes sobre Tipos de Modelos",
+    "viewPricingTableBtn": "Ver Tabla de Precios",
+    "backToHomeBtn": "Volver al Inicio"
+  },
+  "beginners": {
+    "readingOrderFallback": "Si Eres Nuevo, Lee en Este Orden",
+    "stuckFallback": "Dónde se Atascan la Mayoría de Principiantes",
+    "faqFallback": "Preguntas Frecuentes",
+    "nextReadsFallback": "Lecturas Siguientes Recomendadas",
+    "sidebarCtaTitle": "Comparar Modelos de IA",
+    "sidebarCtaBody": "Precios actualizados de más de 60 modelos de texto, imagen y video."
+  },
+  "calculator": {
+    "inputLabel": "Pega o escribe tu texto aquí",
+    "inputPlaceholder": "Escribe tu texto aquí...",
+    "charCountInitial": "0 caracteres",
+    "charCountSuffix": " caracteres",
+    "calculateBtn": "Calcular Tokens",
+    "clearBtn": "Limpiar",
+    "resultsHeading": "Resultados de Estimación",
+    "chineseCharsLabel": "Caracteres Chinos",
+    "englishWordsLabel": "Palabras en Inglés",
+    "symbolsLabel": "Símbolos",
+    "estInputTokensLabel": "Tokens de Entrada Est.",
+    "priceNoteOpenai": "$2.50 / 1M tokens (entrada)",
+    "priceNoteClaude": "$3.00 / 1M tokens (entrada)",
+    "priceNoteGemini": "$1.25 / 1M tokens (entrada)",
+    "disclaimer": "* Solo estimaciones. Los conteos de tokens pueden variar según el tokenizador de cada modelo. Los precios son aproximados y están sujetos a cambios — verifica en la página oficial de cada proveedor.",
+    "faqFallback": "Sobre la Calculadora de Tokens"
+  },
+  "compliance": {
+    "blockersFallback": "Dónde se Atascan las Empresas con la IA",
+    "enterpriseProposalLabel": "Propuesta Empresarial",
+    "proposalCtaFallback": "Ver Propuesta Empresarial",
+    "solutionTitleFallback": "Qué Incluye la Solución",
+    "audienceFallback": "¿Para Quién es Esto?",
+    "roleFallback": "El Rol de AI Token King",
+    "faqFallback": "Preguntas Frecuentes",
+    "sidebarCtaTitleFallback": "Consulta Empresarial",
+    "sidebarCtaLabelFallback": "Contactar Ventas Empresariales"
+  },
+  "userGuide": {
+    "featuresFallback": "Características Principales",
+    "modelsFallback": "Modelos de IA Compatibles",
+    "audienceFallback": "¿Para Quién es?",
+    "gettingStartedFallback": "Cómo Empezar",
+    "faqFallback": "Preguntas Frecuentes",
+    "sidebarCtaTitle": "Comienza Gratis",
+    "sidebarCtaBody": "Comienza a usar AI Token King para gestionar y optimizar tu uso de IA."
   }
 }
