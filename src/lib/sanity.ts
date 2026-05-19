@@ -15,6 +15,7 @@ export interface SanityPost {
   excerpt: string;
   articleNumber?: number;
   language: string;
+  category?: string;
   coverImage?: { asset: { url: string } };
   tags?: string[];
   body: any[];
@@ -78,7 +79,7 @@ export async function getAllPosts(lang: string): Promise<SanityPost[]> {
   if (!client) return [];
   return client.fetch(
     `*[_type == "post" && language == $lang] | order(articleNumber asc) {
-      _id, title, slug, publishedAt, excerpt, tags, articleNumber, language,
+      _id, title, slug, publishedAt, excerpt, tags, category, articleNumber, language,
       coverImage { asset -> { url } }
     }`,
     { lang }

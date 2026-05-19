@@ -47,7 +47,15 @@
     "tryCopy": "Compara modelos, calcula costos y gestiona tu uso de IA — gratis.",
     "tryButton": "Comenzar",
     "copyLink": "Copiar enlace",
-    "copied": "¡Copiado!"
+    "copied": "¡Copiado!",
+    "allPosts": "Todos los artículos",
+    "cat.fundamentals": "Fundamentos de IA",
+    "cat.compliance": "Confianza y Cumplimiento",
+    "cat.calculation": "Cálculo de Tokens",
+    "cat.pricing": "Precios de Tokens",
+    "cat.models": "Comparación de Modelos",
+    "cat.platform": "Plataformas y Herramientas de IA",
+    "cat.tutorials": "Tutoriales"
   },
   "lang": {
     "selectLanguage": "Seleccionar idioma",

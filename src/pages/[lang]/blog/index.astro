@@ -15,6 +15,19 @@ if (!isValidLang(lang)) return Astro.redirect('/en/blog');
 const t = useTranslations(lang as Lang);
 const posts: SanityPost[] = await getAllPosts(lang);
 
+const CATEGORIES = [
+  { value: 'fundamentals', label: t('blog.cat.fundamentals') },
+  { value: 'compliance',   label: t('blog.cat.compliance') },
+  { value: 'calculation',  label: t('blog.cat.calculation') },
+  { value: 'pricing',      label: t('blog.cat.pricing') },
+  { value: 'models',       label: t('blog.cat.models') },
+  { value: 'platform',     label: t('blog.cat.platform') },
+  { value: 'tutorials',    label: t('blog.cat.tutorials') },
+];
+
+// Only show tabs for categories that have at least one post
+const usedCategories = CATEGORIES.filter(c => posts.some(p => p.category === c.value));
+
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString(LANG_META[lang as Lang].locale, { year: 'numeric', month: 'long', day: 'numeric' });
 }
@@ -50,8 +63,37 @@ function formatDate(iso: string) {
     </div>
   </section>
 
-  <!-- Posts grid -->
-  <section style="padding: 4rem 1.5rem; max-width: 1200px; margin: 0 auto;">
+  <!-- Filter tabs + posts -->
+  <section style="padding: 3rem 1.5rem 4rem; max-width: 1200px; margin: 0 auto;">
+
+    {/* Category filter tabs — only render if there are categorised posts */}
+    {usedCategories.length > 0 && (
+      <div class="filter-bar" role="tablist" aria-label="Filter posts by category">
+        <button
+          class="filter-tab active"
+          data-filter="all"
+          role="tab"
+          aria-selected="true"
+        >
+          {t('blog.allPosts')}
+          <span class="filter-count" id="count-all">{posts.length}</span>
+        </button>
+        {usedCategories.map(cat => {
+          const count = posts.filter(p => p.category === cat.value).length;
+          return (
+            <button
+              class="filter-tab"
+              data-filter={cat.value}
+              role="tab"
+              aria-selected="false"
+            >
+              {cat.label}
+              <span class="filter-count" id={`count-${cat.value}`}>{count}</span>
+            </button>
+          );
+        })}
+      </div>
+    )}
 
     {posts.length === 0 && (
       <div style="text-align: center; padding: 4rem 1.5rem; color: #999;">
@@ -61,59 +103,86 @@ function formatDate(iso: string) {
 
     {posts.length > 0 && (
       <>
-        <!-- Featured post -->
-        <div class="card reveal" style="margin-bottom: 3rem; overflow: hidden;">
-          <a href={`/${lang}/blog/${posts[0].slug.current}`} style="display: grid; grid-template-columns: 1fr 1fr; text-decoration: none; color: inherit;" class="blog-featured-grid">
-            <div style="background: linear-gradient(135deg, #2A1F5C, #0D1547); min-height: 280px; position: relative; overflow: hidden;">
-              {posts[0].coverImage?.asset?.url
-                ? <img src={posts[0].coverImage.asset.url} alt={posts[0].title} style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;" />
-                : <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;"><svg width="64" height="64" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-              }
-            </div>
-            <div style="padding: 2.5rem;">
-              {posts[0].tags && posts[0].tags.length > 0 && (
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
-                  {posts[0].tags.slice(0, 2).map(tag => (
-                    <span style="background: #E2DFFE; color: #6155F1; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.625rem; border-radius: 100px;">{tag}</span>
-                  ))}
-                </div>
-              )}
-              <h2 style="font-family: 'Kanit', sans-serif; font-size: 1.6rem; font-weight: 700; color: #1C1C1C; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 0.875rem;">{posts[0].title}</h2>
-              <p style="font-size: 0.9rem; line-height: 1.75; color: #666; margin-bottom: 1.5rem;">{posts[0].excerpt}</p>
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span style="font-size: 0.8rem; color: #999;">{formatDate(posts[0].publishedAt)}</span>
-                <span style="display: inline-flex; align-items: center; gap: 0.375rem; color: #6155F1; font-size: 0.875rem; font-weight: 600;">
-                  {t('blog.readArticle')}
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
+        <!-- Featured post slot (first post in current filter) -->
+        <div id="featured-slot" style="margin-bottom: 3rem;">
+          {posts.map((post, idx) => (
+            <a
+              href={`/${lang}/blog/${post.slug.current}`}
+              class={`card blog-featured-card${idx === 0 ? '' : ' hidden-post'}`}
+              data-category={post.category ?? 'uncategorized'}
+              data-idx={idx}
+              style="display: grid; grid-template-columns: 1fr 1fr; text-decoration: none; color: inherit; overflow: hidden;"
+            >
+              <div style="background: linear-gradient(135deg, #2A1F5C, #0D1547); min-height: 280px; position: relative; overflow: hidden;">
+                {post.coverImage?.asset?.url
+                  ? <img src={post.coverImage.asset.url} alt={post.title} style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;" loading={idx === 0 ? 'eager' : 'lazy'} />
+                  : <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;"><svg width="64" height="64" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                }
               </div>
-            </div>
-          </a>
+              <div style="padding: 2.5rem;">
+                {post.category && (
+                  <span class="filter-pill-active" style="display: inline-block; margin-bottom: 0.875rem;">
+                    {CATEGORIES.find(c => c.value === post.category)?.label ?? post.category}
+                  </span>
+                )}
+                {(!post.category && post.tags && post.tags.length > 0) && (
+                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                    {post.tags.slice(0, 2).map(tag => (
+                      <span style="background: #E2DFFE; color: #6155F1; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.625rem; border-radius: 100px;">{tag}</span>
+                    ))}
+                  </div>
+                )}
+                <h2 style="font-family: 'Kanit', sans-serif; font-size: 1.6rem; font-weight: 700; color: #1C1C1C; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 0.875rem;">{post.title}</h2>
+                <p style="font-size: 0.9rem; line-height: 1.75; color: #666; margin-bottom: 1.5rem;">{post.excerpt}</p>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-size: 0.8rem; color: #999;">{formatDate(post.publishedAt)}</span>
+                  <span style="display: inline-flex; align-items: center; gap: 0.375rem; color: #6155F1; font-size: 0.875rem; font-weight: 600;">
+                    {t('blog.readArticle')}
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </span>
+                </div>
+              </div>
+            </a>
+          ))}
         </div>
 
         <!-- Remaining posts grid -->
-        {posts.length > 1 && (
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;" class="posts-grid">
-            {posts.slice(1).map((post, i) => (
-              <a href={`/${lang}/blog/${post.slug.current}`} class="card reveal" style={`text-decoration: none; color: inherit; display: block; overflow: hidden; animation-delay: ${i * 0.08}s;`}>
-                <div style="background: linear-gradient(135deg, #2A1F5C, #0D1547); height: 160px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                  {post.coverImage?.asset?.url
-                    ? <img src={post.coverImage.asset.url} alt={post.title} style="width: 100%; height: 100%; object-fit: cover;" />
-                    : <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  }
-                </div>
-                <div style="padding: 1.5rem;">
-                  {post.tags && post.tags.length > 0 && (
-                    <span style="background: #E2DFFE; color: #6155F1; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.625rem; border-radius: 100px; display: inline-block; margin-bottom: 0.75rem;">{post.tags[0]}</span>
-                  )}
-                  <h3 style="font-family: 'Kanit', sans-serif; font-size: 1.1rem; font-weight: 700; color: #1C1C1C; letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 0.625rem;">{post.title}</h3>
-                  <p style="font-size: 0.85rem; line-height: 1.7; color: #666; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">{post.excerpt}</p>
-                  <span style="font-size: 0.78rem; color: #999;">{formatDate(post.publishedAt)}</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        )}
+        <div id="posts-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;" class="posts-grid">
+          {posts.map((post, i) => (
+            <a
+              href={`/${lang}/blog/${post.slug.current}`}
+              class="card grid-post-card"
+              data-category={post.category ?? 'uncategorized'}
+              data-idx={i}
+              style={`text-decoration: none; color: inherit; display: block; overflow: hidden; animation-delay: ${i * 0.06}s;`}
+            >
+              <div style="background: linear-gradient(135deg, #2A1F5C, #0D1547); height: 160px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
+                {post.coverImage?.asset?.url
+                  ? <img src={post.coverImage.asset.url} alt={post.title} style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" />
+                  : <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                }
+                {post.category && (
+                  <span style="position: absolute; top: 0.625rem; left: 0.625rem; background: rgba(97,85,241,0.9); color: #fff; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.5rem; border-radius: 100px; backdrop-filter: blur(4px);">
+                    {CATEGORIES.find(c => c.value === post.category)?.label ?? post.category}
+                  </span>
+                )}
+              </div>
+              <div style="padding: 1.5rem;">
+                {(!post.category && post.tags && post.tags.length > 0) && (
+                  <span style="background: #E2DFFE; color: #6155F1; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.625rem; border-radius: 100px; display: inline-block; margin-bottom: 0.75rem;">{post.tags[0]}</span>
+                )}
+                <h3 style="font-family: 'Kanit', sans-serif; font-size: 1.1rem; font-weight: 700; color: #1C1C1C; letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 0.625rem;">{post.title}</h3>
+                <p style="font-size: 0.85rem; line-height: 1.7; color: #666; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">{post.excerpt}</p>
+                <span style="font-size: 0.78rem; color: #999;">{formatDate(post.publishedAt)}</span>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        <!-- Empty state for filtered view -->
+        <div id="filter-empty" style="display: none; text-align: center; padding: 4rem 1.5rem; color: #999;">
+          <p style="font-size: 1.1rem;">{t('blog.noPostsYet')}</p>
+        </div>
       </>
     )}
   </section>
@@ -121,11 +190,169 @@ function formatDate(iso: string) {
 </BaseLayout>
 
 <style>
+  /* ── Filter bar ─────────────────────────────────────────────────────── */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+    align-items: center;
+  }
+
+  .filter-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.45rem 1rem;
+    border-radius: 100px;
+    border: 1.5px solid #E2DFFE;
+    background: transparent;
+    color: #3C315B;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.15s;
+    white-space: nowrap;
+  }
+
+  .filter-tab:hover {
+    background: #F0EEFF;
+    border-color: #6155F1;
+    color: #6155F1;
+    transform: translateY(-1px);
+  }
+
+  .filter-tab.active {
+    background: #6155F1;
+    border-color: #6155F1;
+    color: #fff;
+  }
+
+  .filter-tab.active:hover {
+    background: #4f45d4;
+    border-color: #4f45d4;
+    color: #fff;
+    transform: translateY(-1px);
+  }
+
+  .filter-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 0.3rem;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: rgba(97, 85, 241, 0.12);
+    color: #6155F1;
+    line-height: 1;
+  }
+
+  .filter-tab.active .filter-count {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+  }
+
+  /* ── Featured card ──────────────────────────────────────────────────── */
+  .blog-featured-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+  }
+
+  .filter-pill-active {
+    background: #E2DFFE;
+    color: #6155F1;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.625rem;
+    border-radius: 100px;
+  }
+
+  /* ── Hidden state ───────────────────────────────────────────────────── */
+  .hidden-post {
+    display: none !important;
+  }
+
+  /* ── Responsive ─────────────────────────────────────────────────────── */
   @media (max-width: 900px) {
-    .blog-featured-grid { grid-template-columns: 1fr !important; }
-    .posts-grid { grid-template-columns: repeat(2,1fr) !important; }
+    .blog-featured-card { grid-template-columns: 1fr !important; }
+    .posts-grid { grid-template-columns: repeat(2, 1fr) !important; }
   }
   @media (max-width: 640px) {
     .posts-grid { grid-template-columns: 1fr !important; }
+    .filter-bar { gap: 0.375rem; }
+    .filter-tab { font-size: 0.78rem; padding: 0.4rem 0.75rem; }
   }
 </style>
+
+<script>
+  (function () {
+    const tabs = document.querySelectorAll<HTMLButtonElement>('.filter-tab');
+    const featuredCards = document.querySelectorAll<HTMLAnchorElement>('.blog-featured-card');
+    const gridCards = document.querySelectorAll<HTMLAnchorElement>('.grid-post-card');
+    const emptyState = document.getElementById('filter-empty');
+
+    if (!tabs.length) return;
+
+    function applyFilter(filter: string) {
+      // Update tab states
+      tabs.forEach(tab => {
+        const isActive = tab.dataset.filter === filter;
+        tab.classList.toggle('active', isActive);
+        tab.setAttribute('aria-selected', String(isActive));
+      });
+
+      // Determine which posts match
+      const matchingIndices: number[] = [];
+      gridCards.forEach(card => {
+        const cat = card.dataset.category ?? 'uncategorized';
+        const matches = filter === 'all' || cat === filter;
+        if (matches) matchingIndices.push(Number(card.dataset.idx));
+      });
+
+      // Featured slot: show the first matching post, hide all others
+      let featuredShown = false;
+      featuredCards.forEach(card => {
+        const idx = Number(card.dataset.idx);
+        const show = !featuredShown && matchingIndices.includes(idx);
+        card.classList.toggle('hidden-post', !show);
+        if (show) featuredShown = true;
+      });
+
+      // Grid: show all matching posts EXCEPT the one shown as featured
+      const featuredIdx = featuredCards.length
+        ? Number([...featuredCards].find(c => !c.classList.contains('hidden-post'))?.dataset.idx ?? -1)
+        : -1;
+
+      let gridVisible = 0;
+      gridCards.forEach(card => {
+        const idx = Number(card.dataset.idx);
+        const show = matchingIndices.includes(idx) && idx !== featuredIdx;
+        card.classList.toggle('hidden-post', !show);
+        if (show) gridVisible++;
+      });
+
+      // Toggle empty state
+      if (emptyState) {
+        emptyState.style.display = !featuredShown && gridVisible === 0 ? 'block' : 'none';
+      }
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        applyFilter(tab.dataset.filter ?? 'all');
+      });
+    });
+
+    // Init: apply 'all' on load
+    applyFilter('all');
+  })();
+</script>
