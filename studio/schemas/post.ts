@@ -71,6 +71,24 @@ export const postSchema = defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'category',
+      title: 'Category',
+      type: 'string',
+      description: 'Used for the category filter tabs on the blog index page',
+      options: {
+        list: [
+          { title: 'AI Fundamentals',                    value: 'fundamentals' },
+          { title: 'Trust & Compliance',                 value: 'compliance' },
+          { title: 'Token Calculation',                  value: 'calculation' },
+          { title: 'Token Pricing',                      value: 'pricing' },
+          { title: 'Model Comparisons',                  value: 'models' },
+          { title: 'AI Platforms, Tools & Purchasing',   value: 'platform' },
+          { title: 'Tutorials',                          value: 'tutorials' },
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
       name: 'tags',
       title: 'Tags',
       type: 'array',

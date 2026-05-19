@@ -1,0 +1,34 @@
+[
+  {
+    "articleNumber": 1,
+    "title": "What Is an AI Token? A Beginner's Complete Guide",
+    "excerpt": "Every time you use ChatGPT, Claude, or Gemini, you're billed in tokens — not words. This guide explains what tokens are, why they matter for cost, and how to think about them.",
+    "publishedAt": "2026-04-15",
+    "category": "fundamentals",
+    "tags": ["AI Fundamentals", "Beginner"],
+    "body": [
+      { "type": "h2", "text": "What Is an AI Token?" },
+      { "type": "p",  "text": "If you've ever used ChatGPT, Claude, or Gemini and wondered why you're charged per 'token' rather than per word — you're not alone. Tokens are the fundamental unit of text that AI language models process." },
+      { "type": "blockquote", "text": "The rule of thumb: 100 tokens ≈ 75 words in English." },
+      { "type": "h2", "text": "Why Tokens Matter for Cost" },
+      { "type": "p",  "text": "Every AI API charges based on token count — both what you send and what the model generates back." },
+      { "type": "ul", "items": ["Input tokens — the text you send", "Output tokens — the model's response (priced higher)", "Context window — the maximum tokens a model can see at once"] },
+      { "type": "h2", "text": "Practical Tips" },
+      { "type": "ol", "items": ["Be concise in your prompts", "Choose models by task, not by brand", "Monitor output length"] }
+    ]
+  },
+  {
+    "articleNumber": 2,
+    "title": "How to Calculate AI Token Costs Before You Commit",
+    "excerpt": "Before running any AI workload at scale, you need to estimate token costs. Here's the exact method to forecast your monthly bill across any model.",
+    "publishedAt": "2026-04-18",
+    "category": "pricing",
+    "tags": ["Token Pricing", "Cost Control"],
+    "body": [
+      { "type": "h2", "text": "Why Cost Estimation Matters" },
+      { "type": "p",  "text": "Unexpected AI bills are one of the most common pain points for developers and businesses adopting AI APIs. A small miscalculation in token usage can turn a $50 prototype into a $5,000 monthly bill." },
+      { "type": "h3", "text": "The Basic Formula" },
+      { "type": "p",  "text": "Cost = (input tokens × input price per 1M) + (output tokens × output price per 1M)" }
+    ]
+  }
+]

@@ -18,8 +18,11 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, basename } from 'node:path';
 
 // ── Config ─────────────────────────────────────────────────────────────
-const CLAUDE_MODEL   = 'claude-haiku-4-5-20251001';
-const ANTHROPIC_KEY  = process.env.ANTHROPIC_API_KEY;
+const CLAUDE_MODEL   = 'claude-sonnet-4.6';
+const ANTHROPIC_KEY  = process.env.ANTHROPIC_API_KEY ?? process.env.AI_TOKEN_KING_KEY;
+const API_BASE_URL   = process.env.AI_TOKEN_KING_KEY
+  ? 'https://api.aitokenking.com.tw/api'
+  : 'https://api.anthropic.com';
 const LANG_NAMES     = { es: 'Spanish (Latin American)', fr: 'French', de: 'German', ja: 'Japanese', zh: 'Traditional Chinese (Taiwan)' };
 
 // ── Keys that are NEVER translated ─────────────────────────────────────
@@ -106,10 +109,10 @@ Rules:
 Strings to translate:
 ${numbered}`;
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const response = await fetch(`${API_BASE_URL}/v1/messages`, {
     method: 'POST',
     headers: {
-      'x-api-key': ANTHROPIC_KEY,
+      'Authorization': `Bearer ${ANTHROPIC_KEY}`,
       'anthropic-version': '2023-06-01',
       'content-type': 'application/json',
     },
@@ -131,7 +134,6 @@ ${numbered}`;
   // Parse [N] translated text lines
   const translations = new Array(strings.length);
   const lines = raw.split('\n');
-  let current = null;
   let currentIdx = null;
   let buffer = [];
 
