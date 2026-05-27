@@ -89,9 +89,17 @@ for (const entry of translations) {
 
 // Update identity fields so this becomes a distinct Sanity document
 output.language = targetLang;
-if (typeof output._id === 'string') {
-  output._id = output._id.replace(/-en$/, `-${targetLang}`);
+if (typeof output._id !== 'string') {
+  console.error(`Source document has no string _id — cannot derive a safe target _id.`);
+  process.exit(1);
 }
+if (!output._id.endsWith('-en')) {
+  console.error(`Source _id "${output._id}" does not end with "-en".`);
+  console.error(`This script only translates English source documents. Aborting to avoid`);
+  console.error(`overwriting the wrong document when imported with --replace.`);
+  process.exit(1);
+}
+output._id = output._id.replace(/-en$/, `-${targetLang}`);
 
 // Emit as .ndjson — one line, no pretty-printing
 process.stdout.write(JSON.stringify(output) + '\n');
