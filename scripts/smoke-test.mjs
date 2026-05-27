@@ -78,7 +78,11 @@ async function audit(page, url) {
 }
 
 async function main() {
-  const browser = await puppeteer.launch({ headless: 'new' });
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    // --no-sandbox is needed in CI/Docker environments; harmless locally
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
   const page = await browser.newPage();
   page.setDefaultTimeout(30000);
   await page.setViewport({ width: 1280, height: 800 });
