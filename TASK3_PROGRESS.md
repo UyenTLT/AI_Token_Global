@@ -281,7 +281,70 @@ Compare every Astro page against its archive HTML reference (`archive/`) and fix
 - Hero pointer blob (archive's `.blob-pointer` mousemove follower) not added — Astro's `.hero-bg-canvas` already has 5 animated blobs, and the project-wide hero pattern has no mouse follower
 - PortableText rendering for Sanity `footerNoteBody` vs archive's hardcoded text — dynamic content
 - Inline `style="font-weight:700;color:#1C1C1C;"` removed from `pt()` strong markdef — scoped `.footer-note .prose-article strong` rule now handles it without specificity collisions
-### 11. User Guide (`user-guide.astro`) — NOT STARTED
+### 11. User Guide (`user-guide.astro`) — DONE
+
+**Issues found and fixed:**
+- Hero was missing CTA buttons row → added "Read the Guide" (btn-primary) + "Quick Start" (btn-secondary, translucent white border/bg) with `delay-4` (0.28s) fade-up
+- Breadcrumb was 2-level (Home → heroHeadline) → expanded to 3-level (Home → AI Resources → User Guide) matching archive
+- Hero subtitle2 was `0.9rem/1.65/rgba(255,255,255,0.55)` with no `margin-bottom` → fixed to `0.925rem/1.7/rgba(255,255,255,0.5)` with `margin-bottom: 1.75rem` so the CTA row spaces correctly
+- BaseLayout was missing `activePage`/`activeDropdown` → set `activePage="user-guide"` and `activeDropdown="resources"` so the top-nav AI Resources dropdown highlights
+- Hero filter id was `hero-goo` → changed to `ug-page-goo` so it doesn't collide with index.astro's hero (which uses `hero-goo`)
+- Hero heroLabel icon was a star path → changed to simple solid `<circle cx="8" cy="8" r="8"/>` matching archive
+- All 9 section H2s (what-is/problems/features/models/use-cases/audience/openclaw/getting-started/faq) were plain text → wrapped each in a new `.ug-section-head` flex row (gap 1rem) with a 48×48 `.ug-icon-box` (14px radius) carrying section-specific gradient + SVG:
+  - what-is = `#6155F1 → #3E81E5` + database/layers
+  - problems = `#3E81E5 → #0ABFBC` + verified-badge with check
+  - features = `#6155F1 → #F59E0B` + lightning bolt
+  - models = `#3E81E5 → #6155F1` + monitor
+  - use-cases = `#F59E0B → #F43F5E` + clipboard with check
+  - audience = `#6155F1 → #0ABFBC` + users
+  - openclaw = `#3C315B → #6155F1` + info circle
+  - getting-started = `#22C55E → #0ABFBC` + play triangle
+  - faq = `#6155F1 → #3E81E5` + question circle
+- Section margin-bottom was `3rem` → bumped to `3.5rem` matching archive
+- Section H2 was using `margin-bottom: 1.125rem` (now lives on `.ug-section-head` wrapper instead); section-head margin-bottom is `1.25rem` (default), `1.5rem` (models/audience/getting-started/faq), `1.75rem` (features) per archive's per-section spacing
+- What-is section was missing 2-column Problem/Solution summary cards → added 2-col `.two-col-grid` with two `.card`s: left card "THE PROBLEM" (purple icon-circle + uppercase label + 3 items with red `✕` markers); right card "THE SOLUTION" (green checkmark + uppercase label + 3 items with green `✓` markers). Items hardcoded via 6 new i18n keys
+- Problems section was rendering portable text as a plain `<ul>` (default bullet styling) → restructured as `.ug-problems-callout` gradient box `linear-gradient(135deg, #F5F2FF, #EBF4FF)` 16px radius 1.75rem padding wrapping: intro paragraph (font-size 0.875rem weight 600 color #3C315B mb 1rem) + extracted list-items rendered as colored-dot rows (8×8 dot cycling #6155F1/#3E81E5/#0ABFBC/#F59E0B then repeating) + body text 0.9rem #3C315B lh 1.6
+- Implemented helper logic to split `problemsBody` portable text into `problemsIntro` (non-list blocks) and `problemsBullets` (`listItem === 'bullet'` blocks) so list semantics survive the visual rewrite
+- Features section: cards had 36×36 icon-boxes with colored dots + 22px padding + no border → switched to archive layout: `.card` with `border-left: 4px solid <color>` (#6155F1/#3E81E5/#0ABFBC/#F59E0B), padding `1.5rem 1.75rem`, h3 1.1rem Kanit, body 0.9rem/1.75 #555. No icon-box per card
+- Features cards stack gap was `1rem` → bumped to `1.25rem` matching archive
+- Models section was a vertical flex column of cards with `border-left: 3px solid <color>` + plain title → switched to 2-col `.two-col-grid` of `.card`s (no border-left, colored Kanit title 1rem 700 + 0.875rem #555 description); last odd-index card gets `grid-column: span 2`. Model title colors: #6155F1/#3E81E5/#0ABFBC/#F59E0B/#6155F1 (5 series)
+- Use-cases section was rendering the entire body as prose, swallowing the "Simply put" callout into the flow → split body into `head` (all but last paragraph) + `tail` (last paragraph), rendered tail as `.ug-callout` box (bg #F5F2FF, border 1px rgba(97,85,241,0.12), 14px radius, 1.25rem 1.5rem padding) matching archive
+- OpenClaw section: same issue → split body and render last paragraph as `.ug-callout` gradient `linear-gradient(135deg, rgba(97,85,241,0.06), rgba(62,129,229,0.06))` with same dimensions and border
+- Audience cards used `card-elevated` (no hover) → switched to `.card` (16px radius + translateY(-4px) hover lift) matching archive; last odd-index card gets `grid-column: span 2`; role label colors map to AUDIENCE_COLOR array (#6155F1/#3E81E5/#0ABFBC/#F59E0B/#F43F5E)
+- Audience card padding was `1.25rem 1.375rem` → bumped to `1.375rem 1.5rem` matching archive
+- Getting Started step cards used `card-elevated` (with hover) → switched to plain inline white styled `.ug-step-card` (bg #fff, 14px radius, padding 1.25rem 1.375rem, shadow `0 2px 8px rgba(97,85,241,0.07)`, no hover) since archive's steps don't lift on hover
+- Step card gap was `1rem` → reduced to `0.875rem` matching archive
+- Step card number circle font-size was `0.875rem` → bumped to `0.9rem` matching archive
+- Getting Started section was missing the "New users don't need to research model specs first" callout at the bottom → added new `.ug-callout` gradient `linear-gradient(135deg, #F5F2FF, #EBF4FF)` 14px radius 1.25rem 1.5rem padding with bold-prefixed body via new i18n key `gettingStartedTip` (rendered via `set:html` to preserve the `<strong>` markup)
+- FAQ chevron was `width:16, stroke-width:1.75` → upsized to `width:18, stroke-width:2` matching archive
+- FAQ answer body was using default `.prose-article` styling → scoped `.ug-faq-answer-body p` to `font-size: 0.9rem; line-height: 1.75; color: #555; padding-bottom: 1.25rem` matching archive `.faq-body`
+- Sidebar TOC card was `card-elevated` (20px radius, dual shadow) → switched to plain white `.ug-sidebar-card` (16px radius, single shadow `0 2px 10px rgba(97,85,241,0.08)`, 1.5rem padding) matching archive's `.sidebar-link`-aligned TOC card
+- `.toc-link` styles updated: font-size `0.825rem → 0.855rem`, padding `0.3rem 0.5rem → 0.5rem 0.875rem`, radius `6px → 8px`, color `#666 → #555` matching archive `.sidebar-link`
+- `.toc-link.active` rule did not exist in CSS → added `background:#E2DFFE; color:#6155F1; font-weight:600` (scroll-spy script was adding the class but with no rule it had no effect)
+- First TOC link wasn't auto-active → added `active` class to the What-is anchor so the active state shows on page load before scroll-spy fires
+- Scroll-spy was observing all `[id]` elements (including dropdowns, etc.) → narrowed selector to `article > section[id]` to only observe page sections
+- Sidebar CTA card was `linear-gradient(135deg, #3E81E5, #6155F1)` (blue→purple), 20px radius, `1.375rem 1.5rem` padding → fixed to archive's `linear-gradient(135deg, #6155F1, #3E81E5)` (purple→blue), 16px radius, uniform 1.5rem padding
+- Sidebar CTA title text was "Get Started Free" → updated to "Ready to try it?" via i18n
+- Sidebar CTA body text was "Start using AI Token King to manage and optimize your AI usage." → updated to "New users get free tokens to explore all supported models." via i18n
+- Sidebar CTA button label was using `nav.getStarted` ("Get Started") → uses new i18n key `userGuide.sidebarCtaBtn` ("Get Started Free")
+- Sidebar CTA button arrow icon was 12×12 → upsized to 13×13 matching archive
+- Sidebar CTA body font-size was `0.8rem` → bumped to `0.825rem` matching archive
+- Sidebar CTA title font-size was `0.95rem` → bumped to `1rem` matching archive
+- `pt()` strong marker was hardcoding `font-weight:700;color:#1C1C1C` inline on every `<strong>` → removed inline styles (`<strong>${children}</strong>` only); the global `.prose-article strong` rule now applies and was updated from `#1C1C1C → #3C315B` matching archive's inline override
+- Responsive breakpoint for sidebar collapse was 900px → moved to 1024px matching archive `.guide-layout` collapse
+- Two-col grid collapse (problem/models/audience) was at 900px (via single rule) → moved to 768px matching archive `.problem-grid` / `.audience-grid` collapse
+- Added 18 new i18n keys across en/es/id under `userGuide`: `problemsFallback`, `useCasesFallback`, `openclawFallback`, `whatIsFallback`, `breadcrumbParent`, `heroCtaPrimary`, `heroCtaSecondary`, `problemLabel`, `solutionLabel`, `problemItem1-3`, `solutionItem1-3`, `gettingStartedTip`, `sidebarCtaBtn`
+- Updated 2 existing i18n keys across en/es/id: `sidebarCtaTitle` ("Get Started Free" → "Ready to try it?"), `sidebarCtaBody` (generic intro → "New users get free tokens to explore all supported models.")
+
+**Not changed (intentional):**
+- `.faq-question`/`.faq-answer` accessibility classes (display:none/block + .open) from global.css vs archive's max-height transitions — Astro's shared accessible system per CLAUDE.md responsive rules
+- `.faq-item` border color from global.css (`#EDEDEF`) vs archive (`rgba(97,85,241,0.1)`) — shared global is consistent across all Astro pages; keeping the project value
+- `.reveal` scroll-animation classes — Astro improvement over archive's `.fade-up`-only scheme
+- `.ug-section-head` + `.ug-icon-box` defined as page-local classes (vs global `.icon-box` which has bg `#F5F2FF`) — keeps the user-guide icon-boxes at the archive's gradient-bg 48×48 size without affecting other pages
+- Portable Text rendering for Sanity content (whatIs/problems/useCases/openclaw bodies, feature/model/audience/step descriptions, FAQ answers) vs archive's hardcoded text — dynamic content
+- Sanity content for the "Simply put:" / "Think of it as:" callouts does NOT have `<strong>` markup on the leading clause (archive bolds it) — this is a content authoring gap, not a styling issue; the scoped `.ug-callout strong` rule handles bolding correctly when present
+- Problem/Solution summary items in the what-is section are hardcoded via i18n (3 items each, matching archive's static markup) since they're a distinct summary distinct from `problemsBody` — adding them as Sanity schema fields would be out of scope here
+- Hero pointer blob (archive's `.blob-pointer` mousemove follower) not added — Astro's `.hero-bg-canvas` already has 5 animated blobs, and the project-wide hero pattern has no mouse follower
 ### 12. Blog Index (`blog/index.astro`) — NOT STARTED
 ### 13. Blog Post (`blog/[slug].astro`) — NOT STARTED
 

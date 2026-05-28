@@ -289,7 +289,24 @@
     "audienceFallback": "Untuk Siapa Ini?",
     "gettingStartedFallback": "Cara Mulai",
     "faqFallback": "Pertanyaan Umum",
-    "sidebarCtaTitle": "Mulai Gratis",
-    "sidebarCtaBody": "Mulai pakai AI Token King untuk mengelola dan mengoptimalkan penggunaan AI kamu."
+    "problemsFallback": "Masalah Apa yang Diselesaikan?",
+    "useCasesFallback": "Untuk Apa Bisa Dipakai?",
+    "openclawFallback": "Apa Itu OpenClaw?",
+    "whatIsFallback": "Apa Itu AI Token King?",
+    "breadcrumbParent": "Sumber AI",
+    "heroCtaPrimary": "Baca Panduannya",
+    "heroCtaSecondary": "Mulai Cepat",
+    "problemLabel": "Masalahnya",
+    "solutionLabel": "Solusinya",
+    "problemItem1": "Tidak perlu langganan terpisah per alat",
+    "problemItem2": "Tidak perlu pindah-pindah platform",
+    "problemItem3": "Tidak terkunci pada satu model",
+    "solutionItem1": "Lihat pemakaian & saldo AI Token",
+    "solutionItem2": "Ganti model sesuai tugas",
+    "solutionItem3": "Pakai OpenClaw untuk otomatisasi",
+    "gettingStartedTip": "<strong>Pengguna baru tidak perlu meneliti spesifikasi model dulu.</strong> Mulai dengan ringkasan, terjemahan, atau penulisan — kamu akan belajar sendiri model mana yang cocok untuk tugas apa lewat pemakaian.",
+    "sidebarCtaTitle": "Siap mencoba?",
+    "sidebarCtaBody": "Pengguna baru mendapat token gratis untuk menjelajahi semua model yang didukung.",
+    "sidebarCtaBtn": "Mulai Gratis"
   }
 }

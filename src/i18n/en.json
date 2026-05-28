@@ -289,7 +289,24 @@
     "audienceFallback": "Who Is It For?",
     "gettingStartedFallback": "How to Get Started",
     "faqFallback": "Common Questions",
-    "sidebarCtaTitle": "Get Started Free",
-    "sidebarCtaBody": "Start using AI Token King to manage and optimize your AI usage."
+    "problemsFallback": "What Problems Does It Solve?",
+    "useCasesFallback": "What Can You Use It For?",
+    "openclawFallback": "What is OpenClaw?",
+    "whatIsFallback": "What is AI Token King?",
+    "breadcrumbParent": "AI Resources",
+    "heroCtaPrimary": "Read the Guide",
+    "heroCtaSecondary": "Quick Start",
+    "problemLabel": "The Problem",
+    "solutionLabel": "The Solution",
+    "problemItem1": "No separate subscriptions per tool",
+    "problemItem2": "No constant platform-switching",
+    "problemItem3": "No locking into a single model",
+    "solutionItem1": "View AI Token usage & balance",
+    "solutionItem2": "Switch models based on task",
+    "solutionItem3": "Use OpenClaw for automation",
+    "gettingStartedTip": "<strong>New users don't need to research model specs first.</strong> Start with summarization, translation, or writing — you'll naturally learn which models suit which tasks through use.",
+    "sidebarCtaTitle": "Ready to try it?",
+    "sidebarCtaBody": "New users get free tokens to explore all supported models.",
+    "sidebarCtaBtn": "Get Started Free"
   }
 }
