@@ -22,7 +22,7 @@ function pt(blocks: any[] | undefined): string {
   return toHTML(blocks, {
     components: {
       marks: {
-        strong: ({ children }) => `<strong style="font-weight:700;color:#1C1C1C;">${children}</strong>`,
+        strong: ({ children }) => `<strong>${children}</strong>`,
         em:     ({ children }) => `<em>${children}</em>`,
       },
     },
@@ -36,12 +36,14 @@ function pt(blocks: any[] | undefined): string {
   noindex={page.seo?.noindex ?? false}
   lang={lang as Lang}
   seo={page.seo}
+  activePage="token-calculator"
+  activeDropdown="resources"
 >
 
   <!-- Hero -->
-  <section class="hero-bg" style="padding: 3.5rem 1.5rem 3rem; background: linear-gradient(40deg, #2A1F5C, #0D1547);">
+  <section class="hero-bg" style="padding: 3.5rem 1.5rem 2.5rem;">
     <div class="hero-bg-canvas" aria-hidden="true">
-      <svg style="display:none"><defs><filter id="hero-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo"/><feBlend in="SourceGraphic" in2="goo"/></filter></defs></svg>
+      <svg style="display:none"><defs><filter id="page-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo"/><feBlend in="SourceGraphic" in2="goo"/></filter></defs></svg>
       <div class="grad-blobs">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
@@ -50,123 +52,187 @@ function pt(blocks: any[] | undefined): string {
         <div class="blob blob-5"></div>
       </div>
     </div>
-    <div class="hero-bg-content" style="max-width:1200px;margin:0 auto;text-align:center;">
-      {page.heroLabel && (
-        <div class="section-label fade-up" style="margin-bottom:1.25rem;background:rgba(226,223,254,0.15);color:rgba(255,255,255,0.9);border:1px solid rgba(255,255,255,0.15);">
-          <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.5 5 5.5.8-4 3.9.9 5.5L8 13.5l-4.9 2.6.9-5.5L0 6.8l5.5-.8z"/></svg>
-          {page.heroLabel}
-        </div>
-      )}
-      <h1 class="fade-up" style="font-family:'Kanit',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:800;color:#fff;letter-spacing:-0.04em;line-height:1.1;margin-bottom:1.125rem;animation-delay:0.07s;">
-        {page.heroHeadline}
-      </h1>
-      {page.heroSubtitle && (
-        <p class="fade-up" style="font-size:1.05rem;line-height:1.75;color:rgba(255,255,255,0.7);max-width:640px;margin:0 auto;animation-delay:0.14s;">
-          {page.heroSubtitle}
-        </p>
-      )}
+    <div class="hero-bg-content" style="max-width:1200px;margin:0 auto;">
+
+      <!-- Breadcrumb -->
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href={`/${lang}/`}>{t('common.home')}</a>
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="parent">{t('calculator.breadcrumbParent')}</span>
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="current">{t('nav.tokenCalculator')}</span>
+      </nav>
+
+      <div style="max-width:680px;">
+        {page.heroLabel && (
+          <div class="section-label fade-up" style="margin-bottom:1rem;background:rgba(226,223,254,0.15);color:rgba(255,255,255,0.9);border:1px solid rgba(255,255,255,0.15);">
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+            {page.heroLabel}
+          </div>
+        )}
+        <h1 class="fade-up fade-up-1" style="font-family:'Kanit',sans-serif;font-size:clamp(2rem,4vw,2.875rem);font-weight:800;color:#fff;letter-spacing:-0.04em;line-height:1.1;margin-bottom:1rem;">
+          {page.heroHeadline}
+        </h1>
+        {page.heroSubtitle && (
+          <p class="fade-up fade-up-2" style="font-size:1rem;line-height:1.75;color:rgba(255,255,255,0.7);max-width:560px;">
+            {page.heroSubtitle}
+          </p>
+        )}
+      </div>
     </div>
   </section>
 
-  <!-- Calculator Widget -->
-  <section style="padding: 3rem 1.5rem 2rem;">
-    <div style="max-width:900px;margin:0 auto;">
-      <div class="card-elevated reveal" style="padding:2rem 2.25rem;">
+  <!-- Calculator -->
+  <section style="padding: 2rem 1.5rem 5rem;">
+    <div style="max-width:1200px;margin:0 auto;">
 
-        <!-- Input area -->
-        <div style="margin-bottom:1.5rem;">
-          <label for="textInput" style="display:block;font-family:'Kanit',sans-serif;font-size:1rem;font-weight:700;color:#1C1C1C;margin-bottom:0.75rem;">
-            {t('calculator.inputLabel')}
-          </label>
-          <div style="position:relative;">
+      <div class="calc-grid">
+
+        <!-- LEFT: Input + Rules -->
+        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+
+          <!-- Input -->
+          <div class="card-elevated reveal" style="padding:1.75rem;">
+            <label for="textInput" style="display:block;font-family:'Kanit',sans-serif;font-size:1rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.02em;margin-bottom:0.75rem;">
+              {t('calculator.inputLabel')}
+            </label>
             <textarea
               id="textInput"
+              class="calc-textarea"
               placeholder={t('calculator.inputPlaceholder')}
-              style="width:100%;min-height:160px;padding:1rem 1.125rem;border:1.5px solid rgba(97,85,241,0.2);border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.95rem;color:#1C1C1C;background:#FAFAFA;resize:vertical;outline:none;transition:border-color 0.18s ease;line-height:1.65;"
-              onfocus="this.style.borderColor='#6155F1'" onblur="this.style.borderColor='rgba(97,85,241,0.2)'"
             ></textarea>
-            <div id="charCount"
-              data-initial={t('calculator.charCountInitial')}
-              data-suffix={t('calculator.charCountSuffix')}
-              style="position:absolute;bottom:0.625rem;right:0.875rem;font-size:0.75rem;color:#999;">{t('calculator.charCountInitial')}</div>
+            <div class="char-counter"><span id="charCount">0</span> {t('calculator.charCountWord')}</div>
+
+            <div style="display:flex;gap:0.75rem;margin-top:1.125rem;">
+              <button id="calculateBtn" class="btn-calc" style="flex:1;" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="#fff" stroke-width="1.75"/><line x1="8" y1="8" x2="16" y2="8" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="12" x2="16" y2="12" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="16" x2="12" y2="16" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+                {t('calculator.calculateBtn')}
+              </button>
+              <button id="clearBtn" class="btn-clear" type="button" aria-label="Clear text">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                {t('calculator.clearBtn')}
+              </button>
+            </div>
           </div>
+
+          <!-- Rules -->
+          <div class="card-elevated reveal" style="padding:1.5rem;">
+            <div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:1.125rem;">
+              <div style="width:32px;height:32px;border-radius:9px;background:#F0EEFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#6155F1" stroke-width="1.75"/><path d="M12 8v4M12 16h.01" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round"/></svg>
+              </div>
+              <span style="font-family:'Kanit',sans-serif;font-size:1rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.02em;">{t('calculator.rulesTitle')}</span>
+            </div>
+            <ul class="rule-list">
+              <li><div class="rule-dot"></div><span set:html={t('calculator.rule1')}></span></li>
+              <li><div class="rule-dot"></div><span set:html={t('calculator.rule2')}></span></li>
+              <li><div class="rule-dot"></div><span set:html={t('calculator.rule3')}></span></li>
+              <li><div class="rule-dot"></div><span set:html={t('calculator.rule4')}></span></li>
+              <li><div class="rule-dot"></div><span set:html={t('calculator.rule5')}></span></li>
+            </ul>
+          </div>
+
         </div>
 
-        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:2rem;">
-          <button id="calculateBtn" type="button" class="btn-primary" style="flex:1;min-width:140px;justify-content:center;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 7H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M17 3h4m0 0v4m0-4l-6 6M11 4H4a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            {t('calculator.calculateBtn')}
-          </button>
-          <button id="clearBtn" type="button" style="padding:0.625rem 1.25rem;border-radius:12px;border:1.5px solid rgba(97,85,241,0.2);background:transparent;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.875rem;font-weight:600;color:#666;cursor:pointer;transition:background-color 0.18s ease,color 0.18s ease;" onmouseover="this.style.background='#F5F2FF';this.style.color='#6155F1'" onmouseout="this.style.background='transparent';this.style.color='#666'">
-            {t('calculator.clearBtn')}
-          </button>
-        </div>
+        <!-- RIGHT: Results -->
+        <div class="card-elevated reveal" style="padding:1.75rem;">
 
-        <!-- Results -->
-        <div id="results" style="display:none;">
-          <h2 style="font-family:'Kanit',sans-serif;font-size:1.4rem;font-weight:800;color:#1C1C1C;letter-spacing:-0.03em;margin-bottom:1.25rem;">{t('calculator.resultsHeading')}</h2>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.75rem;">
+            <h2 style="font-family:'Kanit',sans-serif;font-size:1.4rem;font-weight:800;color:#1C1C1C;letter-spacing:-0.03em;margin:0;">{t('calculator.resultsHeading')}</h2>
+            <span class="mini-badge">{t('calculator.inputCostOnly')}</span>
+          </div>
 
           <!-- Summary banner -->
-          <div id="resultSummary" style="background:linear-gradient(135deg,rgba(97,85,241,0.08),rgba(62,129,229,0.06));border:1px solid rgba(97,85,241,0.15);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;flex-wrap:wrap;gap:1.25rem 2rem;">
-            <div>
-              <div style="font-size:0.72rem;font-weight:700;color:#6155F1;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;">{t('calculator.chineseCharsLabel')}</div>
-              <div id="chineseCount" style="font-family:'Kanit',sans-serif;font-size:2rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.03em;">0</div>
+          <div class="summary-banner" id="resultSummary" style="margin-bottom:1.375rem;">
+            {t('calculator.summaryPlaceholder')}
+          </div>
+
+          <!-- Stat grid -->
+          <div class="stat-grid">
+            <div class="stat-box">
+              <div class="stat-label">{t('calculator.chineseCharsLabel')}</div>
+              <div id="chineseCount" class="stat-value">0</div>
             </div>
-            <div>
-              <div style="font-size:0.72rem;font-weight:700;color:#3E81E5;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;">{t('calculator.englishWordsLabel')}</div>
-              <div id="englishCount" style="font-family:'Kanit',sans-serif;font-size:2rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.03em;">0</div>
+            <div class="stat-box">
+              <div class="stat-label">{t('calculator.englishWordsLabel')}</div>
+              <div id="englishCount" class="stat-value">0</div>
             </div>
-            <div>
-              <div style="font-size:0.72rem;font-weight:700;color:#0ABFBC;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;">{t('calculator.symbolsLabel')}</div>
-              <div id="symbolCount" style="font-family:'Kanit',sans-serif;font-size:2rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.03em;">0</div>
+            <div class="stat-box">
+              <div class="stat-label">{t('calculator.symbolsLabel')}</div>
+              <div id="symbolCount" class="stat-value">0</div>
             </div>
-            <div style="border-left:2px solid rgba(97,85,241,0.15);padding-left:2rem;">
-              <div style="font-size:0.72rem;font-weight:700;color:#6155F1;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;">{t('calculator.estInputTokensLabel')}</div>
-              <div id="inputToken" style="font-family:'Kanit',sans-serif;font-size:2rem;font-weight:700;color:#6155F1;letter-spacing:-0.03em;">0</div>
+            <div class="stat-box highlight">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;flex-wrap:wrap;">
+                <span class="stat-label" style="color:#6155F1;margin:0;">{t('calculator.estInputTokensLabel')}</span>
+                <span class="mini-badge">{t('calculator.inputOnly')}</span>
+              </div>
+              <div id="inputToken" class="stat-value" style="color:#6155F1;">0</div>
             </div>
           </div>
 
-          <!-- Cost breakdown -->
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;" class="cost-grid">
+          <!-- Platform cards -->
+          <div style="display:flex;flex-direction:column;gap:0.875rem;">
 
-            <div style="background:#fff;border-radius:14px;padding:1.25rem;box-shadow:0 2px 8px rgba(97,85,241,0.07);border-top:3px solid #74AA9C;">
-              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.875rem;">
-                <div style="width:24px;height:24px;border-radius:6px;background:#74AA9C20;display:flex;align-items:center;justify-content:center;">
-                  <div style="width:8px;height:8px;border-radius:50%;background:#74AA9C;"></div>
+            <div class="platform-card openai">
+              <div class="platform-row">
+                <div class="platform-info">
+                  <div class="platform-accent" style="background:#1C1C1C;"></div>
+                  <div>
+                    <div class="platform-head">
+                      <span class="platform-name">OpenAI</span>
+                      <span class="platform-chip" style="color:#999;background:#F0F0F0;">GPT-4o</span>
+                    </div>
+                    <div class="platform-meta">{t('calculator.refPriceLabel')} <strong>$2.50 / 1M {t('calculator.tokens')}</strong> · USD</div>
+                  </div>
                 </div>
-                <span style="font-family:'Kanit',sans-serif;font-size:0.875rem;font-weight:700;color:#1C1C1C;">OpenAI GPT-4o</span>
+                <div class="platform-cost-col">
+                  <div class="platform-cost-label">{t('calculator.estInputCost')}</div>
+                  <div class="cost-value neutral" id="openaiCost">$0.000000</div>
+                </div>
               </div>
-              <div style="font-size:0.72rem;color:#999;margin-bottom:0.25rem;">{t('calculator.priceNoteOpenai')}</div>
-              <div id="openaiCost" style="font-family:'Kanit',sans-serif;font-size:1.5rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.02em;">$0.000000</div>
             </div>
 
-            <div style="background:#fff;border-radius:14px;padding:1.25rem;box-shadow:0 2px 8px rgba(97,85,241,0.07);border-top:3px solid #D4A17A;">
-              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.875rem;">
-                <div style="width:24px;height:24px;border-radius:6px;background:#D4A17A20;display:flex;align-items:center;justify-content:center;">
-                  <div style="width:8px;height:8px;border-radius:50%;background:#D4A17A;"></div>
+            <div class="platform-card claude">
+              <div class="platform-row">
+                <div class="platform-info">
+                  <div class="platform-accent" style="background:linear-gradient(180deg,#E8834D,#C9622A);"></div>
+                  <div>
+                    <div class="platform-head">
+                      <span class="platform-name">Anthropic</span>
+                      <span class="platform-chip" style="color:#C9622A;background:#FFF0E8;">Claude Opus</span>
+                    </div>
+                    <div class="platform-meta">{t('calculator.refPriceLabel')} <strong>$5.00 / 1M {t('calculator.tokens')}</strong> · USD</div>
+                  </div>
                 </div>
-                <span style="font-family:'Kanit',sans-serif;font-size:0.875rem;font-weight:700;color:#1C1C1C;">Claude 3.5 Sonnet</span>
+                <div class="platform-cost-col">
+                  <div class="platform-cost-label">{t('calculator.estInputCost')}</div>
+                  <div class="cost-value neutral" id="claudeCost">$0.000000</div>
+                </div>
               </div>
-              <div style="font-size:0.72rem;color:#999;margin-bottom:0.25rem;">{t('calculator.priceNoteClaude')}</div>
-              <div id="claudeCost" style="font-family:'Kanit',sans-serif;font-size:1.5rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.02em;">$0.000000</div>
             </div>
 
-            <div style="background:#fff;border-radius:14px;padding:1.25rem;box-shadow:0 2px 8px rgba(97,85,241,0.07);border-top:3px solid #4285F4;">
-              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.875rem;">
-                <div style="width:24px;height:24px;border-radius:6px;background:#4285F420;display:flex;align-items:center;justify-content:center;">
-                  <div style="width:8px;height:8px;border-radius:50%;background:#4285F4;"></div>
+            <div class="platform-card gemini">
+              <div class="platform-row">
+                <div class="platform-info">
+                  <div class="platform-accent" style="background:linear-gradient(180deg,#6155F1,#3E81E5);"></div>
+                  <div>
+                    <div class="platform-head">
+                      <span class="platform-name">Google</span>
+                      <span class="platform-chip" style="color:#6155F1;background:#EEEAFF;">Gemini 1.5 Pro</span>
+                    </div>
+                    <div class="platform-meta">{t('calculator.refPriceLabel')} <strong>$2.00 / 1M {t('calculator.tokens')}</strong> · USD</div>
+                  </div>
                 </div>
-                <span style="font-family:'Kanit',sans-serif;font-size:0.875rem;font-weight:700;color:#1C1C1C;">Gemini 1.5 Pro</span>
+                <div class="platform-cost-col">
+                  <div class="platform-cost-label">{t('calculator.estInputCost')}</div>
+                  <div class="cost-value neutral" id="geminiCost">$0.000000</div>
+                </div>
               </div>
-              <div style="font-size:0.72rem;color:#999;margin-bottom:0.25rem;">{t('calculator.priceNoteGemini')}</div>
-              <div id="geminiCost" style="font-family:'Kanit',sans-serif;font-size:1.5rem;font-weight:700;color:#1C1C1C;letter-spacing:-0.02em;">$0.000000</div>
             </div>
 
           </div>
 
-          <p style="font-size:0.78rem;color:#999;margin-top:1rem;line-height:1.6;">
-            {t('calculator.disclaimer')}
-          </p>
+          <p class="footer-note">{t('calculator.disclaimer')}</p>
         </div>
 
       </div>
@@ -175,27 +241,40 @@ function pt(blocks: any[] | undefined): string {
 
   <!-- FAQ -->
   {page.faq && page.faq.length > 0 && (
-    <section style="padding: 0 1.5rem 3rem;">
-      <div style="max-width:900px;margin:0 auto;">
-        {page.faqSectionLabel && (
-          <div class="section-label reveal" style="margin-bottom:1rem;">{page.faqSectionLabel}</div>
-        )}
-        <h2 class="reveal" style="font-family:'Kanit',sans-serif;font-size:2rem;font-weight:800;color:#1C1C1C;letter-spacing:-0.04em;line-height:1.15;margin-bottom:1rem;">
-          {page.faqTitle ?? t('calculator.faqFallback')}
-        </h2>
-        {page.faqIntro && <p class="reveal" style="font-size:0.95rem;color:#555;line-height:1.75;margin-bottom:1.5rem;">{page.faqIntro}</p>}
-        <div style="background:#fff;border-radius:16px;padding:0.5rem 1.75rem;box-shadow:0 2px 8px rgba(97,85,241,0.07);">
-          {page.faq.map(item => (
-            <div class="faq-item">
-              <button class="faq-question" onclick="window.toggleFaq(this)">
-                <span>{item.question}</span>
-                <svg class="faq-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
-              <div class="faq-answer">
-                <div style="padding-bottom:1.25rem;font-size:0.9rem;line-height:1.75;color:#555;" set:html={pt(item.answer)} />
+    <section style="padding: 0 1.5rem 5rem;">
+      <div style="max-width:1200px;margin:0 auto;">
+        <div class="faq-grid">
+
+          <div>
+            {page.faqSectionLabel && (
+              <div class="section-label reveal" style="margin-bottom:1rem;">
+                <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+                {page.faqSectionLabel}
               </div>
-            </div>
-          ))}
+            )}
+            <h2 class="reveal" style="font-family:'Kanit',sans-serif;font-size:2rem;font-weight:800;color:#1C1C1C;letter-spacing:-0.04em;line-height:1.15;margin-bottom:1rem;">
+              {page.faqTitle ?? t('calculator.faqFallback')}
+            </h2>
+            {page.faqIntro && <p class="reveal" style="font-size:0.95rem;line-height:1.75;color:#666;margin-bottom:1.5rem;">{page.faqIntro}</p>}
+            <a href={`/${lang}/beginners-guide`} class="btn-secondary reveal" style="font-size:0.875rem;">
+              {t('calculator.readBeginnersGuide')} →
+            </a>
+          </div>
+
+          <div class="card-elevated reveal" style="padding:1.5rem 1.75rem;">
+            {page.faq.map(item => (
+              <div class="faq-item">
+                <button class="faq-question" onclick="window.toggleFaq(this)">
+                  <span>{item.question}</span>
+                  <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#6155F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div class="faq-answer">
+                  <div class="faq-answer-body" set:html={pt(item.answer)} />
+                </div>
+              </div>
+            ))}
+          </div>
+
         </div>
       </div>
     </section>
@@ -204,15 +283,20 @@ function pt(blocks: any[] | undefined): string {
   <!-- CTA Banner -->
   {page.ctaTitle && (
     <section style="padding: 0 1.5rem 5rem;">
-      <div style="max-width:900px;margin:0 auto;">
-        <div class="reveal" style="background:linear-gradient(135deg,#3C315B 0%,#6155F1 100%);border-radius:20px;padding:2.25rem 2.5rem;position:relative;overflow:hidden;">
-          <div style="position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.05);"></div>
-          <div style="position:relative;">
-            <h3 style="font-family:'Kanit',sans-serif;font-size:1.4rem;font-weight:800;color:#fff;letter-spacing:-0.03em;margin-bottom:0.75rem;">{page.ctaTitle}</h3>
-            {page.ctaBody && <p style="font-size:0.9rem;color:rgba(255,255,255,0.8);line-height:1.7;margin-bottom:1.5rem;max-width:520px;">{page.ctaBody}</p>}
-            <a href={`/${lang}/api-compare`} class="btn-primary" style="background:rgba(255,255,255,0.18);box-shadow:none;border:1px solid rgba(255,255,255,0.3);color:#fff;">
-              {t('nav.compareModels')}
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div style="max-width:1200px;margin:0 auto;">
+        <div class="reveal cta-card">
+          <div class="cta-blob cta-blob-tr"></div>
+          <div class="cta-blob cta-blob-bl"></div>
+          <div class="cta-text">
+            <div style="font-family:'Kanit',sans-serif;font-size:1.75rem;font-weight:800;color:#fff;letter-spacing:-0.04em;line-height:1.2;margin-bottom:0.625rem;">{page.ctaTitle}</div>
+            {page.ctaBody && <p style="font-size:0.95rem;color:rgba(255,255,255,0.8);line-height:1.7;max-width:480px;margin:0;">{page.ctaBody}</p>}
+          </div>
+          <div class="cta-buttons">
+            <a href={`/${lang}/api-compare`} class="cta-primary">
+              {t('nav.compareModels')} →
+            </a>
+            <a href={`/${lang}/beginners-guide`} class="cta-secondary">
+              {t('nav.beginnersGuide')}
             </a>
           </div>
         </div>
@@ -223,10 +307,397 @@ function pt(blocks: any[] | undefined): string {
 </BaseLayout>
 
 <style is:global>
+  /* Breadcrumb */
+  .calc-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.75rem;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+  }
+  .calc-breadcrumb a {
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .calc-breadcrumb a:hover { color: rgba(255,255,255,0.9); }
+  .calc-breadcrumb .parent { color: rgba(255,255,255,0.5); }
+  .calc-breadcrumb .current { color: rgba(255,255,255,0.9); font-weight: 600; }
+
+  /* Grid */
+  .calc-grid {
+    display: grid;
+    grid-template-columns: minmax(340px, 420px) 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  /* Textarea */
+  .calc-textarea {
+    width: 100%;
+    min-height: 220px;
+    border: 1.5px solid #E2DFFE;
+    border-radius: 14px;
+    padding: 1rem 1.125rem;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    resize: vertical;
+    outline: none;
+    background: #FDFCFF;
+    color: #1C1C1C;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .calc-textarea:focus {
+    border-color: #6155F1;
+    box-shadow: 0 0 0 4px rgba(97,85,241,0.1);
+  }
+  .calc-textarea::placeholder { color: #B0AAD8; }
+
+  /* Char counter */
+  .char-counter {
+    font-size: 0.75rem;
+    color: #B0AAD8;
+    text-align: right;
+    margin-top: 0.375rem;
+  }
+
+  /* Calc button */
+  .btn-calc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #6155F1 0%, #3E81E5 100%);
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(97,85,241,0.4);
+    transition: transform 0.18s cubic-bezier(.22,1,.36,1), box-shadow 0.18s ease, filter 0.18s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-calc::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.16) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .btn-calc:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(97,85,241,0.5); filter: brightness(1.06); }
+  .btn-calc:focus-visible { outline: 2px solid #6155F1; outline-offset: 3px; }
+  .btn-calc:active { transform: translateY(0); }
+
+  .btn-clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #F0EEFF;
+    color: #6155F1;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    border: 1.5px solid #E2DFFE;
+    cursor: pointer;
+    transition: background-color 0.18s ease, transform 0.18s cubic-bezier(.22,1,.36,1);
+  }
+  .btn-clear:hover { background: #E2DFFE; transform: translateY(-1px); }
+  .btn-clear:focus-visible { outline: 2px solid #6155F1; outline-offset: 3px; }
+  .btn-clear:active { transform: translateY(0); }
+
+  /* Rule list */
+  .rule-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .rule-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: #555;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #F0EEFF;
+  }
+  .rule-list li:last-child { border-bottom: none; }
+  .rule-list strong { color: #3C315B; font-weight: 700; }
+  .rule-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #6155F1;
+    margin-top: 0.45rem;
+    flex-shrink: 0;
+  }
+
+  /* Summary banner */
+  .summary-banner {
+    border-radius: 12px;
+    padding: 0.875rem 1.125rem;
+    font-size: 0.875rem;
+    line-height: 1.75;
+    background: #F0EEFF;
+    border: 1px solid rgba(97,85,241,0.18);
+    color: #3C315B;
+  }
+
+  /* Stat grid */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.875rem;
+    margin-bottom: 1.375rem;
+  }
+  .stat-box {
+    background: #FAFAFE;
+    border: 1.5px solid #EDEDEF;
+    border-radius: 14px;
+    padding: 1.125rem 1.25rem;
+    transition: border-color 0.2s ease;
+  }
+  .stat-box.highlight {
+    background: linear-gradient(135deg, rgba(97,85,241,0.06) 0%, rgba(62,129,229,0.06) 100%);
+    border-color: rgba(97,85,241,0.25);
+  }
+  .stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+  .stat-value {
+    font-family: 'Kanit', sans-serif;
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #1C1C1C;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  /* Mini badge */
+  .mini-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    background: rgba(97,85,241,0.12);
+    color: #6155F1;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Platform cards */
+  .platform-card {
+    border-radius: 16px;
+    padding: 1.25rem 1.375rem;
+    border: 1.5px solid #EDEDEF;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s cubic-bezier(.22,1,.36,1);
+  }
+  .platform-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(97,85,241,0.1); }
+  .platform-card.openai { background: #F8FAFC; }
+  .platform-card.claude { background: #FFF8F4; border-color: rgba(232,130,77,0.2); }
+  .platform-card.gemini { background: #F6F4FF; border-color: rgba(97,85,241,0.15); }
+
+  .platform-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .platform-info {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    flex: 1;
+    min-width: 0;
+  }
+  .platform-accent {
+    width: 3px;
+    height: 48px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .platform-head {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 0.2rem;
+    flex-wrap: wrap;
+  }
+  .platform-name {
+    font-family: 'Kanit', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1C1C1C;
+  }
+  .platform-chip {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+  }
+  .platform-meta {
+    font-size: 0.8rem;
+    color: #888;
+  }
+  .platform-meta strong {
+    color: #555;
+    font-weight: 700;
+  }
+  .platform-cost-col {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .platform-cost-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+
+  /* Cost value */
+  .cost-value {
+    font-family: 'Kanit', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    transition: color 0.3s ease;
+  }
+  .cost-value.cheapest { color: #16A34A; }
+  .cost-value.priciest { color: #DC2626; }
+  .cost-value.neutral { color: #1C1C1C; }
+
+  /* Footer note */
+  .footer-note {
+    font-size: 0.78rem;
+    color: #B0AAD8;
+    margin-top: 1.125rem;
+    line-height: 1.6;
+  }
+
+  /* FAQ grid */
+  .faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+  .faq-answer-body {
+    font-size: 0.9rem;
+    line-height: 1.75;
+    color: #555;
+  }
+  .faq-answer-body :global(strong) {
+    color: #3C315B;
+    font-weight: 700;
+  }
+
+  /* CTA banner */
+  .cta-card {
+    background: linear-gradient(135deg, #6155F1 0%, #3E81E5 60%, #56c7fd 100%);
+    border-radius: 24px;
+    padding: 3rem 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-blob {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .cta-blob-tr {
+    top: -40px;
+    right: -40px;
+    width: 220px;
+    height: 220px;
+    background: rgba(255,255,255,0.06);
+  }
+  .cta-blob-bl {
+    bottom: -50px;
+    left: -30px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255,255,255,0.04);
+  }
+  .cta-text { position: relative; z-index: 1; }
+  .cta-buttons {
+    display: flex;
+    gap: 0.875rem;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+  .cta-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #fff;
+    color: #6155F1;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    transition: transform 0.18s cubic-bezier(.22,1,.36,1), box-shadow 0.18s ease;
+  }
+  .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+  .cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    text-decoration: none;
+    border: 1.5px solid rgba(255,255,255,0.35);
+    transition: background-color 0.18s ease, transform 0.18s cubic-bezier(.22,1,.36,1);
+  }
+  .cta-secondary:hover { background-color: rgba(255,255,255,0.25); transform: translateY(-2px); }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .calc-grid { grid-template-columns: 1fr; }
+    .faq-grid { grid-template-columns: 1fr; gap: 2rem; }
+  }
   @media (max-width: 640px) {
-    .cost-grid { grid-template-columns: 1fr !important; }
+    .stat-grid { grid-template-columns: 1fr; }
+    .cta-card { padding: 2.25rem 1.75rem; }
   }
 </style>
+
+<script is:inline define:vars={{ calcI18n: { lowest: t('calculator.summaryLowest'), highest: t('calculator.summaryHighest'), inputCostOnly: t('calculator.inputCostOnly') } }}>
+  window.__CALC_I18N__ = calcI18n;
+</script>
 
 <script is:inline>
   /* Reveal */
@@ -235,47 +706,130 @@ function pt(blocks: any[] | undefined): string {
   }, { threshold: 0.08 });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-  /* Character counter */
-  const textarea = document.getElementById('textInput');
-  const charCountEl = document.getElementById('charCount');
-  var charSuffix = charCountEl.dataset.suffix || ' characters';
-  var charInitial = charCountEl.dataset.initial || '0 characters';
-  textarea.addEventListener('input', function() {
-    charCountEl.textContent = this.value.length + charSuffix;
-  });
+  /* Token calculator logic */
+  const textInput      = document.getElementById('textInput');
+  const chineseCountEl = document.getElementById('chineseCount');
+  const englishCountEl = document.getElementById('englishCount');
+  const symbolCountEl  = document.getElementById('symbolCount');
+  const inputTokenEl   = document.getElementById('inputToken');
+  const openaiCostEl   = document.getElementById('openaiCost');
+  const claudeCostEl   = document.getElementById('claudeCost');
+  const geminiCostEl   = document.getElementById('geminiCost');
+  const resultSummaryEl = document.getElementById('resultSummary');
+  const charCountEl    = document.getElementById('charCount');
 
-  /* Clear */
-  document.getElementById('clearBtn').addEventListener('click', function() {
-    textarea.value = '';
-    charCountEl.textContent = charInitial;
-    document.getElementById('results').style.display = 'none';
-  });
+  const pricing = { openai: 2.5, claude: 5, gemini: 2 };
+  const platformNames = { openai: 'OpenAI', claude: 'Anthropic', gemini: 'Google' };
 
-  /* Calculate */
-  document.getElementById('calculateBtn').addEventListener('click', function() {
-    var text = textarea.value;
-    if (!text.trim()) return;
+  const SUMMARY_PLACEHOLDER = resultSummaryEl ? resultSummaryEl.textContent.trim() : '';
+  const SUMMARY_LOWEST = (window.__CALC_I18N__ && window.__CALC_I18N__.lowest) || 'Lowest cost';
+  const SUMMARY_HIGHEST = (window.__CALC_I18N__ && window.__CALC_I18N__.highest) || 'Highest cost';
+  const SUMMARY_INPUT_ONLY = (window.__CALC_I18N__ && window.__CALC_I18N__.inputCostOnly) || 'Input cost only';
 
-    var chineseChars = (text.match(/[一-鿿㐀-䶿\u{20000}-\u{2a6df}\u{2a700}-\u{2b73f}\u{2b740}-\u{2b81f}\u{2b820}-\u{2ceaf}豈-﫿㌀-㏿︰-﹏豈-﫿⾀0-⾡f]/gu) || []).length;
-    var symbols = (text.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/g) || []).length;
-    var cleanedText = text.replace(/[一-鿿㐀-䶿\u{20000}-\u{2a6df}\u{2a700}-\u{2b73f}\u{2b740}-\u{2b81f}\u{2b820}-\u{2ceaf}豈-﫿㌀-㏿︰-﹏豈-﫿⾀0-⾡f]/gu, ' ');
-    var englishWords = cleanedText.trim() ? (cleanedText.trim().split(/\s+/).filter(function(w) { return w.length > 0; })).length : 0;
+  function formatCost(val) { return '$' + val.toFixed(6); }
 
-    var tokens = Math.round(chineseChars * 1.5 + englishWords * 1.1 + symbols * 0.3);
+  function getExtremes(costMap) {
+    const vals = Object.values(costMap);
+    const min = Math.min.apply(null, vals);
+    const max = Math.max.apply(null, vals);
+    const minPlatforms = Object.keys(costMap).filter(k => costMap[k] === min).map(k => platformNames[k]);
+    const maxPlatforms = Object.keys(costMap).filter(k => costMap[k] === max).map(k => platformNames[k]);
+    return { min: min, max: max, minPlatforms: minPlatforms, maxPlatforms: maxPlatforms };
+  }
 
-    document.getElementById('chineseCount').textContent = chineseChars.toLocaleString();
-    document.getElementById('englishCount').textContent = englishWords.toLocaleString();
-    document.getElementById('symbolCount').textContent = symbols.toLocaleString();
-    document.getElementById('inputToken').textContent = tokens.toLocaleString();
+  function updateSummary(text, costMap) {
+    if (!text.trim()) {
+      resultSummaryEl.textContent = SUMMARY_PLACEHOLDER;
+      resultSummaryEl.style.background = '#F0EEFF';
+      resultSummaryEl.style.borderColor = 'rgba(97,85,241,0.18)';
+      resultSummaryEl.style.color = '#3C315B';
+      return;
+    }
+    const ex = getExtremes(costMap);
+    const minText = ex.minPlatforms.length > 1
+      ? SUMMARY_LOWEST + ': ' + ex.minPlatforms.join(' & ')
+      : SUMMARY_LOWEST + ': <strong>' + ex.minPlatforms[0] + '</strong>';
+    const maxText = ex.maxPlatforms.length > 1
+      ? SUMMARY_HIGHEST + ': ' + ex.maxPlatforms.join(' & ')
+      : SUMMARY_HIGHEST + ': <strong>' + ex.maxPlatforms[0] + '</strong>';
+    resultSummaryEl.innerHTML = minText + ' &nbsp;·&nbsp; ' + maxText + ' &nbsp;·&nbsp; ' + SUMMARY_INPUT_ONLY;
+    resultSummaryEl.style.background = '#EDF7ED';
+    resultSummaryEl.style.borderColor = 'rgba(22,163,74,0.2)';
+    resultSummaryEl.style.color = '#166534';
+  }
 
-    var openaiCost = (tokens / 1000000) * 2.50;
-    var claudeCost = (tokens / 1000000) * 3.00;
-    var geminiCost = (tokens / 1000000) * 1.25;
+  function updateCostColor(el, cost, min, max) {
+    el.classList.remove('cheapest', 'priciest', 'neutral');
+    if (cost === min && min !== max) el.classList.add('cheapest');
+    else if (cost === max && min !== max) el.classList.add('priciest');
+    else el.classList.add('neutral');
+  }
 
-    document.getElementById('openaiCost').textContent = '$' + openaiCost.toFixed(6);
-    document.getElementById('claudeCost').textContent = '$' + claudeCost.toFixed(6);
-    document.getElementById('geminiCost').textContent = '$' + geminiCost.toFixed(6);
+  function calculateTokens() {
+    const text = textInput.value || '';
+    charCountEl.textContent = text.length.toLocaleString();
 
-    document.getElementById('results').style.display = 'block';
-  });
+    const chineseMatches = text.match(/[一-鿿]/g) || [];
+    const englishWordMatches = text.match(/[A-Za-z]+(?:'[A-Za-z]+)*/g) || [];
+    const numberMatches = text.match(/[0-9]/g) || [];
+
+    const chineseCount = chineseMatches.length;
+    const englishCount = englishWordMatches.length;
+    const numberCount  = numberMatches.length;
+
+    const stripped = text
+      .replace(/[一-鿿]/g, '')
+      .replace(/[A-Za-z]+(?:'[A-Za-z]+)*/g, '')
+      .replace(/[0-9]/g, '');
+    const symbolCount = (stripped.match(/[^\s]/g) || []).length + numberCount;
+
+    const inputTokens = Math.round(chineseCount * 1.5 + englishCount * 1.1 + symbolCount * 0.3);
+
+    const openaiCost = (inputTokens * pricing.openai) / 1000000;
+    const claudeCost = (inputTokens * pricing.claude) / 1000000;
+    const geminiCost = (inputTokens * pricing.gemini) / 1000000;
+
+    chineseCountEl.textContent = chineseCount.toLocaleString();
+    englishCountEl.textContent = englishCount.toLocaleString();
+    symbolCountEl.textContent  = symbolCount.toLocaleString();
+    inputTokenEl.textContent   = inputTokens.toLocaleString();
+
+    openaiCostEl.textContent = formatCost(openaiCost);
+    claudeCostEl.textContent = formatCost(claudeCost);
+    geminiCostEl.textContent = formatCost(geminiCost);
+
+    const costMap = { openai: openaiCost, claude: claudeCost, gemini: geminiCost };
+    const ex = getExtremes(costMap);
+    updateCostColor(openaiCostEl, openaiCost, ex.min, ex.max);
+    updateCostColor(claudeCostEl, claudeCost, ex.min, ex.max);
+    updateCostColor(geminiCostEl, geminiCost, ex.min, ex.max);
+
+    updateSummary(text, costMap);
+  }
+
+  function clearAll() {
+    textInput.value = '';
+    charCountEl.textContent = '0';
+    chineseCountEl.textContent = '0';
+    englishCountEl.textContent = '0';
+    symbolCountEl.textContent  = '0';
+    inputTokenEl.textContent   = '0';
+    openaiCostEl.textContent = '$0.000000';
+    claudeCostEl.textContent = '$0.000000';
+    geminiCostEl.textContent = '$0.000000';
+    [openaiCostEl, claudeCostEl, geminiCostEl].forEach(el => {
+      el.classList.remove('cheapest', 'priciest');
+      el.classList.add('neutral');
+    });
+    resultSummaryEl.textContent = SUMMARY_PLACEHOLDER;
+    resultSummaryEl.style.background = '#F0EEFF';
+    resultSummaryEl.style.borderColor = 'rgba(97,85,241,0.18)';
+    resultSummaryEl.style.color = '#3C315B';
+    textInput.focus();
+  }
+
+  document.getElementById('calculateBtn').addEventListener('click', calculateTokens);
+  document.getElementById('clearBtn').addEventListener('click', clearAll);
+  textInput.addEventListener('input', calculateTokens);
+  textInput.addEventListener('paste', () => setTimeout(calculateTokens, 0));
 </script>

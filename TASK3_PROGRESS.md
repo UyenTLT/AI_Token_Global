@@ -204,7 +204,53 @@ Compare every Astro page against its archive HTML reference (`archive/`) and fix
 - `.reveal` scroll-animation classes — Astro improvement over archive
 - Portable Text rendering for Sanity content vs archive's hardcoded text
 - `.section-head` + `.cp-icon-box` defined as page-local classes (vs global `.icon-box` which is 52×52 with `#F5F2FF` bg) — keeps the compliance icon-box at the archive's 48×48 size without affecting other pages that use the global 52×52 icon-box
-### 9. Token Calculator (`token-calculator.astro`) — NOT STARTED
+### 9. Token Calculator (`token-calculator.astro`) — DONE
+
+**Issues found and fixed:**
+- Hero was centered with 1200px container and starred `Free Tool` chip → changed to left-aligned with 680px text column, 3-level breadcrumb (Home → AI Resources → Token Calculator) at top, and a circle-SVG `Free Tool` chip matching archive
+- Hero h1 was `clamp(2rem, 4vw, 3rem)` → resized to `clamp(2rem, 4vw, 2.875rem)` matching archive
+- Hero h1 mb was `1.125rem` → adjusted to `1rem` matching archive; subtitle 1.05rem mw 640 → 1rem mw 560 matching archive
+- BaseLayout was missing `activePage`/`activeDropdown` → set `activePage="token-calculator"` and `activeDropdown="resources"` so the AI Resources dropdown highlights
+- Hero `pt` blob filter id was `hero-goo` → changed to `page-goo` so it doesn't collide with index.astro's hero (which uses `hero-goo`)
+- Entire calculator was single-column 900px max-width with simple textarea-then-results stack → rewrote as `.calc-grid` 2-column `minmax(340px, 420px) 1fr` layout: LEFT = input panel (card-elevated 1.75rem padding) + rules panel (card-elevated 1.5rem padding); RIGHT = results panel (card-elevated 1.75rem padding)
+- Input panel: textarea was 160px min-height with absolute-positioned char counter inside → 220px min-height with `.calc-textarea` class (border #E2DFFE, bg #FDFCFF, radius 14px, focus shadow `0 0 0 4px rgba(97,85,241,0.1)`), char counter moved below as `.char-counter` right-aligned 0.75rem #B0AAD8
+- Calculate button was using global `.btn-primary` (solid purple #6155F1) → switched to `.btn-calc` (gradient `#6155F1→#3E81E5`, 0.95rem/700, padding 0.75rem 1.5rem, shadow `0 4px 18px rgba(97,85,241,0.4)`, internal `::before` lighten gradient)
+- Clear button was 1.5px purple border ghost → `.btn-clear` (bg #F0EEFF, color #6155F1, border 1.5px #E2DFFE, padding 0.75rem 1.25rem, 0.95rem/600)
+- Rules panel was missing entirely → added new panel with icon-box header (32×32 #F0EEFF + info-circle svg) + `Estimation Rules` Kanit title, then `.rule-list` with 5 bulleted `.rule-dot` (6×6 #6155F1) items, body 0.875rem/1.7 #555, dividers 1px #F0EEFF between
+- Results panel: was hidden (`display:none`) until calc and showed only after results → now always visible with a `.summary-banner` placeholder ("Enter text above to begin calculating. Only input costs are estimated.") that swaps to a green "Lowest cost / Highest cost / Input cost only" highlight after calculating
+- Results header: was h2 alone → now h2 + `.mini-badge` "Input cost only" inline (right side, flex space-between)
+- Stat grid was 3 columns of summary numbers + a 4th highlighted column with extra border-left → restructured as 2x2 grid of `.stat-box` cards: bg #FAFAFE, border 1.5px #EDEDEF, radius 14px, padding 1.125rem 1.25rem; 4th box `.stat-box.highlight` with gradient bg + purple border + extra `.mini-badge` "Input only" alongside its label
+- Stat value font-size was 2rem → bumped to 2.25rem with line-height 1 matching archive
+- Symbols label was "Symbols" → changed to "Numbers & Symbols" matching archive
+- Cost breakdown was a 3-column grid of small `.cost-card` cards with colored top border (#74AA9C, #D4A17A, #4285F4) → replaced with stacked vertical `.platform-card` rows, each a horizontal flex layout (accent bar 3×48 + name+meta on left, est cost on right)
+- Platform branding: was using OpenAI/Claude/Gemini brand colors as top borders → switched to full-card brand bg tints (`.openai` bg #F8FAFC, `.claude` bg #FFF8F4 + border rgba(232,130,77,0.2), `.gemini` bg #F6F4FF + border rgba(97,85,241,0.15)); accent bar uses brand gradient (openai #1C1C1C, claude #E8834D→#C9622A, gemini #6155F1→#3E81E5)
+- Platform model names: were "OpenAI GPT-4o / Claude 3.5 Sonnet / Gemini 1.5 Pro" with single-line layout → restructured into provider name + colored model chip (OpenAI + GPT-4o gray chip, Anthropic + Claude Opus orange chip, Google + Gemini 1.5 Pro purple chip) plus a "AI Token King ref. price: $X / 1M tokens · USD" meta line
+- Pricing rates: Claude was $3.00/1M (Claude 3.5 Sonnet), Gemini was $1.25/1M → updated to $5.00/1M (Claude Opus) and $2.00/1M (Gemini 1.5 Pro) matching archive pricing.openai=2.5, claude=5, gemini=2
+- Cost values: were always #1C1C1C neutral → added dynamic `.cheapest` (#16A34A green) and `.priciest` (#DC2626 red) colors that swap based on min/max comparison after calculating
+- Cost value font-size was 1.5rem → upsized to 1.75rem matching archive
+- Disclaimer text was a generic "Estimates only" line → replaced with archive's "Reference prices sourced from AI Token King. Actual billing depends..."
+- FAQ section was single column 900px max-width with a single FAQ card → restructured as 2-column `.faq-grid` (1fr 1fr, gap 3rem): LEFT = section label + h2 + intro + "Read the Beginners Guide →" btn-secondary; RIGHT = card-elevated FAQ accordion
+- FAQ section-label was plain text → now has inline `<circle>` SVG icon matching archive
+- FAQ chevron stroke was 1.75 → upsized to 2 matching archive
+- FAQ answer body was using default styling → scoped `.faq-answer-body` with 0.9rem/1.75/#555 and `:global(strong)` → #3C315B 700
+- CTA banner: gradient was `linear-gradient(135deg, #3C315B 0%, #6155F1 100%)` with single arrow button → replaced with `.cta-card` gradient `#6155F1 → #3E81E5 60% → #56c7fd 100%`, 24px radius, 3rem 3.5rem padding, flex space-between layout with two decorative `.cta-blob` circles (top-right 220×220 + bottom-left 200×200), text on left + two buttons on right (`.cta-primary` solid white + `.cta-secondary` translucent border)
+- CTA inner padding/title size: was h3 1.4rem with 520px subtitle → now div 1.75rem with 480px subtitle matching archive
+- Token calculator JS: was inline string regex with broken multi-byte unicode escapes producing wrong counts → cleaned to archive's logic (`/[一-鿿]/g`, `/[A-Za-z]+(?:'[A-Za-z]+)*/g`, `/[0-9]/g`) with token formula `c*1.5 + e*1.1 + s*0.3`
+- Summary banner update logic was missing entirely → added archive's `updateSummary` (placeholder/results swap + green highlight on results, with min/max platform names in bold)
+- Char counter logic was using i18n `charCountInitial`/`charCountSuffix` strings concatenated → simplified to plain number + static "characters" suffix in markup, matching archive's `<span id="charCount">0</span> characters`
+- i18n: removed `charCountInitial`/`charCountSuffix`/`priceNoteOpenai`/`priceNoteClaude`/`priceNoteGemini` (no longer used)
+- Added 17 new i18n keys across en/es/id: `breadcrumbParent`, `charCountWord`, `rulesTitle`, `rule1`-`rule5`, `inputCostOnly`, `inputOnly`, `summaryPlaceholder`, `summaryLowest`, `summaryHighest`, `estInputCost`, `refPriceLabel`, `tokens`, `readBeginnersGuide`
+- Updated 4 existing i18n keys across en/es/id: `inputLabel` ("Paste or type your text below" → "Input Text"), `inputPlaceholder` (generic → archive's longer "Paste any text — an article, a prompt..."), `calculateBtn` ("Calculate Tokens" → "Calculate"), `symbolsLabel` ("Symbols" → "Numbers & Symbols"), `disclaimer` (rewrite to archive's text)
+
+**Not changed (intentional):**
+- `.faq-question` font-size stays at global.css's 0.975rem (vs archive 0.95rem) — shared across every Astro page; not diverging this one page
+- `.faq-item` border color from global.css (#EDEDEF) vs archive (#EDEDEF) — same value
+- `.faq-answer` accessibility classes (display:none/block + .open) from global.css vs archive's max-height transitions — Astro's shared accessible system per CLAUDE.md responsive rules
+- `.reveal` scroll-animation classes — Astro improvement over archive's `.fade-up`-only scheme
+- 1024px breakpoint for calc-grid+faq-grid collapse, 640px for stat-grid collapse — matches project responsive system
+- Hero pointer blob (archive's `.blob-pointer` mousemove follower) not added — Astro's `.hero-bg-canvas` already has 5 animated blobs, and the project-wide hero pattern has no mouse follower
+- PortableText rendering for Sanity content (FAQ answers) vs archive's hardcoded text
+- Calc i18n init script uses `define:vars` for compile-time injection of summary strings, vs archive's hardcoded English literals — needed for the calculator to update its summary in es/id correctly
 ### 10. Use Cases (`use-cases.astro`) — NOT STARTED
 ### 11. User Guide (`user-guide.astro`) — NOT STARTED
 ### 12. Blog Index (`blog/index.astro`) — NOT STARTED
