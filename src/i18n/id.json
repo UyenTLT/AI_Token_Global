@@ -196,9 +196,16 @@
     "furtherReadingFallback": "Bacaan Lanjutan",
     "faqFallback": "Pertanyaan Umum",
     "compareAllModelsTitle": "Bandingkan Semua Model",
-    "compareAllModelsBody": "Harga live lengkap untuk 60+ model teks, gambar, dan video.",
-    "viewAllModelsBtn": "Lihat Semua Model",
-    "alsoCompareTitle": "Bandingkan Juga"
+    "compareAllModelsBody": "Lihat ChatGPT, Claude, dan Gemini berdampingan dalam harga, jendela konteks, dan kesesuaian kasus penggunaan.",
+    "viewAllModelsBtn": "Lihat Perbandingan Lengkap",
+    "alsoCompareTitle": "Bandingkan Juga",
+    "chatgptApiShort": "API ChatGPT",
+    "claudeApiShort": "API Claude",
+    "geminiApiShort": "API Gemini",
+    "chatgptApiGuide": "Panduan API ChatGPT",
+    "claudeApiGuide": "Panduan API Claude",
+    "geminiApiGuide": "Panduan API Gemini",
+    "tocOverview": "Ringkasan"
   },
   "apiCompare": {
     "sectionLabel": "Referensi Model",

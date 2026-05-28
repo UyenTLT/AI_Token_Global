@@ -196,9 +196,16 @@
     "furtherReadingFallback": "Lecturas Adicionales",
     "faqFallback": "Preguntas Frecuentes",
     "compareAllModelsTitle": "Comparar Todos los Modelos",
-    "compareAllModelsBody": "Precios actualizados de más de 60 modelos de texto, imagen y video.",
-    "viewAllModelsBtn": "Ver Todos los Modelos",
-    "alsoCompareTitle": "También Compara"
+    "compareAllModelsBody": "Ve ChatGPT, Claude y Gemini lado a lado en precio, ventana de contexto y adecuación al caso de uso.",
+    "viewAllModelsBtn": "Ver Comparación Completa",
+    "alsoCompareTitle": "También Compara",
+    "chatgptApiShort": "API de ChatGPT",
+    "claudeApiShort": "API de Claude",
+    "geminiApiShort": "API de Gemini",
+    "chatgptApiGuide": "Guía de la API de ChatGPT",
+    "claudeApiGuide": "Guía de la API de Claude",
+    "geminiApiGuide": "Guía de la API de Gemini",
+    "tocOverview": "Resumen"
   },
   "apiCompare": {
     "sectionLabel": "Referencia de Modelos",

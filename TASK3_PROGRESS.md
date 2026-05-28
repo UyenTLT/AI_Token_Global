@@ -120,10 +120,54 @@ Compare every Astro page against its archive HTML reference (`archive/`) and fix
 - 1024px breakpoint for sidebar collapse — matches project responsive system
 - Portable Text rendering for Sanity content vs archive's hardcoded text
 - Per-card icon gradients defined inline (data-driven from `card.icon` field) rather than 3 separate inline-styled SVGs in archive — same visual output, less repetition
-### 5. ChatGPT API (`chatgpt-api.astro`) — NOT STARTED
-### 6. Claude API (`claude-api.astro`) — NOT STARTED
-### 7. Gemini API (`gemini-api.astro`) — NOT STARTED
-*Pages 5-7 share `ApiModelPage.astro` component — fixing one fixes all three.*
+### 5. ChatGPT API (`chatgpt-api.astro`) — DONE
+### 6. Claude API (`claude-api.astro`) — COVERED BY SAME COMPONENT (pending Sanity content)
+### 7. Gemini API (`gemini-api.astro`) — COVERED BY SAME COMPONENT (pending Sanity content)
+*Pages 5-7 share `ApiModelPage.astro` component — one rewrite covers all three.*
+
+**Issues found and fixed (`ApiModelPage.astro`):**
+- Hero was a dark blob-gradient section with `.section-label` "API Guide" chip and a single 800px column → rewritten as a light overlay section (`linear-gradient(135deg,rgba(97,85,241,.08)→rgba(62,129,229,.06),#F5F2FF`) on a 1200px container, with an inner solid gradient card (16px radius, 2rem 2.5rem padding) wrapping h1+subtitle; removed goo blobs, fade-up on breadcrumb, and the API Guide chip
+- Per-model hero accents updated: chatgpt = purple→blue, claude = teal→blue (`#2D8653→#3E81E5`), gemini = blue→purple (`#3E81E5→#6155F1`); each model also has matching translucent section overlay
+- h1 was 44px clamp `-0.04em` mb 16px → 32px clamp `1.5rem,3vw,2rem`, `-0.03em`, mb 0.5rem
+- Subtitle was 1.05rem rgba(0.75) lh 1.65 mw 560px → 0.925rem rgba(0.85) lh 1.7 mw 580px
+- Breadcrumb colors were rgba(white) (for dark hero) → #999 with #6155F1 hover and #CCC chevrons; current-page span is #6155F1 600
+- Breadcrumb final span was `page.heroHeadline` ("ChatGPT API Guide") → short label via new i18n key `chatgptApiShort` ("ChatGPT API")
+- Layout wrapper was `.api-layout` 1fr 300px grid with `padding 3rem 1.5rem` → `.post-layout` 1fr 280px grid inside outer `padding 2.5rem 1.5rem 5rem`; breakpoint moved from 900px to 1060px (matches archive)
+- Article body was using `.article-h2` scoped class with `1.5rem 700 -0.03em mb 0.875rem pb 0.625rem` + bottom 2px purple border → rewritten as `.article-body :global(h2)` with `1.4rem 800 -0.03em lh 1.2 mt 2.5rem mb 0.75rem pt 2rem` + top 1px rgba(97,85,241,0.1) border (first-child resets these)
+- Added an `Overview` h2 (`{page.heroHeadline}`) at the top of the article (was missing → article started with prose body)
+- Added `.article-body :global(h3)` for "Pricing Reference": Kanit 1.05rem 700 `-0.02em` mt 1.5rem mb 0.5rem
+- Article paragraph was `0.975rem #3C315B lh 1.8 mb 1.125rem` → `0.95rem #444 lh 1.85 mb 1rem`
+- Article li was `0.975rem #3C315B lh 1.75 mb 0` → `0.95rem #444 lh 1.8 mb 0.3rem`
+- `pt()` link/strong override styles removed (color/text-decoration moved into `.article-body :global(a/strong)` CSS so PortableText links no longer carry inline font-weight 600 or color attrs)
+- Pricing reference card (`pricing-ref card-elevated` with purple dot label, divider, and "View full model comparison" link) → replaced with plain `<h3>Pricing Reference</h3>` + prose, matching archive's flat layout
+- Further reading custom flex-row links (with arrow svgs and inline styles) → simple `<ul><li><a>` to flow through standard article-body styles
+- FAQ was wrapped in a non-existent custom `.faq-card` styling → rewrote as inline `.faq-wrap` (1px rgba(97,85,241,0.1) top border) with `.faq-row` items (1px rgba(97,85,241,0.08) bottom border each; last has none); button styles scoped as `.faq-q` (0.925rem 600 padding 1.125rem 0); answer body 0.9rem #555 lh 1.8 pb 1.125rem
+- FAQ classes were `.faq-question`/`.faq-answer` from global.css → renamed to `.faq-q`/`.faq-answer` so the page can scope its own padding/colors without colliding with shared global styles; reused `window.toggleFaq()` so behaviour stays identical
+- Sidebar was `.api-sidebar` 300px w, top 80px → `.post-sidebar` 280px w, top 88px (matches archive)
+- Sidebar TOC card was `card-elevated` (20px radius, dual shadow, 22px 24px padding) → `.sidebar-card` (white, 16px radius, 1.5rem padding, single shadow `0 2px 10px rgba(97,85,241,0.08)`)
+- "On This Page" title was Kanit 0.875rem 700 #1C1C1C normal-case `letter-spacing: 0.01em` → 0.72rem 700 #6155F1 uppercase `letter-spacing: 0.07em` matching archive
+- TOC links (`.toc-link`) were 0.825rem 500 #666 padding 0.3rem 0.5rem radius 6px → renamed `.sidebar-link`, sized 0.845rem 500 #666 padding 0.45rem 0.875rem radius 7px; active state bg #E2DFFE color #6155F1 weight 600
+- First TOC link wasn't auto-active → added `active` class to "Overview" anchor + scroll-spy `IntersectionObserver` swaps active class as user scrolls (replacing earlier reliance on `.reveal` only)
+- First TOC label was the same as breadcrumb ("ChatGPT API") → uses new `apiModel.tocOverview` i18n key ("Overview")
+- "Compare All Models" sidebar CTA was using the dark hero gradient + standard `.btn-primary` (purple solid) → uses per-model `cardBg` gradient (matching archive's gradient card) with 16px radius 1.5rem padding; button styles inlined as `.sidebar-cta-btn` (translucent rgba(255,255,255,0.2) bg, 1px solid rgba(255,255,255,0.35) border, no shadow)
+- "Compare All Models" body text key updated across en/es/id: "Full live pricing for 60+ models" → "See ChatGPT, Claude, and Gemini side-by-side on pricing, context window, and use case fit"
+- "View All Models" button label key updated across en/es/id: "View All Models" → "View Full Comparison" (matches archive's CTA copy)
+- "Also Compare" card was `card-elevated` 22px 24px padding → `.sidebar-card-tight` 16px radius 1.375rem padding single shadow
+- "Also Compare" title was 0.875rem #1C1C1C normal case → 0.75rem #3C315B uppercase letter-spacing 0.04em
+- "Also Compare" links were pill-style chips with bg #F5F2FF padding 0.625rem 0.875rem radius 10px and uniform #3C315B color → plain inline links 0.85rem 600 no padding/bg, with per-model colors hardcoded in `ALSO_COMPARE_COLOR` map (chatgpt page → claude=#6155F1, gemini=#3E81E5; claude page → chatgpt=#6155F1, gemini=#3E81E5; gemini page → chatgpt=#6155F1, claude=#2D8653); gap animation `0.375rem ↔ 0.625rem` on hover
+- "Also Compare" link labels were "Claude API"/"Gemini API" → use new i18n keys `claudeApiGuide`/`geminiApiGuide` etc. ("Claude API Guide" / "Guía de la API de Claude" / "Panduan API Claude")
+- BaseLayout `activePage` was `${modelSlug}-api` (no matching nav link, so no active highlight) → `"api-compare"` so the top nav "Compare Models" link highlights, matching archive
+- Added 7 new i18n keys across en/es/id: `chatgptApiShort`, `claudeApiShort`, `geminiApiShort`, `chatgptApiGuide`, `claudeApiGuide`, `geminiApiGuide`, `tocOverview`
+- Updated 2 existing i18n keys across en/es/id: `compareAllModelsBody`, `viewAllModelsBtn`
+
+**Not changed (intentional):**
+- Claude/Gemini Sanity content doesn't exist yet → both pages redirect to `/${lang}/`. Component rewrite already covers them; only Sanity content needs to be authored. ChatGPT was used as the canonical verification page since it's the only one with data.
+- `pricingReference` content in Sanity for chatgpt-api lacks `<strong>` markup on model names (archive bolds "GPT-4o:", "GPT-4o mini:" etc.) — this is a content authoring gap, not a styling issue; the prose-article CSS handles `strong` correctly when present
+- Sidebar TOC labels in archive used shorter custom strings ("Common Use Cases", "How Pricing Works", "Who It's For", "Comparison Tips") that differ from h2 text — Astro uses the Sanity `whatIsTitle` etc. (same as h2 text) since the schema has no separate sidebar-label fields; adding them would require schema changes out of scope here
+- Section IDs differ for some sections (archive: `#who-fits`, `#comparison-tips`; Astro: `#unique-section`, `#comparing`) — internal anchors stay consistent across the Astro site; visible TOC behaviour is identical
+- Top-nav `.nav-link.active` background is `#E2DFFE` in `global.css` (matches every other Astro page and the api-compare archive), whereas chatgpt-api archive uses a slightly lighter `#EDE9FF` — the archive is internally inconsistent; we keep the project-wide global value
+- Specific Sanity content text differs from archive (e.g., archive links "AI Token Basics" vs Astro's "What is an AI Token?") — content delta, not a styling issue
+- Reveal animation classes (`.reveal`) — Astro improvement over archive's `.fade-up`-only scheme
 ### 8. Compliance (`compliance.astro`) — NOT STARTED
 ### 9. Token Calculator (`token-calculator.astro`) — NOT STARTED
 ### 10. Use Cases (`use-cases.astro`) — NOT STARTED
