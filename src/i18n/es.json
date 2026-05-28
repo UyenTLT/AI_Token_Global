@@ -90,7 +90,17 @@
     "home": "Inicio",
     "comingSoon": "Próximamente",
     "comingText": "El sitio está siendo configurado. Mientras tanto, visita el blog.",
-    "onThisPage": "En esta página"
+    "onThisPage": "En esta página",
+    "live": "En vivo",
+    "aria": {
+      "breadcrumb": "Migas de pan",
+      "pagination": "Paginación",
+      "previousPage": "Página anterior",
+      "nextPage": "Página siguiente",
+      "tableOfContents": "Tabla de contenidos",
+      "filterCategories": "Filtrar artículos por categoría",
+      "clearInput": "Borrar texto"
+    }
   },
   "home": {
     "heroLabel": "Tu Centro de Conocimiento en IA",

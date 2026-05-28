@@ -90,7 +90,17 @@
     "home": "Home",
     "comingSoon": "Coming Soon",
     "comingText": "The Astro-powered site is being set up. In the meantime, check out the blog.",
-    "onThisPage": "On This Page"
+    "onThisPage": "On This Page",
+    "live": "Live",
+    "aria": {
+      "breadcrumb": "Breadcrumb",
+      "pagination": "Pagination",
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "tableOfContents": "Table of contents",
+      "filterCategories": "Filter posts by category",
+      "clearInput": "Clear text"
+    }
   },
   "home": {
     "heroLabel": "Your AI Knowledge Hub",

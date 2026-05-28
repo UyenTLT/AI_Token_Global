@@ -55,7 +55,7 @@ function pt(blocks: any[] | undefined): string {
     <div class="hero-bg-content" style="max-width:1200px;margin:0 auto;">
 
       <!-- Breadcrumb -->
-      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+      <nav class="calc-breadcrumb" aria-label={t('common.aria.breadcrumb')}>
         <a href={`/${lang}/`}>{t('common.home')}</a>
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span class="parent">{t('calculator.breadcrumbParent')}</span>
@@ -104,7 +104,7 @@ function pt(blocks: any[] | undefined): string {
             <div class="char-counter"><span id="charCount">0</span> {t('calculator.charCountWord')}</div>
 
             <div style="display:flex;justify-content:flex-end;margin-top:1.125rem;">
-              <button id="clearBtn" class="btn-clear" type="button" aria-label="Clear text">
+              <button id="clearBtn" class="btn-clear" type="button" aria-label={t('common.aria.clearInput')}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 {t('calculator.clearBtn')}
               </button>
@@ -687,9 +687,9 @@ function pt(blocks: any[] | undefined): string {
   const platformNames = { openai: 'OpenAI', claude: 'Anthropic', gemini: 'Google' };
 
   const SUMMARY_PLACEHOLDER = resultSummaryEl ? resultSummaryEl.textContent.trim() : '';
-  const SUMMARY_LOWEST = (window.__CALC_I18N__ && window.__CALC_I18N__.lowest) || 'Lowest cost';
-  const SUMMARY_HIGHEST = (window.__CALC_I18N__ && window.__CALC_I18N__.highest) || 'Highest cost';
-  const SUMMARY_INPUT_ONLY = (window.__CALC_I18N__ && window.__CALC_I18N__.inputCostOnly) || 'Input cost only';
+  const SUMMARY_LOWEST = (window.__CALC_I18N__ && window.__CALC_I18N__.lowest) || '';
+  const SUMMARY_HIGHEST = (window.__CALC_I18N__ && window.__CALC_I18N__.highest) || '';
+  const SUMMARY_INPUT_ONLY = (window.__CALC_I18N__ && window.__CALC_I18N__.inputCostOnly) || '';
 
   function formatCost(val) { return '$' + val.toFixed(6); }
 

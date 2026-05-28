@@ -184,7 +184,7 @@ const pageOfTemplate  = t('blog.pageOf');
           <!-- Category tabs -->
           {usedCategories.length > 0 && (
             <div style="margin-bottom: 2.5rem;">
-              <div class="cat-scroll" role="tablist" aria-label="Filter posts by category">
+              <div class="cat-scroll" role="tablist" aria-label={t('common.aria.filterCategories')}>
                 <button class="cat-tab active" data-filter="all" role="tab" aria-selected="true">{t('blog.allPosts')}</button>
                 {usedCategories.map(cat => (
                   <button class="cat-tab" data-filter={cat.value} role="tab" aria-selected="false">{cat.label}</button>
@@ -280,12 +280,12 @@ const pageOfTemplate  = t('blog.pageOf');
 
           <!-- Pagination -->
           {totalPages > 1 && (
-            <nav class="pagination" aria-label="Pagination" data-template={pageOfTemplate}>
-              <a href="#" class="page-btn page-prev" aria-disabled="true" aria-label="Previous page">
+            <nav class="pagination" aria-label={t('common.aria.pagination')} data-template={pageOfTemplate}>
+              <a href="#" class="page-btn page-prev" aria-disabled="true" aria-label={t('common.aria.previousPage')}>
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M11 4L5 8l6 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </a>
               <div class="page-numbers" id="page-numbers"></div>
-              <a href="#" class="page-btn page-next" aria-label="Next page">
+              <a href="#" class="page-btn page-next" aria-label={t('common.aria.nextPage')}>
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M5 4l6 4-6 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </a>
               <span class="page-status" id="page-status">{pageOfTemplate.replace('{n}', '1').replace('{total}', String(totalPages))}</span>
@@ -793,7 +793,7 @@ const pageOfTemplate  = t('blog.pageOf');
     const prevBtn = document.querySelector<HTMLAnchorElement>('.page-prev');
     const nextBtn = document.querySelector<HTMLAnchorElement>('.page-next');
     const paginationEl = document.querySelector<HTMLElement>('.pagination');
-    const pageOfTpl = paginationEl?.dataset.template ?? 'Page {n} of {total}';
+    const pageOfTpl = paginationEl?.dataset.template ?? '';
 
     let currentFilter = 'all';
     let currentPage = 1;

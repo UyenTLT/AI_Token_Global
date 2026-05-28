@@ -90,7 +90,17 @@
     "home": "Beranda",
     "comingSoon": "Segera Hadir",
     "comingText": "Situs berbasis Astro sedang disiapkan. Sementara itu, lihat dulu blognya.",
-    "onThisPage": "Di Halaman Ini"
+    "onThisPage": "Di Halaman Ini",
+    "live": "Langsung",
+    "aria": {
+      "breadcrumb": "Navigasi remah roti",
+      "pagination": "Paginasi",
+      "previousPage": "Halaman sebelumnya",
+      "nextPage": "Halaman berikutnya",
+      "tableOfContents": "Daftar isi",
+      "filterCategories": "Saring artikel berdasarkan kategori",
+      "clearInput": "Hapus teks"
+    }
   },
   "home": {
     "heroLabel": "Pusat Pengetahuan AI Kamu",

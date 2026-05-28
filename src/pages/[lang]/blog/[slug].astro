@@ -166,7 +166,7 @@ const coverTint = post.category ? CAT_TINT[post.category] ?? CAT_TINT.fundamenta
     <div class="post-hero-inner">
 
       <!-- Breadcrumb -->
-      <nav class="post-breadcrumb" aria-label="Breadcrumb">
+      <nav class="post-breadcrumb" aria-label={t('common.aria.breadcrumb')}>
         <a href={`/${lang}/`}>{t('common.home')}</a>
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="#CCC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <a href={`/${lang}/blog`}>{t('nav.blog')}</a>
@@ -263,7 +263,7 @@ const coverTint = post.category ? CAT_TINT[post.category] ?? CAT_TINT.fundamenta
         {headings.length > 0 && (
           <div class="sidebar-card">
             <div class="sidebar-eyebrow">{t('common.onThisPage')}</div>
-            <nav class="toc-nav" id="toc-nav" aria-label="Table of contents">
+            <nav class="toc-nav" id="toc-nav" aria-label={t('common.aria.tableOfContents')}>
               {headings.map((h, idx) => (
                 <a href={`#${h.id}`} class={`sidebar-link${idx === 0 ? ' active' : ''}`}>{h.text}</a>
               ))}
@@ -894,8 +894,8 @@ const coverTint = post.category ? CAT_TINT[post.category] ?? CAT_TINT.fundamenta
       const label = copyBtn.querySelector('.copy-label') as HTMLElement | null;
       navigator.clipboard.writeText(window.location.href).then(() => {
         if (!label) return;
-        const orig = (copyBtn as HTMLElement).dataset.copy ?? label.textContent ?? 'Copy link';
-        label.textContent = (copyBtn as HTMLElement).dataset.copied ?? 'Copied!';
+        const orig = (copyBtn as HTMLElement).dataset.copy ?? label.textContent ?? '';
+        label.textContent = (copyBtn as HTMLElement).dataset.copied ?? label.textContent ?? '';
         setTimeout(() => { label.textContent = orig; }, 2000);
       });
     });

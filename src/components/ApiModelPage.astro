@@ -76,7 +76,7 @@ const seoDesc  = page.seo?.seoDescription ?? page.heroSubtitle ?? '';
   <section style={`background:${hero.sectionBg};padding:3rem 1.5rem 2.5rem;`}>
     <div style="max-width:1200px;margin:0 auto;">
       <!-- Breadcrumb -->
-      <nav style="display:flex;align-items:center;gap:.5rem;margin-bottom:1.75rem;font-size:.8rem;color:#999;flex-wrap:wrap;" aria-label="Breadcrumb">
+      <nav style="display:flex;align-items:center;gap:.5rem;margin-bottom:1.75rem;font-size:.8rem;color:#999;flex-wrap:wrap;" aria-label={t('common.aria.breadcrumb')}>
         <a href={`/${lang}/`} style="color:#999;text-decoration:none;transition:color .15s ease;" onmouseover="this.style.color='#6155F1'" onmouseout="this.style.color='#999'">{t('common.home')}</a>
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#CCC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <a href={`/${lang}/api-compare`} style="color:#999;text-decoration:none;transition:color .15s ease;" onmouseover="this.style.color='#6155F1'" onmouseout="this.style.color='#999'">{t('nav.compareModels')}</a>
