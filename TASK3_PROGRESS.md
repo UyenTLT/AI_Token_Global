@@ -345,7 +345,60 @@ Compare every Astro page against its archive HTML reference (`archive/`) and fix
 - Sanity content for the "Simply put:" / "Think of it as:" callouts does NOT have `<strong>` markup on the leading clause (archive bolds it) — this is a content authoring gap, not a styling issue; the scoped `.ug-callout strong` rule handles bolding correctly when present
 - Problem/Solution summary items in the what-is section are hardcoded via i18n (3 items each, matching archive's static markup) since they're a distinct summary distinct from `problemsBody` — adding them as Sanity schema fields would be out of scope here
 - Hero pointer blob (archive's `.blob-pointer` mousemove follower) not added — Astro's `.hero-bg-canvas` already has 5 animated blobs, and the project-wide hero pattern has no mouse follower
-### 12. Blog Index (`blog/index.astro`) — NOT STARTED
+### 12. Blog Index (`blog/index.astro`) — DONE
+
+**Issues found and fixed:**
+- Hero content was a 800px text column with no search bar → widened to a 1200px centered container, added the archive's decorative `<input type="search">` (translucent white bg, 14px radius, magnifier icon on the left)
+- Hero subtitle was 1.05rem `margin: 0 auto` (no bottom margin, so the search bar sat flush) → 1rem with `margin: 0 auto 2.5rem` matching archive
+- Hero section padding was `4rem 1.5rem 3.5rem` → `4rem 1.5rem 3rem` matching archive
+- Hero label background was `rgba(226,223,254,0.18)` → `rgba(226,223,254,0.15)` matching archive
+- Hero filter id was `hero-goo` → renamed to `blog-page-goo` so it doesn't collide with other pages
+- Updated 2 existing i18n keys across en/es/id: `latestArticles` ("Latest Articles" → "AI Token King Articles"), `heroTitle` ("AI Token King Blog" → "AI Token Article Hub"), `heroSubtitle` ("Insights on..." → "Explore guides on AI token basics, cost calculation, model comparisons, platform purchasing, and more — helping you find the right learning path faster.")
+- Added "Featured Article" section header (Kanit 1.25rem 700 #1C1C1C, `margin-bottom: 1.5rem`) above the featured card — was entirely missing
+- Featured card was a `.card` 2-column grid (1fr 1fr, 576px each) with 16px radius and the project default card shadow → rewrote as `.featured-card` (white, 20px radius, archive's exact box-shadow `0 4px 24px rgba(97,85,241,0.1), 0 1px 6px rgba(0,0,0,0.05)`, hover `translateY(-4px)` + deeper shadow), with `.featured-inner` flex row containing a fixed 480px image on the left + flex:1 content on the right
+- Featured image was a single dark-gradient div with optional image on top → now `.featured-img` with the cover image (object-fit cover), a `.featured-img-overlay` purple→blue mix-blend-multiply gradient, and a `.featured-img-sheen` translucent diagonal sheen matching archive
+- Featured h2 was 1.6rem/700/-0.03em → `clamp(1.35rem, 2.5vw, 1.75rem)`/800/-0.03em matching archive's responsive heading
+- Featured card had no hover lift or arrow gap animation → added both (matches archive's `.featured-card:hover` + `.btn-ghost` gap expansion)
+- Featured meta row showed only date → added "Read Article →" inline btn-ghost on the right with hover gap animation matching archive
+- Featured card had only one tag pill (category) → added a 2nd tag pill row showing category + first tag (when present) matching archive's "AI Token Basics + Beginner" pattern
+- Filter tabs class was `.filter-tab` with count badges (e.g. "All Posts 95") → renamed to archive's `.cat-tab`, removed all count badges (archive has none)
+- Filter tab styling: was transparent bg + 1.5px solid #E2DFFE border → white bg + 1.5px solid rgba(97,85,241,0.15) border matching archive
+- Filter tab padding: was 0.45rem 1rem → 0.5rem 1.125rem matching archive
+- Filter tab font-size: was 0.82rem → 0.825rem matching archive
+- Active tab had no box-shadow → added `box-shadow: 0 2px 10px rgba(97,85,241,0.3)` matching archive
+- Filter container was `.filter-bar` with margin-bottom 2.5rem directly on the bar → wrapped in an outer div with `margin-bottom: 2.5rem` and used `.cat-scroll` for the inline flex row matching archive structure
+- Results bar was entirely missing → added "Showing {n} of {total} articles" using i18n template + decorative Sort by dropdown matching archive (uses real counts from Sanity, not the hardcoded "12 of 200+")
+- Post card class was `.card` (no overflow:hidden) with style-attribute padding → switched to `.post-card` (white, 16px radius, overflow hidden, archive's exact box-shadow, hover translateY(-3px) + shadow grow)
+- Post image area was 160px gradient div with category pill overlaid on top → 200px `.post-img-wrap` with cover-fit image + `.post-img-overlay` linear-gradient-to-top tint (color cycles per category) matching archive
+- Post card has no image hover zoom → added `transform: scale(1.05)` transition on `.post-img` when card is hovered matching archive
+- Category pill was overlaid absolutely on image → moved INSIDE body content as part of `.post-tag-row` (above title) matching archive's layout
+- Tag pill color: was always purple `#E2DFFE`/`#6155F1` → added 5-variant color map (`tag-purple`/`tag-blue`/`tag-dark`/`tag-green`/`tag-amber`) keyed off category via `CAT_PILL` lookup (compliance=dark, pricing/models=blue, platform=amber, tutorials=green, others=purple) matching archive
+- Post card body padding: was 1.5rem → 1.375rem (22px) matching archive
+- Post card h3: was 1.1rem → 1.05rem matching archive
+- Post card excerpt: was 0.85rem → 0.825rem matching archive
+- Post date: was 0.78rem → 0.775rem matching archive
+- Post card meta row was just date → added "Read →" small label on right (0.775rem #6155F1 600 with gap expansion on hover) matching archive
+- Post grid `margin-bottom: 0` → `margin-bottom: 3rem` matching archive (gives room above pagination)
+- Pagination was entirely missing → added `.pagination` nav with prev/next arrows, numbered `.page-btn`s (36×36, 9px radius), `.page-ellipsis` "···" separator, and "Page N of M" status label. Algorithm anchors first 3 pages + last + current neighbourhood to match archive's "1 2 3 … 17" pattern; auto-hides when only 1 page total. Wired to the existing filter so pagination resets and re-renders per category.
+- Filter logic was 2-pass (separate featured/grid passes) → unified into a single `render()` that picks the first matching post for the featured slot, paginates the remainder, updates the showing/total counts, rebuilds pagination chrome, and toggles the empty state in one place
+- Pagination clicks: smooth-scroll to the post grid so users don't get teleported back to the hero
+- Newsletter CTA banner was entirely missing → added `.newsletter-banner` (gradient `#6155F1 → #3E81E5`, 20px radius, 3rem 2.5rem padding) with two decorative `.newsletter-blob` circles (top-right 200×200, bottom-left 160×160), `.newsletter-copy` left side (Kanit clamp(1.25rem,2.5vw,1.625rem) title + 0.9rem rgba(255,255,255,0.8) subtitle), `.newsletter-form` right side with email input + Subscribe button (decorative — `onsubmit="return false;"` so no double-submit during the placeholder phase)
+- Responsive breakpoints: 1023px (featured card stacks vertically, image becomes 220px tall, post grid drops to 2 columns) and 640px (post grid drops to 1 column, tabs shrink, newsletter form input flexes) matching archive's 860px / 640px tiers (using 1023px to align with project's other pages where the nav switches)
+- Added 12 new i18n keys across en/es/id under `blog`: `searchPlaceholder`, `featuredArticle`, `read`, `showingPosts` (templated `{n}` / `{total}`), `sortBy`, `sortLatest`, `sortPopular`, `sortBeginner`, `pageOf` (templated `{n}` / `{total}`), `newsletterTitle`, `newsletterCopy`, `newsletterEmail`, `newsletterSubscribe`
+- Updated 4 existing i18n keys across en/es/id under `blog`: `latestArticles`, `heroTitle`, `heroSubtitle`, `readArticle` ("Read article" → "Read Article")
+- Removed the inline `style="..."` attributes that were duplicating CSS rules; everything now lives in a single scoped `<style>` block for consistency with the other pages
+
+**Not changed (intentional):**
+- Sort dropdown is decorative (selecting a different sort doesn't actually re-sort) — matches archive's behaviour exactly; real sorting would need either client-side `Date.parse` work or a Sanity ordering switch that's out of scope
+- Search input is decorative — matches archive (no filter handler on input); making it functional would duplicate the category-filter scope
+- Pagination uses real post count (e.g. "Page 1 of 8" for 95 posts) instead of archive's hardcoded "Page 1 of 17" — matching archive's literal numbers would lie about the data
+- "Showing 12 of N articles" uses the real total instead of archive's hardcoded "200+" — same rationale
+- `.reveal` scroll-animation classes — Astro improvement over archive's `.fade-up`-only scheme; deferred reveals on the newsletter banner survive translation
+- Hero pointer blob (archive's `.blob-pointer` mousemove follower) not added — project-wide hero pattern has no mouse follower; `.hero-bg-canvas` already has 4 animated blobs
+- Post card images use real Sanity cover images when present and fall back to a per-category gradient block (with the AI Token King logo motif) — archive uses hardcoded `placehold.co` URLs which don't generalize
+- Category pill colour map (`CAT_PILL`) covers all 7 schema categories; archive has hardcoded HTML per post — same visual output, data-driven
+- Filter tab list only shows categories that have at least one post (existing behaviour preserved) — archive's static list shows all categories regardless
+
 ### 13. Blog Post (`blog/[slug].astro`) — NOT STARTED
 
 ---

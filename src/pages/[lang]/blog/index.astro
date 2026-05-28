@@ -14,6 +14,7 @@ if (!isValidLang(lang)) return Astro.redirect('/en/blog');
 
 const t = useTranslations(lang as Lang);
 const posts: SanityPost[] = await getAllPosts(lang);
+const POSTS_PER_PAGE = 12;
 
 const CATEGORIES = [
   { value: 'fundamentals', label: t('blog.cat.fundamentals') },
@@ -25,12 +26,34 @@ const CATEGORIES = [
   { value: 'tutorials',    label: t('blog.cat.tutorials') },
 ];
 
-// Only show tabs for categories that have at least one post
 const usedCategories = CATEGORIES.filter(c => posts.some(p => p.category === c.value));
 
+// Per-category tag-pill color (matches archive's mix of purple/blue/dark/green/amber chips)
+const CAT_PILL: Record<string, string> = {
+  fundamentals: 'purple',
+  compliance:   'dark',
+  calculation:  'purple',
+  pricing:      'blue',
+  models:       'blue',
+  platform:     'amber',
+  tutorials:    'green',
+};
+
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString(LANG_META[lang as Lang].locale, { year: 'numeric', month: 'long', day: 'numeric' });
+  return new Date(iso).toLocaleDateString(LANG_META[lang as Lang].locale, { year: 'numeric', month: 'short', day: 'numeric' });
 }
+
+function catLabel(value?: string) {
+  if (!value) return '';
+  return CATEGORIES.find(c => c.value === value)?.label ?? value;
+}
+
+const totalPosts = posts.length;
+const totalPages = Math.max(1, Math.ceil(Math.max(0, totalPosts - 1) / POSTS_PER_PAGE));
+const initialShowing = Math.min(POSTS_PER_PAGE, totalPosts);
+
+const showingTemplate = t('blog.showingPosts');
+const pageOfTemplate  = t('blog.pageOf');
 ---
 
 <BaseLayout
@@ -40,319 +63,861 @@ function formatDate(iso: string) {
   lang={lang as Lang}
 >
 
-  <!-- Hero -->
-  <section class="hero-bg" style="padding: 4rem 1.5rem 3.5rem;">
+  <!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+  <section class="hero-bg" style="padding: 4rem 1.5rem 3rem;">
     <div class="hero-bg-canvas" aria-hidden="true">
-      <svg style="display:none"><defs><filter id="hero-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo"/><feBlend in="SourceGraphic" in2="goo"/></filter></defs></svg>
+      <svg style="display:none"><defs><filter id="blog-page-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo"/><feBlend in="SourceGraphic" in2="goo"/></filter></defs></svg>
       <div class="grad-blobs">
         <div class="blob blob-1"></div><div class="blob blob-2"></div>
         <div class="blob blob-3"></div><div class="blob blob-4"></div>
       </div>
     </div>
-    <div class="hero-bg-content" style="max-width: 800px; margin: 0 auto; text-align: center;">
-      <div class="section-label fade-up" style="margin-bottom: 1.25rem; background: rgba(226,223,254,0.18); color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.15); display: inline-flex;">
+
+    <div class="hero-bg-content" style="max-width: 1200px; margin: 0 auto; text-align: center; position: relative;">
+      <div class="section-label fade-up" style="margin-bottom: 1.25rem; justify-content: center; background: rgba(226,223,254,0.15); color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.15);">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
         {t('blog.latestArticles')}
       </div>
+
       <h1 class="fade-up fade-up-1" style="font-family: 'Kanit', sans-serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; color: #fff; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 1rem;">
         {t('blog.heroTitle')}
       </h1>
-      <p class="fade-up fade-up-2" style="font-size: 1.05rem; line-height: 1.75; color: rgba(255,255,255,0.7); max-width: 560px; margin: 0 auto;">
+
+      <p class="fade-up fade-up-2" style="font-size: 1rem; line-height: 1.75; color: rgba(255,255,255,0.7); max-width: 560px; margin: 0 auto 2.5rem;">
         {t('blog.heroSubtitle')}
       </p>
+
+      <!-- Decorative search bar (visual parity with archive) -->
+      <div class="fade-up fade-up-3 hero-search" style="max-width: 480px; margin: 0 auto; position: relative;">
+        <input
+          type="search"
+          placeholder={t('blog.searchPlaceholder')}
+          aria-label={t('blog.searchPlaceholder')}
+        />
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="hero-search-icon">
+          <circle cx="11" cy="11" r="8" stroke="rgba(255,255,255,0.5)" stroke-width="1.75"/>
+          <path d="M21 21l-4.35-4.35" stroke="rgba(255,255,255,0.5)" stroke-width="1.75" stroke-linecap="round"/>
+        </svg>
+      </div>
     </div>
   </section>
 
-  <!-- Filter tabs + posts -->
-  <section style="padding: 3rem 1.5rem 4rem; max-width: 1200px; margin: 0 auto;">
 
-    {/* Category filter tabs — only render if there are categorised posts */}
-    {usedCategories.length > 0 && (
-      <div class="filter-bar" role="tablist" aria-label="Filter posts by category">
-        <button
-          class="filter-tab active"
-          data-filter="all"
-          role="tab"
-          aria-selected="true"
-        >
-          {t('blog.allPosts')}
-          <span class="filter-count" id="count-all">{posts.length}</span>
-        </button>
-        {usedCategories.map(cat => {
-          const count = posts.filter(p => p.category === cat.value).length;
-          return (
-            <button
-              class="filter-tab"
-              data-filter={cat.value}
-              role="tab"
-              aria-selected="false"
-            >
-              {cat.label}
-              <span class="filter-count" id={`count-${cat.value}`}>{count}</span>
-            </button>
-          );
-        })}
-      </div>
-    )}
-
-    {posts.length === 0 && (
-      <div style="text-align: center; padding: 4rem 1.5rem; color: #999;">
+  {posts.length === 0 && (
+    <section style="padding: 5rem 1.5rem;">
+      <div style="text-align: center; color: #999; max-width: 480px; margin: 0 auto;">
         <p style="font-size: 1.1rem;">{t('blog.noPostsYet')}</p>
       </div>
-    )}
+    </section>
+  )}
 
-    {posts.length > 0 && (
-      <>
-        <!-- Featured post slot (first post in current filter) -->
-        <div id="featured-slot" style="margin-bottom: 3rem;">
-          {posts.map((post, idx) => (
-            <a
-              href={`/${lang}/blog/${post.slug.current}`}
-              class={`card blog-featured-card${idx === 0 ? '' : ' hidden-post'}`}
-              data-category={post.category ?? 'uncategorized'}
-              data-idx={idx}
-              style="display: grid; grid-template-columns: 1fr 1fr; text-decoration: none; color: inherit; overflow: hidden;"
-            >
-              <div style="background: linear-gradient(135deg, #2A1F5C, #0D1547); min-height: 280px; position: relative; overflow: hidden;">
-                {post.coverImage?.asset?.url
-                  ? <img src={post.coverImage.asset.url} alt={post.title} style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;" loading={idx === 0 ? 'eager' : 'lazy'} />
-                  : <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;"><svg width="64" height="64" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                }
-              </div>
-              <div style="padding: 2.5rem;">
-                {post.category && (
-                  <span class="filter-pill-active" style="display: inline-block; margin-bottom: 0.875rem;">
-                    {CATEGORIES.find(c => c.value === post.category)?.label ?? post.category}
-                  </span>
-                )}
-                {(!post.category && post.tags && post.tags.length > 0) && (
-                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
-                    {post.tags.slice(0, 2).map(tag => (
-                      <span style="background: #E2DFFE; color: #6155F1; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.625rem; border-radius: 100px;">{tag}</span>
-                    ))}
+  {posts.length > 0 && (
+    <>
+      <!-- ═══════════════════════════════ FEATURED ARTICLE ═══════════════════════════════ -->
+      <section style="padding: 3rem 1.5rem 3.5rem;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+            <div style="font-family: 'Kanit', sans-serif; font-size: 1.25rem; font-weight: 700; color: #1C1C1C; letter-spacing: -0.02em;">{t('blog.featuredArticle')}</div>
+          </div>
+
+          {posts.map((post, idx) => {
+            const pillClass = post.category && CAT_PILL[post.category] ? CAT_PILL[post.category] : 'purple';
+            const fallbackBg = pillClass === 'blue'
+              ? 'linear-gradient(135deg, #3E81E5, #0D1547)'
+              : pillClass === 'dark'
+                ? 'linear-gradient(135deg, #3C315B, #0D1547)'
+                : pillClass === 'green'
+                  ? 'linear-gradient(135deg, #2D8653, #0F4030)'
+                  : pillClass === 'amber'
+                    ? 'linear-gradient(135deg, #B07D2E, #4A2B0F)'
+                    : 'linear-gradient(135deg, #6155F1, #2A1F5C)';
+            return (
+              <a
+                href={`/${lang}/blog/${post.slug.current}`}
+                class={`featured-card${idx === 0 ? '' : ' hidden-post'}`}
+                data-category={post.category ?? 'uncategorized'}
+                data-idx={idx}
+                aria-label={post.title}
+              >
+                <div class="featured-inner">
+                  <div class="featured-img" style={`background: ${fallbackBg};`}>
+                    {post.coverImage?.asset?.url && (
+                      <img src={post.coverImage.asset.url} alt={post.title} loading={idx === 0 ? 'eager' : 'lazy'} />
+                    )}
+                    <div class="featured-img-overlay"></div>
+                    <div class="featured-img-sheen"></div>
                   </div>
-                )}
-                <h2 style="font-family: 'Kanit', sans-serif; font-size: 1.6rem; font-weight: 700; color: #1C1C1C; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 0.875rem;">{post.title}</h2>
-                <p style="font-size: 0.9rem; line-height: 1.75; color: #666; margin-bottom: 1.5rem;">{post.excerpt}</p>
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <span style="font-size: 0.8rem; color: #999;">{formatDate(post.publishedAt)}</span>
-                  <span style="display: inline-flex; align-items: center; gap: 0.375rem; color: #6155F1; font-size: 0.875rem; font-weight: 600;">
-                    {t('blog.readArticle')}
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  </span>
+                  <div class="featured-content">
+                    <div class="featured-tag-row">
+                      {post.category && (
+                        <span class={`tag-pill tag-${pillClass}`}>{catLabel(post.category)}</span>
+                      )}
+                      {post.tags && post.tags.slice(0, 1).map(tag => (
+                        <span class="tag-pill tag-blue">{tag}</span>
+                      ))}
+                    </div>
+                    <h2 class="featured-title">{post.title}</h2>
+                    <p class="featured-excerpt">{post.excerpt}</p>
+                    <div class="featured-meta-row">
+                      <div class="featured-meta">
+                        <span>{formatDate(post.publishedAt)}</span>
+                      </div>
+                      <span class="featured-read btn-ghost">
+                        {t('blog.readArticle')}
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </a>
-          ))}
+              </a>
+            );
+          })}
         </div>
+      </section>
 
-        <!-- Remaining posts grid -->
-        <div id="posts-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;" class="posts-grid">
-          {posts.map((post, i) => (
-            <a
-              href={`/${lang}/blog/${post.slug.current}`}
-              class="card grid-post-card"
-              data-category={post.category ?? 'uncategorized'}
-              data-idx={i}
-              style={`text-decoration: none; color: inherit; display: block; overflow: hidden; animation-delay: ${i * 0.06}s;`}
-            >
-              <div style="background: linear-gradient(135deg, #2A1F5C, #0D1547); height: 160px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
-                {post.coverImage?.asset?.url
-                  ? <img src={post.coverImage.asset.url} alt={post.title} style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" />
-                  : <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                }
-                {post.category && (
-                  <span style="position: absolute; top: 0.625rem; left: 0.625rem; background: rgba(97,85,241,0.9); color: #fff; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.5rem; border-radius: 100px; backdrop-filter: blur(4px);">
-                    {CATEGORIES.find(c => c.value === post.category)?.label ?? post.category}
-                  </span>
-                )}
-              </div>
-              <div style="padding: 1.5rem;">
-                {(!post.category && post.tags && post.tags.length > 0) && (
-                  <span style="background: #E2DFFE; color: #6155F1; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.625rem; border-radius: 100px; display: inline-block; margin-bottom: 0.75rem;">{post.tags[0]}</span>
-                )}
-                <h3 style="font-family: 'Kanit', sans-serif; font-size: 1.1rem; font-weight: 700; color: #1C1C1C; letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 0.625rem;">{post.title}</h3>
-                <p style="font-size: 0.85rem; line-height: 1.7; color: #666; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">{post.excerpt}</p>
-                <span style="font-size: 0.78rem; color: #999;">{formatDate(post.publishedAt)}</span>
-              </div>
-            </a>
-          ))}
-        </div>
 
-        <!-- Empty state for filtered view -->
-        <div id="filter-empty" style="display: none; text-align: center; padding: 4rem 1.5rem; color: #999;">
-          <p style="font-size: 1.1rem;">{t('blog.noPostsYet')}</p>
+      <!-- ═══════════════════════════════ FILTERS + POST GRID + PAGINATION ═══════════════════════════════ -->
+      <section style="padding: 0 1.5rem 5rem;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+
+          <!-- Category tabs -->
+          {usedCategories.length > 0 && (
+            <div style="margin-bottom: 2.5rem;">
+              <div class="cat-scroll" role="tablist" aria-label="Filter posts by category">
+                <button class="cat-tab active" data-filter="all" role="tab" aria-selected="true">{t('blog.allPosts')}</button>
+                {usedCategories.map(cat => (
+                  <button class="cat-tab" data-filter={cat.value} role="tab" aria-selected="false">{cat.label}</button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <!-- Results count + sort -->
+          <div class="results-bar">
+            <div class="results-count">
+              {showingTemplate.split(/(\{n\}|\{total\})/g).map(chunk => {
+                if (chunk === '{n}') return <span id="post-count" class="count-current">{initialShowing}</span>;
+                if (chunk === '{total}') return <span id="post-total" class="count-total">{totalPosts}</span>;
+                return <>{chunk}</>;
+              })}
+            </div>
+            <div class="results-sort">
+              <span class="sort-label">{t('blog.sortBy')}</span>
+              <select aria-label={t('blog.sortBy')}>
+                <option>{t('blog.sortLatest')}</option>
+                <option>{t('blog.sortPopular')}</option>
+                <option>{t('blog.sortBeginner')}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Post grid -->
+          <div class="post-grid" id="post-grid">
+            {posts.map((post, idx) => {
+              const pillClass = post.category && CAT_PILL[post.category] ? CAT_PILL[post.category] : 'purple';
+              const tintRgba = pillClass === 'blue'
+                ? 'rgba(62,129,229,0.45)'
+                : pillClass === 'dark'
+                  ? 'rgba(60,49,91,0.55)'
+                  : pillClass === 'green'
+                    ? 'rgba(45,134,83,0.45)'
+                    : pillClass === 'amber'
+                      ? 'rgba(176,125,46,0.5)'
+                      : 'rgba(97,85,241,0.45)';
+              const fallbackBg = pillClass === 'blue'
+                ? 'linear-gradient(135deg, #3E81E5, #0D1547)'
+                : pillClass === 'dark'
+                  ? 'linear-gradient(135deg, #3C315B, #0D1547)'
+                  : pillClass === 'green'
+                    ? 'linear-gradient(135deg, #2D8653, #0F4030)'
+                    : pillClass === 'amber'
+                      ? 'linear-gradient(135deg, #B07D2E, #4A2B0F)'
+                      : 'linear-gradient(135deg, #6155F1, #2A1F5C)';
+              return (
+                <a
+                  href={`/${lang}/blog/${post.slug.current}`}
+                  class="post-card"
+                  data-category={post.category ?? 'uncategorized'}
+                  data-idx={idx}
+                  aria-label={post.title}
+                >
+                  <div class="post-img-wrap" style={`background: ${fallbackBg};`}>
+                    {post.coverImage?.asset?.url
+                      ? <img class="post-img" src={post.coverImage.asset.url} alt="" loading="lazy" />
+                      : <div class="post-img-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    }
+                    <div class="post-img-overlay" style={`background: linear-gradient(to top, ${tintRgba} 0%, transparent 60%);`}></div>
+                  </div>
+                  <div class="post-body">
+                    <div class="post-tag-row">
+                      {post.category && (
+                        <span class={`tag-pill tag-${pillClass}`}>{catLabel(post.category)}</span>
+                      )}
+                      {post.tags && post.tags.slice(0, 1).map(tag => (
+                        <span class="tag-pill tag-blue">{tag}</span>
+                      ))}
+                    </div>
+                    <h3 class="post-title">{post.title}</h3>
+                    <p class="post-excerpt">{post.excerpt}</p>
+                    <div class="post-meta-row">
+                      <span class="post-date">{formatDate(post.publishedAt)}</span>
+                      <span class="post-read">
+                        {t('blog.read')}
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+
+          <!-- Empty state when current filter has no remaining posts -->
+          <div id="filter-empty" style="display: none; text-align: center; padding: 3rem 1.5rem; color: #999;">
+            <p style="font-size: 1rem;">{t('blog.noPostsYet')}</p>
+          </div>
+
+          <!-- Pagination -->
+          {totalPages > 1 && (
+            <nav class="pagination" aria-label="Pagination" data-template={pageOfTemplate}>
+              <a href="#" class="page-btn page-prev" aria-disabled="true" aria-label="Previous page">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M11 4L5 8l6 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+              <div class="page-numbers" id="page-numbers"></div>
+              <a href="#" class="page-btn page-next" aria-label="Next page">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M5 4l6 4-6 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+              <span class="page-status" id="page-status">{pageOfTemplate.replace('{n}', '1').replace('{total}', String(totalPages))}</span>
+            </nav>
+          )}
+
         </div>
-      </>
-    )}
-  </section>
+      </section>
+
+
+      <!-- ═══════════════════════════════ NEWSLETTER CTA ═══════════════════════════════ -->
+      <section style="padding: 0 1.5rem 5rem;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+          <div class="newsletter-banner reveal">
+            <div class="newsletter-blob newsletter-blob-1"></div>
+            <div class="newsletter-blob newsletter-blob-2"></div>
+            <div class="newsletter-copy">
+              <div class="newsletter-title">{t('blog.newsletterTitle')}</div>
+              <p class="newsletter-sub">{t('blog.newsletterCopy')}</p>
+            </div>
+            <form class="newsletter-form" onsubmit="return false;">
+              <input type="email" placeholder={t('blog.newsletterEmail')} aria-label={t('blog.newsletterEmail')} />
+              <button type="submit">{t('blog.newsletterSubscribe')}</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </>
+  )}
 
 </BaseLayout>
 
 <style>
-  /* ── Filter bar ─────────────────────────────────────────────────────── */
-  .filter-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 2.5rem;
-    align-items: center;
+  /* ── Hero search bar ───────────────────────────────────────────────── */
+  .hero-search input {
+    width: 100%;
+    padding: 0.875rem 1.25rem 0.875rem 3rem;
+    border-radius: 14px;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9rem;
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .hero-search input::placeholder { color: rgba(255, 255, 255, 0.6); }
+  .hero-search input:focus {
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1), 0 2px 12px rgba(0, 0, 0, 0.2);
+  }
+  .hero-search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
   }
 
-  .filter-tab {
+  /* ── Featured card ─────────────────────────────────────────────────── */
+  .featured-card {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(97, 85, 241, 0.1), 0 1px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.22s cubic-bezier(.22, 1, .36, 1), box-shadow 0.22s ease;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .featured-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(97, 85, 241, 0.18), 0 3px 10px rgba(0, 0, 0, 0.08);
+  }
+  .featured-card:focus-visible { outline: 2px solid #6155F1; outline-offset: 3px; border-radius: 20px; }
+
+  .featured-inner { display: flex; align-items: stretch; }
+
+  .featured-img {
+    width: 480px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 300px;
+  }
+  .featured-img img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .featured-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(97, 85, 241, 0.5) 0%, rgba(62, 129, 229, 0.35) 100%);
+    mix-blend-mode: multiply;
+  }
+  .featured-img-sheen {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, transparent 60%, rgba(255, 255, 255, 0.06) 100%);
+  }
+
+  .featured-content {
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+  }
+  .featured-tag-row {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .featured-title {
+    font-family: 'Kanit', sans-serif;
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+    font-weight: 800;
+    color: #1C1C1C;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin: 0 0 1rem 0;
+  }
+  .featured-excerpt {
+    font-size: 0.9rem;
+    line-height: 1.75;
+    color: #666;
+    margin: 0 0 1.5rem 0;
+    max-width: 520px;
+  }
+  .featured-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .featured-meta { display: flex; align-items: center; gap: 1.25rem; }
+  .featured-meta span { font-size: 0.8rem; color: #999; font-weight: 500; }
+  .featured-read {
+    font-size: 0.85rem;
+    color: #6155F1;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
-    padding: 0.45rem 1rem;
+    transition: gap 0.18s ease, opacity 0.15s ease;
+  }
+  .featured-card:hover .featured-read { gap: 0.625rem; }
+
+  /* ── Tag pills (per-category color) ────────────────────────────────── */
+  .tag-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.625rem;
     border-radius: 100px;
-    border: 1.5px solid #E2DFFE;
-    background: transparent;
-    color: #3C315B;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.15s;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: #E2DFFE;
+    color: #6155F1;
     white-space: nowrap;
   }
+  .tag-purple { background: #E2DFFE; color: #6155F1; }
+  .tag-blue   { background: #EBF4FF; color: #3E81E5; }
+  .tag-dark   { background: #F4F2F4; color: #3C315B; }
+  .tag-green  { background: #F0FFF4; color: #2D8653; }
+  .tag-amber  { background: #FFF4E2; color: #B07D2E; }
 
-  .filter-tab:hover {
-    background: #F0EEFF;
-    border-color: #6155F1;
+  /* ── Category filter tabs ──────────────────────────────────────────── */
+  .cat-scroll {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    padding-bottom: 0.25rem;
+  }
+  .cat-tab {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.125rem;
+    border-radius: 100px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: #3C315B;
+    background: #fff;
+    border: 1.5px solid rgba(97, 85, 241, 0.15);
+    cursor: pointer;
+    transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .cat-tab:hover {
+    background: #EDE9FF;
     color: #6155F1;
-    transform: translateY(-1px);
+    border-color: rgba(97, 85, 241, 0.3);
   }
-
-  .filter-tab.active {
+  .cat-tab:active { transform: scale(0.97); }
+  .cat-tab:focus-visible { outline: 2px solid #6155F1; outline-offset: 2px; }
+  .cat-tab.active {
     background: #6155F1;
+    color: #fff;
     border-color: #6155F1;
-    color: #fff;
+    box-shadow: 0 2px 10px rgba(97, 85, 241, 0.3);
   }
 
-  .filter-tab.active:hover {
-    background: #4f45d4;
-    border-color: #4f45d4;
-    color: #fff;
-    transform: translateY(-1px);
+  /* ── Results bar ───────────────────────────────────────────────────── */
+  .results-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.75rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .results-count {
+    font-size: 0.875rem;
+    color: #666;
+    font-weight: 500;
+  }
+  .results-count .count-current { color: #6155F1; font-weight: 700; }
+  .results-count .count-total { color: #1C1C1C; font-weight: 700; }
+  .results-sort {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+  .sort-label { font-size: 0.8rem; color: #999; font-weight: 500; }
+  .results-sort select {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: #3C315B;
+    background: #fff;
+    border: 1.5px solid rgba(97, 85, 241, 0.2);
+    border-radius: 8px;
+    padding: 0.375rem 0.75rem;
+    cursor: pointer;
+    outline: none;
   }
 
-  .filter-count {
+  /* ── Post grid ─────────────────────────────────────────────────────── */
+  .post-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .post-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(97, 85, 241, 0.07), 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s cubic-bezier(.22, 1, .36, 1), box-shadow 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(97, 85, 241, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  .post-card:focus-visible { outline: 2px solid #6155F1; outline-offset: 3px; border-radius: 16px; }
+
+  .post-img-wrap {
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+  }
+  .post-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s cubic-bezier(.22, 1, .36, 1);
+  }
+  .post-card:hover .post-img { transform: scale(1.05); }
+  .post-img-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .post-img-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .post-body { padding: 1.375rem; }
+  .post-tag-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.875rem;
+    flex-wrap: wrap;
+  }
+  .post-title {
+    font-family: 'Kanit', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1C1C1C;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    margin: 0 0 0.625rem 0;
+  }
+  .post-excerpt {
+    font-size: 0.825rem;
+    line-height: 1.7;
+    color: #666;
+    margin: 0 0 1rem 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .post-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .post-date { font-size: 0.775rem; color: #999; font-weight: 500; }
+  .post-read {
+    font-size: 0.775rem;
+    color: #6155F1;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: gap 0.18s ease;
+  }
+  .post-card:hover .post-read { gap: 0.5rem; }
+
+  /* ── Pagination ────────────────────────────────────────────────────── */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .page-numbers { display: inline-flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .page-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 1.25rem;
-    height: 1.25rem;
-    padding: 0 0.3rem;
-    border-radius: 100px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    background: rgba(97, 85, 241, 0.12);
-    color: #6155F1;
-    line-height: 1;
-  }
-
-  .filter-tab.active .filter-count {
-    background: rgba(255, 255, 255, 0.25);
-    color: #fff;
-  }
-
-  /* ── Featured card ──────────────────────────────────────────────────── */
-  .blog-featured-card {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: #3C315B;
+    background: #fff;
+    border: 1.5px solid rgba(97, 85, 241, 0.15);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
     text-decoration: none;
-    color: inherit;
+  }
+  .page-btn:hover { background: #EDE9FF; color: #6155F1; border-color: rgba(97, 85, 241, 0.3); }
+  .page-btn:focus-visible { outline: 2px solid #6155F1; outline-offset: 2px; }
+  .page-btn.active { background: #6155F1; color: #fff; border-color: #6155F1; }
+  .page-btn[aria-disabled="true"] { opacity: 0.35; pointer-events: none; cursor: not-allowed; }
+  .page-ellipsis {
+    font-size: 0.825rem;
+    color: #999;
+    padding: 0 0.25rem;
+    user-select: none;
+  }
+  .page-status {
+    font-size: 0.8rem;
+    color: #999;
+    margin-left: 0.5rem;
+    font-weight: 500;
+  }
+
+  /* ── Newsletter banner ─────────────────────────────────────────────── */
+  .newsletter-banner {
+    background: linear-gradient(135deg, #6155F1 0%, #3E81E5 100%);
+    border-radius: 20px;
+    padding: 3rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    position: relative;
     overflow: hidden;
   }
-
-  .filter-pill-active {
-    background: #E2DFFE;
+  .newsletter-blob {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .newsletter-blob-1 {
+    top: -40px;
+    right: -40px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .newsletter-blob-2 {
+    bottom: -60px;
+    left: 30%;
+    width: 160px;
+    height: 160px;
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .newsletter-copy { position: relative; flex: 1; min-width: 260px; }
+  .newsletter-title {
+    font-family: 'Kanit', sans-serif;
+    font-size: clamp(1.25rem, 2.5vw, 1.625rem);
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+  }
+  .newsletter-sub {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    max-width: 420px;
+    margin: 0;
+  }
+  .newsletter-form {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  .newsletter-form input {
+    padding: 0.75rem 1.125rem;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.875rem;
+    min-width: 220px;
+    outline: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  .newsletter-form button {
+    padding: 0.75rem 1.5rem;
+    background: #fff;
     color: #6155F1;
-    font-size: 0.7rem;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.875rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 0.2rem 0.625rem;
-    border-radius: 100px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
-
-  /* ── Hidden state ───────────────────────────────────────────────────── */
-  .hidden-post {
-    display: none !important;
+  .newsletter-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   }
+  .newsletter-form button:active { transform: translateY(0); }
+  .newsletter-form button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
-  /* ── Responsive ─────────────────────────────────────────────────────── */
-  @media (max-width: 900px) {
-    .blog-featured-card { grid-template-columns: 1fr !important; }
-    .posts-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  /* ── Visibility helper ─────────────────────────────────────────────── */
+  .hidden-post { display: none !important; }
+
+  /* ── Responsive ────────────────────────────────────────────────────── */
+  @media (max-width: 1023px) {
+    .featured-inner { flex-direction: column !important; }
+    .featured-img { width: 100% !important; min-height: 0 !important; height: 220px !important; }
+    .post-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .featured-content { padding: 2rem !important; }
   }
   @media (max-width: 640px) {
-    .posts-grid { grid-template-columns: 1fr !important; }
-    .filter-bar { gap: 0.375rem; }
-    .filter-tab { font-size: 0.78rem; padding: 0.4rem 0.75rem; }
+    .post-grid { grid-template-columns: 1fr !important; }
+    .cat-scroll { gap: 0.5rem !important; }
+    .cat-tab { font-size: 0.78rem; padding: 0.4rem 0.875rem; }
+    .results-bar { gap: 0.75rem; }
+    .newsletter-banner { padding: 2.25rem 1.75rem; }
+    .newsletter-form input { min-width: 0; flex: 1; }
   }
 </style>
 
 <script>
   (function () {
-    const tabs = document.querySelectorAll<HTMLButtonElement>('.filter-tab');
-    const featuredCards = document.querySelectorAll<HTMLAnchorElement>('.blog-featured-card');
-    const gridCards = document.querySelectorAll<HTMLAnchorElement>('.grid-post-card');
+    const POSTS_PER_PAGE = 12;
+    const tabs = document.querySelectorAll<HTMLButtonElement>('.cat-tab');
+    const featuredCards = document.querySelectorAll<HTMLAnchorElement>('.featured-card');
+    const gridCards = document.querySelectorAll<HTMLAnchorElement>('.post-card');
     const emptyState = document.getElementById('filter-empty');
+    const postCountEl = document.getElementById('post-count');
+    const postTotalEl = document.getElementById('post-total');
+    const pageStatus  = document.getElementById('page-status');
+    const pageNumbers = document.getElementById('page-numbers');
+    const prevBtn = document.querySelector<HTMLAnchorElement>('.page-prev');
+    const nextBtn = document.querySelector<HTMLAnchorElement>('.page-next');
+    const paginationEl = document.querySelector<HTMLElement>('.pagination');
+    const pageOfTpl = paginationEl?.dataset.template ?? 'Page {n} of {total}';
 
-    if (!tabs.length) return;
+    let currentFilter = 'all';
+    let currentPage = 1;
 
-    function applyFilter(filter: string) {
-      // Update tab states
-      tabs.forEach(tab => {
-        const isActive = tab.dataset.filter === filter;
-        tab.classList.toggle('active', isActive);
-        tab.setAttribute('aria-selected', String(isActive));
-      });
+    function pageOf(n: number, total: number) {
+      return pageOfTpl.replace('{n}', String(n)).replace('{total}', String(total));
+    }
 
-      // Determine which posts match
-      const matchingIndices: number[] = [];
-      gridCards.forEach(card => {
-        const cat = card.dataset.category ?? 'uncategorized';
-        const matches = filter === 'all' || cat === filter;
-        if (matches) matchingIndices.push(Number(card.dataset.idx));
-      });
+    function buildPageNumbers(total: number, current: number) {
+      if (!pageNumbers) return;
+      pageNumbers.innerHTML = '';
+      const append = (html: string) => { pageNumbers.insertAdjacentHTML('beforeend', html); };
+      const btn = (n: number) =>
+        `<a href="#" class="page-btn${n === current ? ' active' : ''}" data-page="${n}">${n}</a>`;
 
-      // Featured slot: show the first matching post, hide all others
-      let featuredShown = false;
-      featuredCards.forEach(card => {
-        const idx = Number(card.dataset.idx);
-        const show = !featuredShown && matchingIndices.includes(idx);
-        card.classList.toggle('hidden-post', !show);
-        if (show) featuredShown = true;
-      });
-
-      // Grid: show all matching posts EXCEPT the one shown as featured
-      const featuredIdx = featuredCards.length
-        ? Number([...featuredCards].find(c => !c.classList.contains('hidden-post'))?.dataset.idx ?? -1)
-        : -1;
-
-      let gridVisible = 0;
-      gridCards.forEach(card => {
-        const idx = Number(card.dataset.idx);
-        const show = matchingIndices.includes(idx) && idx !== featuredIdx;
-        card.classList.toggle('hidden-post', !show);
-        if (show) gridVisible++;
-      });
-
-      // Toggle empty state
-      if (emptyState) {
-        emptyState.style.display = !featuredShown && gridVisible === 0 ? 'block' : 'none';
+      if (total <= 7) {
+        for (let i = 1; i <= total; i++) append(btn(i));
+        return;
+      }
+      // Match archive's "1 2 3 … 17" pattern: anchor the first 3 and the last,
+      // plus the current page's neighbourhood when it falls outside.
+      const showSet = new Set<number>([1, 2, 3, total, current - 1, current, current + 1]);
+      const sorted = [...showSet].filter(n => n >= 1 && n <= total).sort((a, b) => a - b);
+      let prev = 0;
+      for (const n of sorted) {
+        if (n - prev > 1) append('<span class="page-ellipsis" aria-hidden="true">···</span>');
+        append(btn(n));
+        prev = n;
       }
     }
 
+    function getMatching(filter: string) {
+      const matching: HTMLAnchorElement[] = [];
+      gridCards.forEach(card => {
+        const cat = card.dataset.category ?? 'uncategorized';
+        if (filter === 'all' || cat === filter) matching.push(card);
+      });
+      return matching;
+    }
+
+    function pickFeatured(filter: string) {
+      // First matching post becomes the featured slot
+      let featuredIdx = -1;
+      featuredCards.forEach(card => {
+        const cat = card.dataset.category ?? 'uncategorized';
+        if (featuredIdx === -1 && (filter === 'all' || cat === filter)) {
+          featuredIdx = Number(card.dataset.idx);
+        }
+        card.classList.add('hidden-post');
+      });
+      if (featuredIdx >= 0) {
+        const target = [...featuredCards].find(c => Number(c.dataset.idx) === featuredIdx);
+        if (target) target.classList.remove('hidden-post');
+      }
+      return featuredIdx;
+    }
+
+    function render() {
+      const featuredIdx = pickFeatured(currentFilter);
+      const matching = getMatching(currentFilter).filter(c => Number(c.dataset.idx) !== featuredIdx);
+      const total = matching.length;
+      const totalPages = Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      const start = (currentPage - 1) * POSTS_PER_PAGE;
+      const end = start + POSTS_PER_PAGE;
+
+      // Hide everything first
+      gridCards.forEach(c => c.classList.add('hidden-post'));
+      // Show this page's slice
+      matching.slice(start, end).forEach(c => c.classList.remove('hidden-post'));
+
+      const visible = Math.max(0, Math.min(POSTS_PER_PAGE, total - start));
+      if (postCountEl) postCountEl.textContent = String(visible);
+      if (postTotalEl) postTotalEl.textContent = String(total + (featuredIdx >= 0 ? 1 : 0));
+
+      // Pagination chrome
+      if (paginationEl) {
+        paginationEl.style.display = totalPages > 1 ? '' : 'none';
+        buildPageNumbers(totalPages, currentPage);
+        if (pageStatus) pageStatus.textContent = pageOf(currentPage, totalPages);
+        if (prevBtn) {
+          if (currentPage <= 1) prevBtn.setAttribute('aria-disabled', 'true');
+          else prevBtn.removeAttribute('aria-disabled');
+        }
+        if (nextBtn) {
+          if (currentPage >= totalPages) nextBtn.setAttribute('aria-disabled', 'true');
+          else nextBtn.removeAttribute('aria-disabled');
+        }
+      }
+
+      // Empty state
+      const featuredVisible = featuredIdx >= 0;
+      if (emptyState) emptyState.style.display = !featuredVisible && visible === 0 ? 'block' : 'none';
+    }
+
+    // Tab clicks
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
-        applyFilter(tab.dataset.filter ?? 'all');
+        tabs.forEach(t => {
+          t.classList.toggle('active', t === tab);
+          t.setAttribute('aria-selected', String(t === tab));
+        });
+        currentFilter = tab.dataset.filter ?? 'all';
+        currentPage = 1;
+        render();
       });
     });
 
-    // Init: apply 'all' on load
-    applyFilter('all');
+    // Pagination delegation
+    paginationEl?.addEventListener('click', (e) => {
+      const target = (e.target as HTMLElement).closest<HTMLAnchorElement>('a.page-btn');
+      if (!target) return;
+      e.preventDefault();
+      if (target.getAttribute('aria-disabled') === 'true') return;
+
+      if (target.classList.contains('page-prev')) currentPage--;
+      else if (target.classList.contains('page-next')) currentPage++;
+      else if (target.dataset.page) currentPage = Number(target.dataset.page);
+
+      render();
+      // Scroll the grid into view
+      document.getElementById('post-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    render();
   })();
 </script>
