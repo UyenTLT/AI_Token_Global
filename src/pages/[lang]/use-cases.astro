@@ -30,6 +30,28 @@ function pt(blocks: any[] | undefined): string {
   });
 }
 
+// Archive bolds the leading question of the footer note (e.g. "Not sure which direction to start with?").
+// If Sanity content stores it as a single unformatted span, split off the leading "...?" and apply strong.
+function boldLeadingQuestion(blocks: any[] | undefined): any[] | undefined {
+  if (!blocks?.length) return blocks;
+  return blocks.map((block, bIdx) => {
+    if (bIdx !== 0 || block._type !== 'block' || !block.children?.length) return block;
+    const first = block.children[0];
+    if (first._type !== 'span' || first.marks?.length) return block;
+    const m = (first.text ?? '').match(/^(.+?\?)(\s+)(.*)$/s);
+    if (!m) return block;
+    const [, head, gap, tail] = m;
+    return {
+      ...block,
+      children: [
+        { ...first, _key: (first._key ?? 'lead') + '-bold', text: head, marks: ['strong'] },
+        { _type: 'span', _key: (first._key ?? 'lead') + '-rest', text: gap + tail, marks: [] },
+        ...block.children.slice(1),
+      ],
+    };
+  });
+}
+
 type CardVisual = { gradient: string; calloutBg: string; accent: string; svg: string };
 
 const CARD_VISUALS: CardVisual[] = [
@@ -131,7 +153,7 @@ const CARD_VISUALS: CardVisual[] = [
 
       {page.footerNoteBody && (
         <div class="footer-note reveal" style="background:linear-gradient(135deg,rgba(97,85,241,0.06),rgba(62,129,229,0.04));border-radius:16px;padding:1.625rem 2rem;border:1px solid rgba(97,85,241,0.1);text-align:center;max-width:820px;margin:0 auto 3.5rem;">
-          <div class="prose-article" set:html={pt(page.footerNoteBody)} />
+          <div class="prose-article" set:html={pt(boldLeadingQuestion(page.footerNoteBody))} />
           <div style="display:flex;gap:0.875rem;justify-content:center;margin-top:1.25rem;flex-wrap:wrap;">
             <a href={`/${lang}/api-compare`} class="btn-primary" style="font-size:0.875rem;">{t('useCasesPage.footerCtaPrimary')}</a>
             <a href={`/${lang}/beginners-guide`} class="btn-secondary" style="font-size:0.875rem;">{t('useCasesPage.footerCtaSecondary')}</a>
