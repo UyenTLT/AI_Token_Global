@@ -210,7 +210,11 @@
     "tableColBestFor": "Terbaik Untuk / Kasus Penggunaan",
     "faqFallback": "Pertanyaan Umum tentang Tipe Model",
     "viewPricingTableBtn": "Lihat Tabel Harga",
-    "backToHomeBtn": "Kembali ke Beranda"
+    "backToHomeBtn": "Kembali ke Beranda",
+    "tocFaqLabel": "FAQ",
+    "quickTipTitle": "Tips Cepat",
+    "quickTipBody": "Baru kenal AI? Mulai dengan model teks seperti GPT-4o mini atau Claude Haiku — biaya rendah, mudah dicoba, dan dokumentasinya banyak.",
+    "comparePricesBtn": "Bandingkan Harga"
   },
   "beginners": {
     "readingOrderFallback": "Kalau Kamu Baru, Baca Sesuai Urutan Ini",

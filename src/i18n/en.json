@@ -210,7 +210,11 @@
     "tableColBestFor": "Best For / Use Case",
     "faqFallback": "Common Questions About Model Types",
     "viewPricingTableBtn": "View Pricing Table",
-    "backToHomeBtn": "Back to Home"
+    "backToHomeBtn": "Back to Home",
+    "tocFaqLabel": "FAQ",
+    "quickTipTitle": "Quick Tip",
+    "quickTipBody": "New to AI? Start with a text model like GPT-4o mini or Claude Haiku — low cost, easy to test, and widely documented.",
+    "comparePricesBtn": "Compare Prices"
   },
   "beginners": {
     "readingOrderFallback": "If You're New, Read in This Order",

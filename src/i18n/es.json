@@ -210,7 +210,11 @@
     "tableColBestFor": "Mejor Para / Caso de Uso",
     "faqFallback": "Preguntas Frecuentes sobre Tipos de Modelos",
     "viewPricingTableBtn": "Ver Tabla de Precios",
-    "backToHomeBtn": "Volver al Inicio"
+    "backToHomeBtn": "Volver al Inicio",
+    "tocFaqLabel": "FAQ",
+    "quickTipTitle": "Consejo Rápido",
+    "quickTipBody": "¿Nuevo en IA? Empieza con un modelo de texto como GPT-4o mini o Claude Haiku — bajo coste, fáciles de probar y muy documentados.",
+    "comparePricesBtn": "Comparar Precios"
   },
   "beginners": {
     "readingOrderFallback": "Si Eres Nuevo, Lee en Este Orden",
