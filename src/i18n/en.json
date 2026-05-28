@@ -151,6 +151,7 @@
     "blogCtaBtn": "Explore All Articles",
     "faqCommonLabel": "Common Questions",
     "seoTitleFallback": "AI Token King — Your AI Knowledge Hub",
+    "tokenBody2Fallback": "Every API call you make is billed in tokens: <strong style=\"color:#3C315B;\">input tokens</strong> (what you send) and <strong style=\"color:#3C315B;\">output tokens</strong> (what the model generates). Mastering token math is essential for anyone building with AI.",
     "tokenBreakdownTokensLabel": "Tokens",
     "tokenBreakdownCharsLabel": "Characters",
     "tableCellModel": "Model",
@@ -165,7 +166,13 @@
     "modalityText": "Text",
     "modalityVision": "Vision",
     "modalityAudio": "Audio",
-    "readMore": "Read More"
+    "readMore": "Read More",
+    "newsletterLabel": "Stay Updated",
+    "newsletterHeading": "Get the Latest AI Insights Delivered to Your Inbox",
+    "newsletterSubtitle": "Weekly roundups of new AI models, pricing changes, token tips, and practical guides. No spam — just signal.",
+    "newsletterPlaceholder": "Enter your email",
+    "newsletterBtn": "Subscribe Free",
+    "newsletterDisclaimer": "Join thousands of developers and AI enthusiasts. Unsubscribe anytime."
   },
   "aiTrends": {
     "heroLabel": "Trend Watch",

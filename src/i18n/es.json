@@ -151,6 +151,7 @@
     "blogCtaBtn": "Explorar Todos los Artículos",
     "faqCommonLabel": "Preguntas Frecuentes",
     "seoTitleFallback": "AI Token King — Tu Centro de Conocimiento en IA",
+    "tokenBody2Fallback": "Cada llamada a la API se factura en tokens: <strong style=\"color:#3C315B;\">tokens de entrada</strong> (lo que envías) y <strong style=\"color:#3C315B;\">tokens de salida</strong> (lo que el modelo genera). Dominar el cálculo de tokens es esencial para cualquiera que trabaje con IA.",
     "tokenBreakdownTokensLabel": "Tokens",
     "tokenBreakdownCharsLabel": "Caracteres",
     "tableCellModel": "Modelo",
@@ -165,7 +166,13 @@
     "modalityText": "Texto",
     "modalityVision": "Visión",
     "modalityAudio": "Audio",
-    "readMore": "Leer Más"
+    "readMore": "Leer Más",
+    "newsletterLabel": "Mantente Actualizado",
+    "newsletterHeading": "Recibe las Últimas Novedades de IA en Tu Bandeja de Entrada",
+    "newsletterSubtitle": "Resúmenes semanales de nuevos modelos de IA, cambios de precios, consejos sobre tokens y guías prácticas. Sin spam — solo información útil.",
+    "newsletterPlaceholder": "Ingresa tu correo electrónico",
+    "newsletterBtn": "Suscríbete Gratis",
+    "newsletterDisclaimer": "Únete a miles de desarrolladores y entusiastas de la IA. Cancela cuando quieras."
   },
   "aiTrends": {
     "heroLabel": "Tendencias IA",

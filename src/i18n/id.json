@@ -151,6 +151,7 @@
     "blogCtaBtn": "Jelajahi Semua Artikel",
     "faqCommonLabel": "Pertanyaan Umum",
     "seoTitleFallback": "AI Token King — Pusat Pengetahuan AI Kamu",
+    "tokenBody2Fallback": "Setiap panggilan API ditagih dalam token: <strong style=\"color:#3C315B;\">token input</strong> (yang kamu kirim) dan <strong style=\"color:#3C315B;\">token output</strong> (yang dihasilkan model). Menguasai perhitungan token sangat penting bagi siapa saja yang membangun dengan AI.",
     "tokenBreakdownTokensLabel": "Token",
     "tokenBreakdownCharsLabel": "Karakter",
     "tableCellModel": "Model",
@@ -165,7 +166,13 @@
     "modalityText": "Teks",
     "modalityVision": "Visi",
     "modalityAudio": "Audio",
-    "readMore": "Baca Selengkapnya"
+    "readMore": "Baca Selengkapnya",
+    "newsletterLabel": "Tetap Update",
+    "newsletterHeading": "Dapatkan Wawasan AI Terbaru Langsung ke Inbox Kamu",
+    "newsletterSubtitle": "Rangkuman mingguan model AI baru, perubahan harga, tips token, dan panduan praktis. Tanpa spam — hanya informasi berguna.",
+    "newsletterPlaceholder": "Masukkan email kamu",
+    "newsletterBtn": "Berlangganan Gratis",
+    "newsletterDisclaimer": "Bergabung dengan ribuan developer dan penggemar AI. Berhenti kapan saja."
   },
   "aiTrends": {
     "heroLabel": "Pantauan Tren",
