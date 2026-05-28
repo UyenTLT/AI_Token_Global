@@ -240,7 +240,6 @@
     "inputLabel": "Texto de Entrada",
     "inputPlaceholder": "Pega cualquier texto — un artículo, un prompt, un mensaje de atención al cliente o contenido de API — para estimar su conteo de tokens y costo.",
     "charCountWord": "caracteres",
-    "calculateBtn": "Calcular",
     "clearBtn": "Limpiar",
     "rulesTitle": "Reglas de Estimación",
     "rule1": "Estimación de propósito general — ideal para evaluar rápidamente el tamaño del texto a escala.",

@@ -240,7 +240,6 @@
     "inputLabel": "Teks Input",
     "inputPlaceholder": "Tempel teks apa saja — artikel, prompt, pesan layanan pelanggan, atau konten API — untuk memperkirakan jumlah token dan biayanya.",
     "charCountWord": "karakter",
-    "calculateBtn": "Hitung",
     "clearBtn": "Hapus",
     "rulesTitle": "Aturan Estimasi",
     "rule1": "Estimasi umum — ideal untuk mengukur ukuran teks dengan cepat dalam skala besar.",

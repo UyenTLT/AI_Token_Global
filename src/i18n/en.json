@@ -240,7 +240,6 @@
     "inputLabel": "Input Text",
     "inputPlaceholder": "Paste any text — an article, a prompt, a customer service message, or API content — to estimate its token count and cost.",
     "charCountWord": "characters",
-    "calculateBtn": "Calculate",
     "clearBtn": "Clear",
     "rulesTitle": "Estimation Rules",
     "rule1": "General-purpose estimation — great for quickly gauging text size at scale.",
