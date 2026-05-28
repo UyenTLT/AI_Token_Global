@@ -22,7 +22,7 @@ function pt(blocks: any[] | undefined): string {
   return toHTML(blocks, {
     components: {
       marks: {
-        strong: ({ children }) => `<strong style="font-weight:700;color:#1C1C1C;">${children}</strong>`,
+        strong: ({ children }) => `<strong>${children}</strong>`,
         em:     ({ children }) => `<em>${children}</em>`,
         link:   ({ value, children }) => `<a href="${value?.href ?? '#'}" style="color:#6155F1;text-decoration:underline;text-underline-offset:3px;" target="${value?.href?.startsWith('http') ? '_blank' : '_self'}" rel="noopener noreferrer">${children}</a>`,
       },
@@ -30,7 +30,29 @@ function pt(blocks: any[] | undefined): string {
   });
 }
 
-const ACCENT_COLORS = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#F43F5E'];
+// problemsBody = 1 intro paragraph + bulleted list items.
+// Render intro as prose, bullets as colored-dot rows inside a gradient callout.
+const problemsBlocks = (page.problemsBody ?? []) as any[];
+const problemsIntro = problemsBlocks.filter(b => !b.listItem);
+const problemsBullets = problemsBlocks.filter(b => b.listItem === 'bullet');
+
+// useCasesBody / openclawBody: last paragraph is rendered as a styled callout.
+function splitLast(blocks: any[] | undefined) {
+  const arr = (blocks ?? []) as any[];
+  if (arr.length <= 1) return { head: arr, tail: [] as any[] };
+  return { head: arr.slice(0, -1), tail: arr.slice(-1) };
+}
+const useCasesSplit = splitLast(page.useCasesBody);
+const openclawSplit = splitLast(page.openclawBody);
+
+const BULLET_DOT_COLORS  = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#6155F1', '#3E81E5'];
+const FEATURE_BORDER     = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#F43F5E'];
+const MODEL_TITLE_COLOR  = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#6155F1'];
+const AUDIENCE_COLOR     = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#F43F5E'];
+const STEP_BG            = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#F43F5E'];
+
+const problemItems = [t('userGuide.problemItem1'), t('userGuide.problemItem2'), t('userGuide.problemItem3')];
+const solutionItems = [t('userGuide.solutionItem1'), t('userGuide.solutionItem2'), t('userGuide.solutionItem3')];
 ---
 
 <BaseLayout
@@ -39,12 +61,14 @@ const ACCENT_COLORS = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#F43F5E'];
   noindex={page.seo?.noindex ?? false}
   lang={lang as Lang}
   seo={page.seo}
+  activePage="user-guide"
+  activeDropdown="resources"
 >
 
   <!-- Hero -->
   <section class="hero-bg" style="padding: 3.5rem 1.5rem 3rem; background: linear-gradient(40deg, #2A1F5C, #0D1547);">
     <div class="hero-bg-canvas" aria-hidden="true">
-      <svg style="display:none"><defs><filter id="hero-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo"/><feBlend in="SourceGraphic" in2="goo"/></filter></defs></svg>
+      <svg style="display:none"><defs><filter id="ug-page-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo"/><feBlend in="SourceGraphic" in2="goo"/></filter></defs></svg>
       <div class="grad-blobs">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
@@ -54,15 +78,17 @@ const ACCENT_COLORS = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#F43F5E'];
       </div>
     </div>
     <div class="hero-bg-content" style="max-width:1200px;margin:0 auto;">
-      <nav style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1.75rem;font-size:0.8rem;color:rgba(255,255,255,0.5);" aria-label="Breadcrumb">
+      <nav style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1.75rem;font-size:0.8rem;color:rgba(255,255,255,0.5);" aria-label={t('common.aria.breadcrumb')}>
         <a href={`/${lang}/`} style="color:rgba(255,255,255,0.5);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">{t('common.home')}</a>
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span style="color:rgba(255,255,255,0.9);font-weight:600;">{page.heroHeadline}</span>
+        <span style="color:rgba(255,255,255,0.5);">{t('userGuide.breadcrumbParent')}</span>
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span style="color:rgba(255,255,255,0.9);font-weight:600;">{t('nav.userGuide')}</span>
       </nav>
       <div style="max-width:760px;">
         {page.heroLabel && (
           <div class="section-label fade-up" style="margin-bottom:1.125rem;background:rgba(226,223,254,0.15);color:rgba(255,255,255,0.9);border:1px solid rgba(255,255,255,0.15);">
-            <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.5 5 5.5.8-4 3.9.9 5.5L8 13.5l-4.9 2.6.9-5.5L0 6.8l5.5-.8z"/></svg>
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
             {page.heroLabel}
           </div>
         )}
@@ -70,15 +96,19 @@ const ACCENT_COLORS = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#F43F5E'];
           {page.heroHeadline}
         </h1>
         {page.heroSubtitle && (
-          <p class="fade-up" style="font-size:1.05rem;line-height:1.75;color:rgba(255,255,255,0.7);max-width:640px;margin-bottom:0.5rem;animation-delay:0.14s;">
+          <p class="fade-up" style="font-size:1.05rem;line-height:1.75;color:rgba(255,255,255,0.7);max-width:640px;margin-bottom:0.625rem;animation-delay:0.14s;">
             {page.heroSubtitle}
           </p>
         )}
         {page.heroSubtitle2 && (
-          <p class="fade-up" style="font-size:0.9rem;line-height:1.65;color:rgba(255,255,255,0.55);max-width:600px;animation-delay:0.21s;">
+          <p class="fade-up" style="font-size:0.925rem;line-height:1.7;color:rgba(255,255,255,0.5);max-width:600px;margin-bottom:1.75rem;animation-delay:0.21s;">
             {page.heroSubtitle2}
           </p>
         )}
+        <div class="fade-up" style="display:flex;gap:0.75rem;flex-wrap:wrap;animation-delay:0.28s;">
+          <a href="#what-is" class="btn-primary">{t('userGuide.heroCtaPrimary')}</a>
+          <a href="#getting-started" class="btn-secondary" style="color:rgba(255,255,255,0.85);border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);">{t('userGuide.heroCtaSecondary')}</a>
+        </div>
       </div>
     </div>
   </section>
@@ -88,119 +118,219 @@ const ACCENT_COLORS = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#F43F5E'];
 
     <article>
 
-      <!-- What Is -->
-      {page.whatIsTitle && (
-        <section id="what-is" style="margin-bottom:3rem;">
-          <h2 class="section-h2">{page.whatIsTitle}</h2>
-          {page.whatIsBody && <div class="prose-article reveal" set:html={pt(page.whatIsBody)} />}
-        </section>
-      )}
+      <!-- 1. What Is -->
+      <section id="what-is" style="margin-bottom:3.5rem;">
+        <div class="ug-section-head">
+          <div class="ug-icon-box" style="background:linear-gradient(135deg,#6155F1,#3E81E5);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h2 class="section-h2">{page.whatIsTitle ?? t('userGuide.whatIsFallback')}</h2>
+        </div>
+        {page.whatIsBody && <div class="prose-article reveal" style="margin-bottom:1.5rem;" set:html={pt(page.whatIsBody)} />}
 
-      <!-- Problems -->
-      {page.problemsTitle && (
-        <section id="problems" style="margin-bottom:3rem;">
-          <h2 class="section-h2">{page.problemsTitle}</h2>
-          {page.problemsBody && <div class="prose-article reveal" set:html={pt(page.problemsBody)} />}
-        </section>
-      )}
+        <div class="two-col-grid reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="card" style="padding:1.25rem 1.375rem;">
+            <div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:0.625rem;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#6155F1" stroke-width="1.75"/><path d="M12 8v4M12 16h.01" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round"/></svg>
+              <span style="font-size:0.8rem;font-weight:700;color:#6155F1;text-transform:uppercase;letter-spacing:0.04em;">{t('userGuide.problemLabel')}</span>
+            </div>
+            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.5rem;">
+              {problemItems.map(item => (
+                <li style="font-size:0.875rem;color:#555;display:flex;align-items:flex-start;gap:0.5rem;line-height:1.5;">
+                  <span style="color:#F43F5E;font-weight:700;flex-shrink:0;">✕</span>{item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div class="card" style="padding:1.25rem 1.375rem;">
+            <div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:0.625rem;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span style="font-size:0.8rem;font-weight:700;color:#22C55E;text-transform:uppercase;letter-spacing:0.04em;">{t('userGuide.solutionLabel')}</span>
+            </div>
+            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.5rem;">
+              {solutionItems.map(item => (
+                <li style="font-size:0.875rem;color:#555;display:flex;align-items:flex-start;gap:0.5rem;line-height:1.5;">
+                  <span style="color:#22C55E;font-weight:700;flex-shrink:0;">✓</span>{item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
 
-      <!-- Core Features -->
+      <!-- 2. Problems -->
+      <section id="problems" style="margin-bottom:3.5rem;">
+        <div class="ug-section-head">
+          <div class="ug-icon-box" style="background:linear-gradient(135deg,#3E81E5,#0ABFBC);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h2 class="section-h2">{page.problemsTitle ?? t('userGuide.problemsFallback')}</h2>
+        </div>
+
+        <div class="ug-problems-callout reveal" style="background:linear-gradient(135deg,#F5F2FF,#EBF4FF);border-radius:16px;padding:1.75rem;">
+          {problemsIntro.length > 0 && (
+            <div class="problems-intro" set:html={pt(problemsIntro)} />
+          )}
+          {problemsBullets.length > 0 && (
+            <div style="display:flex;flex-direction:column;gap:0.75rem;">
+              {problemsBullets.map((b, i) => {
+                const text = (b.children ?? []).map((c: any) => c.text ?? '').join('');
+                return (
+                  <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+                    <div style={`width:8px;height:8px;border-radius:50%;background:${BULLET_DOT_COLORS[i % BULLET_DOT_COLORS.length]};flex-shrink:0;margin-top:0.4rem;`}></div>
+                    <span style="font-size:0.9rem;color:#3C315B;line-height:1.6;">{text}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <!-- 3. Core Features -->
       {page.features && page.features.length > 0 && (
-        <section id="features" style="margin-bottom:3rem;">
-          <h2 class="section-h2">{page.featuresTitle ?? t('userGuide.featuresFallback')}</h2>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.125rem;" class="two-col-grid">
+        <section id="features" style="margin-bottom:3.5rem;">
+          <div class="ug-section-head" style="margin-bottom:1.75rem;">
+            <div class="ug-icon-box" style="background:linear-gradient(135deg,#6155F1,#F59E0B);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2 class="section-h2">{page.featuresTitle ?? t('userGuide.featuresFallback')}</h2>
+          </div>
+          <div class="reveal" style="display:flex;flex-direction:column;gap:1.25rem;">
             {page.features.map((f, i) => (
-              <div class="card-elevated reveal" style="padding:1.375rem;">
-                <div style={`width:36px;height:36px;border-radius:10px;background:${ACCENT_COLORS[i % 5]}20;display:flex;align-items:center;justify-content:center;margin-bottom:0.75rem;`}>
-                  <div style={`width:8px;height:8px;border-radius:50%;background:${ACCENT_COLORS[i % 5]};`}></div>
-                </div>
-                <h3 style="font-family:'Kanit',sans-serif;font-size:1rem;font-weight:700;color:#1C1C1C;margin-bottom:0.5rem;">{f.title}</h3>
-                {f.body && <div class="prose-article" set:html={pt(f.body)} />}
+              <div class="card ug-feature-card" style={`padding:1.5rem 1.75rem;border-left:4px solid ${FEATURE_BORDER[i % FEATURE_BORDER.length]};`}>
+                <h3 style="font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;color:#1C1C1C;margin-bottom:0.5rem;letter-spacing:-0.02em;">{f.title}</h3>
+                {f.body && <div class="ug-feature-body" set:html={pt(f.body)} />}
               </div>
             ))}
           </div>
         </section>
       )}
 
-      <!-- Supported Models -->
+      <!-- 4. Supported Models -->
       {page.models && page.models.length > 0 && (
-        <section id="models" style="margin-bottom:3rem;">
-          <h2 class="section-h2">{page.modelsTitle ?? t('userGuide.modelsFallback')}</h2>
-          <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1.125rem;">
-            {page.models.map((m, i) => (
-              <div class="reveal" style={`display:flex;align-items:flex-start;gap:1rem;background:#fff;border-radius:12px;padding:1rem 1.25rem;box-shadow:0 2px 8px rgba(97,85,241,0.07);border-left:3px solid ${ACCENT_COLORS[i % 5]};`}>
-                <div>
-                  <div style="font-family:'Kanit',sans-serif;font-size:0.95rem;font-weight:700;color:#1C1C1C;">{m.name}</div>
-                  {m.description && <p style="font-size:0.875rem;color:#666;line-height:1.6;margin:0.25rem 0 0;">{m.description}</p>}
+        <section id="models" style="margin-bottom:3.5rem;">
+          <div class="ug-section-head" style="margin-bottom:1.5rem;">
+            <div class="ug-icon-box" style="background:linear-gradient(135deg,#3E81E5,#6155F1);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="#fff" stroke-width="1.75"/><path d="M8 21h8M12 17v4" stroke="#fff" stroke-width="1.75" stroke-linecap="round"/></svg>
+            </div>
+            <h2 class="section-h2">{page.modelsTitle ?? t('userGuide.modelsFallback')}</h2>
+          </div>
+          <div class="two-col-grid reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            {page.models.map((m, i) => {
+              const isLastOdd = i === page.models!.length - 1 && page.models!.length % 2 === 1;
+              return (
+                <div class="card" style={`padding:1.25rem 1.375rem;${isLastOdd ? 'grid-column:span 2;' : ''}`}>
+                  <div style={`font-family:'Kanit',sans-serif;font-size:1rem;font-weight:700;color:${MODEL_TITLE_COLOR[i % MODEL_TITLE_COLOR.length]};margin-bottom:0.375rem;`}>{m.name}</div>
+                  {m.description && <p style="font-size:0.875rem;color:#555;line-height:1.6;margin:0;">{m.description}</p>}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
 
-      <!-- Use Cases -->
-      {page.useCasesTitle && (
-        <section id="use-cases" style="margin-bottom:3rem;">
-          <h2 class="section-h2">{page.useCasesTitle}</h2>
-          {page.useCasesBody && <div class="prose-article reveal" set:html={pt(page.useCasesBody)} />}
-        </section>
-      )}
+      <!-- 5. Use Cases -->
+      <section id="use-cases" style="margin-bottom:3.5rem;">
+        <div class="ug-section-head">
+          <div class="ug-icon-box" style="background:linear-gradient(135deg,#F59E0B,#F43F5E);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h2 class="section-h2">{page.useCasesTitle ?? t('userGuide.useCasesFallback')}</h2>
+        </div>
+        {useCasesSplit.head.length > 0 && (
+          <div class="prose-article reveal" style="margin-bottom:1.25rem;" set:html={pt(useCasesSplit.head)} />
+        )}
+        {useCasesSplit.tail.length > 0 && (
+          <div class="ug-callout reveal" style="background:#F5F2FF;border-radius:14px;padding:1.25rem 1.5rem;border:1px solid rgba(97,85,241,0.12);" set:html={pt(useCasesSplit.tail)} />
+        )}
+      </section>
 
-      <!-- Audience -->
+      <!-- 6. Audience -->
       {page.audience && page.audience.length > 0 && (
-        <section id="audience" style="margin-bottom:3rem;">
-          <h2 class="section-h2">{page.audienceTitle ?? t('userGuide.audienceFallback')}</h2>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.125rem;" class="two-col-grid">
-            {page.audience.map((a, i) => (
-              <div class="card-elevated reveal" style="padding:1.25rem 1.375rem;">
-                <div style={`font-size:0.8rem;font-weight:700;color:${ACCENT_COLORS[i % 5]};text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.375rem;`}>{a.role}</div>
-                {a.body && <div class="prose-article" set:html={pt(a.body)} />}
-              </div>
-            ))}
+        <section id="audience" style="margin-bottom:3.5rem;">
+          <div class="ug-section-head" style="margin-bottom:1.5rem;">
+            <div class="ug-icon-box" style="background:linear-gradient(135deg,#6155F1,#0ABFBC);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4" stroke="#fff" stroke-width="1.75"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2 class="section-h2">{page.audienceTitle ?? t('userGuide.audienceFallback')}</h2>
+          </div>
+          <div class="two-col-grid reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            {page.audience.map((a, i) => {
+              const isLastOdd = i === page.audience!.length - 1 && page.audience!.length % 2 === 1;
+              return (
+                <div class="card ug-audience-card" style={`padding:1.375rem 1.5rem;${isLastOdd ? 'grid-column:span 2;' : ''}`}>
+                  <div style={`font-size:0.75rem;font-weight:700;color:${AUDIENCE_COLOR[i % AUDIENCE_COLOR.length]};text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;`}>{a.role}</div>
+                  {a.body && <div class="ug-audience-body" set:html={pt(a.body)} />}
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
 
-      <!-- OpenClaw -->
-      {page.openclawTitle && (
-        <section id="openclaw" style="margin-bottom:3rem;">
-          <h2 class="section-h2">{page.openclawTitle}</h2>
-          {page.openclawBody && <div class="prose-article reveal" set:html={pt(page.openclawBody)} />}
-        </section>
-      )}
+      <!-- 7. OpenClaw -->
+      <section id="openclaw" style="margin-bottom:3.5rem;">
+        <div class="ug-section-head">
+          <div class="ug-icon-box" style="background:linear-gradient(135deg,#3C315B,#6155F1);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-5h2v2h-2zm0-8h2v6h-2z" fill="#fff"/></svg>
+          </div>
+          <h2 class="section-h2">{page.openclawTitle ?? t('userGuide.openclawFallback')}</h2>
+        </div>
+        {openclawSplit.head.length > 0 && (
+          <div class="prose-article reveal" style="margin-bottom:1.25rem;" set:html={pt(openclawSplit.head)} />
+        )}
+        {openclawSplit.tail.length > 0 && (
+          <div class="ug-callout reveal" style="background:linear-gradient(135deg,rgba(97,85,241,0.06),rgba(62,129,229,0.06));border-radius:14px;padding:1.25rem 1.5rem;border:1px solid rgba(97,85,241,0.12);" set:html={pt(openclawSplit.tail)} />
+        )}
+      </section>
 
-      <!-- Getting Started -->
+      <!-- 8. Getting Started -->
       {page.steps && page.steps.length > 0 && (
-        <section id="getting-started" style="margin-bottom:3rem;">
-          <h2 class="section-h2">{page.gettingStartedTitle ?? t('userGuide.gettingStartedFallback')}</h2>
-          <div style="display:flex;flex-direction:column;gap:1rem;margin-top:1.125rem;">
+        <section id="getting-started" style="margin-bottom:3.5rem;">
+          <div class="ug-section-head" style="margin-bottom:1.5rem;">
+            <div class="ug-icon-box" style="background:linear-gradient(135deg,#22C55E,#0ABFBC);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 3l14 9-14 9V3z" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2 class="section-h2">{page.gettingStartedTitle ?? t('userGuide.gettingStartedFallback')}</h2>
+          </div>
+
+          <div class="reveal" style="display:flex;flex-direction:column;gap:0.875rem;">
             {page.steps.map((step, i) => (
-              <div class="card-elevated reveal" style="padding:1.375rem 1.5rem;display:flex;gap:1.25rem;align-items:flex-start;">
-                <div style={`width:32px;height:32px;border-radius:50%;background:${ACCENT_COLORS[i % 5]};color:#fff;font-family:'Kanit',sans-serif;font-weight:700;font-size:0.875rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;`}>{i + 1}</div>
-                <div style="flex:1;">
-                  <h3 style="font-family:'Kanit',sans-serif;font-size:1rem;font-weight:700;color:#1C1C1C;margin-bottom:0.375rem;">{step.title}</h3>
-                  {step.body && <div class="prose-article" set:html={pt(step.body)} />}
+              <div class="ug-step-card" style="display:flex;align-items:flex-start;gap:1.125rem;background:#fff;border-radius:14px;padding:1.25rem 1.375rem;box-shadow:0 2px 8px rgba(97,85,241,0.07);">
+                <div style={`width:32px;height:32px;border-radius:50%;background:${STEP_BG[i % STEP_BG.length]};color:#fff;font-family:'Kanit',sans-serif;font-size:0.9rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;`}>{i + 1}</div>
+                <div>
+                  <div style="font-weight:700;color:#1C1C1C;margin-bottom:0.25rem;font-size:0.95rem;">{step.title}</div>
+                  {step.body && <div class="ug-step-body" set:html={pt(step.body)} />}
                 </div>
               </div>
             ))}
           </div>
+
+          <div class="ug-callout reveal" style="margin-top:1.5rem;background:linear-gradient(135deg,#F5F2FF,#EBF4FF);border-radius:14px;padding:1.25rem 1.5rem;">
+            <p style="font-size:0.875rem;color:#3C315B;line-height:1.7;margin:0;" set:html={t('userGuide.gettingStartedTip')} />
+          </div>
         </section>
       )}
 
-      <!-- FAQ -->
+      <!-- 9. FAQ -->
       {page.faq && page.faq.length > 0 && (
-        <section id="faq" style="margin-bottom:3rem;">
-          <h2 class="section-h2">{page.faqTitle ?? t('userGuide.faqFallback')}</h2>
-          <div style="background:#fff;border-radius:16px;padding:0.5rem 1.75rem;box-shadow:0 2px 8px rgba(97,85,241,0.07);margin-top:1.125rem;">
+        <section id="faq" style="margin-bottom:3.5rem;">
+          <div class="ug-section-head" style="margin-bottom:1.5rem;">
+            <div class="ug-icon-box" style="background:linear-gradient(135deg,#6155F1,#3E81E5);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2 class="section-h2">{page.faqTitle ?? t('userGuide.faqFallback')}</h2>
+          </div>
+          <div style="background:#fff;border-radius:16px;padding:0.5rem 1.75rem;box-shadow:0 2px 8px rgba(97,85,241,0.07);">
             {page.faq.map(item => (
               <div class="faq-item">
                 <button class="faq-question" onclick="window.toggleFaq(this)">
                   <span>{item.question}</span>
-                  <svg class="faq-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#6155F1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#6155F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
                 <div class="faq-answer">
-                  <div class="prose-article" style="padding-bottom:1.25rem;" set:html={pt(item.answer)} />
+                  <div class="ug-faq-answer-body" set:html={pt(item.answer)} />
                 </div>
               </div>
             ))}
@@ -212,26 +342,26 @@ const ACCENT_COLORS = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#F43F5E'];
 
     <!-- Sidebar -->
     <aside class="ug-sidebar" style="position:sticky;top:88px;">
-      <div class="card-elevated" style="padding:1.5rem;margin-bottom:1.25rem;">
+      <div class="ug-sidebar-card" style="background:#fff;border-radius:16px;padding:1.5rem;box-shadow:0 2px 10px rgba(97,85,241,0.08);margin-bottom:1.25rem;">
         <div style="font-family:'Kanit',sans-serif;font-size:0.75rem;font-weight:700;color:#6155F1;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:1rem;">{t('common.onThisPage')}</div>
         <nav style="display:flex;flex-direction:column;gap:0.125rem;">
-          {page.whatIsTitle && <a href="#what-is" class="toc-link">{page.whatIsTitle}</a>}
-          {page.problemsTitle && <a href="#problems" class="toc-link">{page.problemsTitle}</a>}
+          <a href="#what-is" class="toc-link active">{page.whatIsTitle ?? t('userGuide.whatIsFallback')}</a>
+          <a href="#problems" class="toc-link">{page.problemsTitle ?? t('userGuide.problemsFallback')}</a>
           {page.features && page.features.length > 0 && <a href="#features" class="toc-link">{page.featuresTitle ?? t('userGuide.featuresFallback')}</a>}
           {page.models && page.models.length > 0 && <a href="#models" class="toc-link">{page.modelsTitle ?? t('userGuide.modelsFallback')}</a>}
-          {page.useCasesTitle && <a href="#use-cases" class="toc-link">{page.useCasesTitle}</a>}
+          <a href="#use-cases" class="toc-link">{page.useCasesTitle ?? t('userGuide.useCasesFallback')}</a>
           {page.audience && page.audience.length > 0 && <a href="#audience" class="toc-link">{page.audienceTitle ?? t('userGuide.audienceFallback')}</a>}
-          {page.openclawTitle && <a href="#openclaw" class="toc-link">{page.openclawTitle}</a>}
+          <a href="#openclaw" class="toc-link">{page.openclawTitle ?? t('userGuide.openclawFallback')}</a>
           {page.steps && page.steps.length > 0 && <a href="#getting-started" class="toc-link">{page.gettingStartedTitle ?? t('userGuide.gettingStartedFallback')}</a>}
           {page.faq && page.faq.length > 0 && <a href="#faq" class="toc-link">{page.faqTitle ?? t('userGuide.faqFallback')}</a>}
         </nav>
       </div>
-      <div style="padding:1.375rem 1.5rem;border-radius:20px;background:linear-gradient(135deg,#3E81E5,#6155F1);">
-        <div style="font-family:'Kanit',sans-serif;font-size:0.95rem;font-weight:700;color:#fff;margin-bottom:0.5rem;">{t('userGuide.sidebarCtaTitle')}</div>
-        <p style="font-size:0.8rem;color:rgba(255,255,255,0.85);line-height:1.6;margin-bottom:1rem;">{t('userGuide.sidebarCtaBody')}</p>
-        <a href="https://www.aitokenking.com.tw/home" target="_blank" rel="noopener noreferrer" class="btn-primary" style="font-size:0.8rem;padding:0.5rem 1rem;width:100%;justify-content:center;background:rgba(255,255,255,0.2);box-shadow:none;border:1px solid rgba(255,255,255,0.35);">
-          {t('nav.getStarted')}
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div style="background:linear-gradient(135deg,#6155F1,#3E81E5);border-radius:16px;padding:1.5rem;color:#fff;">
+        <div style="font-family:'Kanit',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.5rem;">{t('userGuide.sidebarCtaTitle')}</div>
+        <p style="font-size:0.825rem;opacity:0.88;line-height:1.6;margin-bottom:1.125rem;">{t('userGuide.sidebarCtaBody')}</p>
+        <a href="https://www.aitokenking.com.tw/home" target="_blank" rel="noopener noreferrer" class="btn-primary" style="background:rgba(255,255,255,0.2);box-shadow:none;border:1px solid rgba(255,255,255,0.35);font-size:0.825rem;padding:0.5rem 1rem;width:100%;justify-content:center;">
+          {t('userGuide.sidebarCtaBtn')}
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
     </aside>
@@ -247,29 +377,60 @@ const ACCENT_COLORS = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#F43F5E'];
     font-weight: 800;
     color: #1C1C1C;
     letter-spacing: -0.03em;
-    margin-bottom: 1.125rem;
+    margin: 0;
   }
+  .ug-section-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .ug-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
   .prose-article p { font-size: 0.95rem; line-height: 1.8; color: #555; margin-bottom: 1rem; }
   .prose-article p:last-child { margin-bottom: 0; }
   .prose-article ul { padding-left: 1.25rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.375rem; }
   .prose-article li { font-size: 0.95rem; line-height: 1.75; color: #3C315B; }
-  .prose-article strong { font-weight: 700; color: #1C1C1C; }
+  .prose-article strong { font-weight: 700; color: #3C315B; }
+
+  /* Section-specific overrides */
+  .ug-feature-body p { font-size: 0.9rem; line-height: 1.75; color: #555; margin: 0; }
+  .ug-audience-body p { font-size: 0.875rem; line-height: 1.65; color: #555; margin: 0; }
+  .ug-step-body p { font-size: 0.875rem; line-height: 1.6; color: #666; margin: 0; }
+  .ug-callout p { font-size: 0.875rem; line-height: 1.7; color: #3C315B; margin: 0; }
+  .ug-callout strong { color: #3C315B; font-weight: 700; }
+  .ug-faq-answer-body p { font-size: 0.9rem; line-height: 1.75; color: #555; margin: 0; padding-bottom: 1.25rem; }
+  .ug-problems-callout .problems-intro p { font-size: 0.875rem; font-weight: 600; color: #3C315B; line-height: 1.6; margin: 0 0 1rem 0; }
+
+  /* Sidebar TOC link — match archive .sidebar-link */
   .toc-link {
-    font-size: 0.825rem;
-    font-weight: 500;
-    color: #666;
-    text-decoration: none;
-    padding: 0.3rem 0.5rem;
-    border-radius: 6px;
-    transition: background-color 0.15s ease, color 0.15s ease;
     display: block;
+    padding: 0.5rem 0.875rem;
+    border-radius: 8px;
+    font-size: 0.855rem;
+    font-weight: 500;
+    color: #555;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
     line-height: 1.4;
   }
   .toc-link:hover { background-color: #F5F2FF; color: #6155F1; }
+  .toc-link.active { background-color: #E2DFFE; color: #6155F1; font-weight: 600; }
   .toc-link:focus-visible { outline: 2px solid #6155F1; outline-offset: 2px; }
-  @media (max-width: 900px) {
+
+  @media (max-width: 1024px) {
     .ug-layout { grid-template-columns: 1fr !important; }
     .ug-sidebar { display: none !important; }
+  }
+  @media (max-width: 768px) {
     .two-col-grid { grid-template-columns: 1fr !important; }
   }
 </style>
@@ -281,7 +442,7 @@ const ACCENT_COLORS = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#F43F5E'];
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
   const sidebarLinks = document.querySelectorAll('.toc-link');
-  const sections = document.querySelectorAll('[id]');
+  const sections = document.querySelectorAll('article > section[id]');
   const spy = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {

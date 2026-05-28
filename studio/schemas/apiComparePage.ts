@@ -98,8 +98,8 @@ export const apiComparePageSchema = defineType({
       title: 'SEO',
       type: 'object',
       fields: [
-        defineField({ name: 'seoTitle',       title: 'SEO Title',              type: 'string', validation: (Rule: any) => Rule.max(60) }),
-        defineField({ name: 'seoDescription', title: 'Meta Description',       type: 'text',   rows: 2, validation: (Rule: any) => Rule.max(160) }),
+        defineField({ name: 'seoTitle',       title: 'SEO Title',              type: 'string', validation: (Rule: any) => Rule.max(60).warning('Over 60 chars — search engines may truncate the title') }),
+        defineField({ name: 'seoDescription', title: 'Meta Description',       type: 'text',   rows: 2, validation: (Rule: any) => Rule.max(160).warning('Over 160 chars — search engines may truncate the description') }),
         defineField({ name: 'ogImage',        title: 'Open Graph Image',       type: 'image'  }),
         defineField({ name: 'noindex',        title: 'Hide from search engines', type: 'boolean', initialValue: false }),
       ],

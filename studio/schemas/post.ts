@@ -38,7 +38,7 @@ export const postSchema = defineType({
       title: 'Excerpt',
       type: 'text',
       rows: 3,
-      validation: Rule => Rule.required().max(300),
+      validation: Rule => [Rule.required(), Rule.max(300).warning('Over 300 chars — excerpt may be truncated in card/list previews')],
     }),
     defineField({
       name: 'coverImage',
@@ -151,8 +151,8 @@ export const postSchema = defineType({
       title: 'SEO',
       type: 'object',
       fields: [
-        defineField({ name: 'seoTitle', title: 'SEO Title', type: 'string', description: 'Overrides post title. Max 60 chars.', validation: Rule => Rule.max(60) }),
-        defineField({ name: 'seoDescription', title: 'Meta Description', type: 'text', rows: 2, description: 'Overrides excerpt. Max 160 chars.', validation: Rule => Rule.max(160) }),
+        defineField({ name: 'seoTitle', title: 'SEO Title', type: 'string', description: 'Overrides post title. Max 60 chars.', validation: Rule => Rule.max(60).warning('Over 60 chars — search engines may truncate the title') }),
+        defineField({ name: 'seoDescription', title: 'Meta Description', type: 'text', rows: 2, description: 'Overrides excerpt. Max 160 chars.', validation: Rule => Rule.max(160).warning('Over 160 chars — search engines may truncate the description') }),
         defineField({ name: 'ogImage', title: 'Open Graph Image', type: 'image', description: '1200×630px recommended. Defaults to cover image.' }),
         defineField({ name: 'noindex', title: 'Hide from search engines', type: 'boolean', initialValue: false }),
       ],
