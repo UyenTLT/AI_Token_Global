@@ -217,8 +217,12 @@
     "stuckFallback": "Di Mana Pemula Biasanya Mentok",
     "faqFallback": "Pertanyaan Umum",
     "nextReadsFallback": "Bacaan Selanjutnya yang Disarankan",
-    "sidebarCtaTitle": "Bandingkan Model AI",
-    "sidebarCtaBody": "Harga live lengkap untuk 60+ model teks, gambar, dan video."
+    "sidebarCtaTitle": "Bandingkan Model",
+    "sidebarCtaBody": "Setelah memahami dasar-dasarnya, lihat bagaimana model-model berbeda dibandingkan dari segi kemampuan dan biaya.",
+    "viewModelOverview": "Lihat Ikhtisar Model",
+    "quickTipTitle": "Tips Cepat",
+    "quickTipBody": "Cara tercepat untuk bingung adalah mulai dari tabel harga sebelum memahami apa itu token. Bangun konsepnya dulu — angka-angkanya akan masuk akal dengan sendirinya.",
+    "exploreUseCases": "Jelajahi Kasus Penggunaan"
   },
   "calculator": {
     "inputLabel": "Tempel atau ketik teksmu di bawah ini",

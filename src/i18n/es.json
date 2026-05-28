@@ -217,8 +217,12 @@
     "stuckFallback": "Dónde se Atascan la Mayoría de Principiantes",
     "faqFallback": "Preguntas Frecuentes",
     "nextReadsFallback": "Lecturas Siguientes Recomendadas",
-    "sidebarCtaTitle": "Comparar Modelos de IA",
-    "sidebarCtaBody": "Precios actualizados de más de 60 modelos de texto, imagen y video."
+    "sidebarCtaTitle": "Comparar Modelos",
+    "sidebarCtaBody": "Una vez que entiendas los conceptos básicos, compara cómo se diferencian los modelos en capacidad y costo.",
+    "viewModelOverview": "Ver Resumen de Modelos",
+    "quickTipTitle": "Consejo Rápido",
+    "quickTipBody": "La forma más rápida de confundirte es empezar con tablas de precios antes de entender qué son los tokens. Construye el concepto primero — los números tendrán sentido por sí solos.",
+    "exploreUseCases": "Explorar Casos de Uso"
   },
   "calculator": {
     "inputLabel": "Pega o escribe tu texto aquí",

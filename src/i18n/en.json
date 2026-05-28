@@ -217,8 +217,12 @@
     "stuckFallback": "Where Most Beginners Get Stuck",
     "faqFallback": "Common Questions",
     "nextReadsFallback": "Recommended Next Reads",
-    "sidebarCtaTitle": "Compare AI Models",
-    "sidebarCtaBody": "Full live pricing for 60+ text, image, and video models."
+    "sidebarCtaTitle": "Compare Models",
+    "sidebarCtaBody": "Once you understand the basics, see how different models compare on capability and cost.",
+    "viewModelOverview": "View Model Overview",
+    "quickTipTitle": "Quick Tip",
+    "quickTipBody": "The fastest way to get confused is to start with pricing tables before understanding what tokens are. Build the concept first — the numbers will make sense on their own.",
+    "exploreUseCases": "Explore Use Cases"
   },
   "calculator": {
     "inputLabel": "Paste or type your text below",
