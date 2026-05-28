@@ -107,4 +107,24 @@ Compare every Astro page against its archive HTML reference (`archive/`) and fix
 ## How to Continue
 Start a new Claude Code session with this prompt:
 
-> I'm continuing Task 3 (tweak and polish static pages) on branch `levii/tweak-polish-static-pages`. Read `TASK3_PROGRESS.md` for full context — what's done, what's remaining, and lessons learned. Start with the next NOT STARTED page. Work page by page, detailed comparison, fix, build, verify.
+> I'm continuing Task 3 (tweak and polish static pages) on branch `levii/tweak-polish-static-pages`.
+>
+> **Before writing ANY code:**
+> 1. Read `CLAUDE.md` fully — it has hard rules you must follow.
+> 2. Invoke the `/frontend-design` skill — this is mandatory per CLAUDE.md, every session, no exceptions.
+> 3. Read `TASK3_PROGRESS.md` for full context — what's done, what's remaining, and lessons learned.
+>
+> **Then, for the next NOT STARTED page:**
+> 1. Read the Astro source file and the archive HTML reference (`archive/en/<page>.html`) in full.
+> 2. Start both servers: `node archive/serve.mjs` (port 3000, archive) and `npm run dev` (port 4321, Astro).
+> 3. Screenshot both with `node archive/screenshot.mjs <url> <label>`.
+> 4. Run a detailed Puppeteer `page.evaluate()` comparison — check every section's styles, colors, font sizes, weights, padding, margins, hover effects, layout. Don't do high-level scans.
+> 5. List every difference found.
+> 6. Fix each difference.
+> 7. `npm run build` — must pass.
+> 8. Re-audit with Puppeteer to confirm all differences are resolved (comparison round 2).
+> 9. Screenshot the fixed page.
+> 10. Update `TASK3_PROGRESS.md` with findings.
+> 11. Commit: `fix(<page>): polish static page to match archive reference`.
+>
+> Work ONE page at a time. Do not start the next page until the current one is committed.
