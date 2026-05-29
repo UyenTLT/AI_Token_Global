@@ -1,28 +1,20 @@
 import styled from 'styled-components';
+import { SUPPORTED_LOCALES, type Locale } from './lib/locales';
 
 // Reusable locale filter chip strip used by every section that shows
 // per-row locale data (Top Queries, Top Pages, Striking Distance, CTR Outliers).
 //
-// Why this lives in a shared component:
-//   - Same UI on every table → consistency for the user
-//   - One place to add a new locale when the site expands beyond en/es/id
-//   - Filter logic (filterByLocale) is colocated with the UI so behaviour
-//     never drifts between sections
+// The set of locales is read from lib/locales.ts — to add a new
+// language, edit `SUPPORTED_LOCALES` in that one file and a new chip
+// appears here automatically. No changes to this component required.
 
-export type LocaleFilterValue = 'all' | 'en' | 'es' | 'id';
-
-const OPTIONS: Array<{ value: LocaleFilterValue; label: string }> = [
-  { value: 'all', label: 'All' },
-  { value: 'en', label: 'EN' },
-  { value: 'es', label: 'ES' },
-  { value: 'id', label: 'ID' },
-];
+export type LocaleFilterValue = 'all' | Locale;
 
 interface Props {
   value: LocaleFilterValue;
   onChange: (next: LocaleFilterValue) => void;
   /** Optional per-locale row counts shown as small numbers next to each chip. */
-  counts?: Partial<Record<Exclude<LocaleFilterValue, 'all'>, number>> & { all?: number };
+  counts?: Partial<Record<LocaleFilterValue, number>>;
 }
 
 const HAIRLINE = 'rgba(127, 127, 127, 0.25)';
@@ -65,6 +57,16 @@ const Count = styled.span`
   font-variant-numeric: tabular-nums;
 `;
 
+// Chip options are derived from the single SUPPORTED_LOCALES constant
+// plus a fixed "All" prefix. Reorder or extend in lib/locales.ts.
+const OPTIONS: Array<{ value: LocaleFilterValue; label: string }> = [
+  { value: 'all', label: 'All' },
+  ...SUPPORTED_LOCALES.map((l) => ({
+    value: l.code as LocaleFilterValue,
+    label: l.code.toUpperCase(),
+  })),
+];
+
 export function LocaleFilter({ value, onChange, counts }: Props) {
   return (
     <Wrap role="group" aria-label="Filter by locale">
@@ -91,7 +93,7 @@ export function LocaleFilter({ value, onChange, counts }: Props) {
  * Filter helper used by every section that has a `locale` field on its rows.
  * Generic so it works for QueryRow, PageRow, etc. without TS contortions.
  */
-export function filterByLocale<T extends { locale: 'en' | 'es' | 'id' }>(
+export function filterByLocale<T extends { locale: Locale }>(
   rows: T[],
   value: LocaleFilterValue,
 ): T[] {
@@ -99,11 +101,15 @@ export function filterByLocale<T extends { locale: 'en' | 'es' | 'id' }>(
   return rows.filter((r) => r.locale === value);
 }
 
-/** Helper to compute the per-locale counts the chips display. */
-export function countByLocale<T extends { locale: 'en' | 'es' | 'id' }>(
+/**
+ * Counts rows per locale. Returns an object keyed by 'all' + every locale code,
+ * so the chip strip can render counts even for locales with zero rows.
+ */
+export function countByLocale<T extends { locale: Locale }>(
   rows: T[],
-): Required<NonNullable<Props['counts']>> {
-  const out = { all: rows.length, en: 0, es: 0, id: 0 };
-  for (const r of rows) out[r.locale]++;
-  return out;
+): Record<LocaleFilterValue, number> {
+  const out: Record<string, number> = { all: rows.length };
+  for (const { code } of SUPPORTED_LOCALES) out[code] = 0;
+  for (const r of rows) out[r.locale] = (out[r.locale] ?? 0) + 1;
+  return out as Record<LocaleFilterValue, number>;
 }

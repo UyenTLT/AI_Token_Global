@@ -4,6 +4,13 @@
 // interfaces below. The component imports the JSON and reads it as
 // the typed shape. When real GSC data replaces mocks, the JSON
 // shape stays the same — only `meta.dataSource` flips to 'gsc'.
+//
+// `Locale` re-exported from lib/locales.ts so types.ts stays the
+// single mental "what's the row shape" reference for anyone wiring
+// new sections in.
+
+import type { Locale } from './locales';
+export type { Locale };
 
 export type DataSourceKind = 'mock' | 'gsc';
 
@@ -47,7 +54,7 @@ export interface QueryRow {
   /** The search term as Google reported it. */
   query: string;
   /** Locale path this query primarily lands on, e.g. "/en", "/es", "/id". */
-  locale: 'en' | 'es' | 'id';
+  locale: Locale;
   clicks: number;
   impressions: number;
   /** Click-through rate as a fraction in [0, 1]. */
@@ -70,7 +77,7 @@ export interface PageRow {
    */
   page: string;
   /** Top-level locale segment of the path. Derived once from `page` for fast filtering. */
-  locale: 'en' | 'es' | 'id';
+  locale: Locale;
   clicks: number;
   impressions: number;
   ctr: number;
@@ -109,7 +116,7 @@ export interface StrikingSnapshot {
 // locale doing" without crossing into the per-row tables.
 
 export interface LocaleAggregate {
-  locale: 'en' | 'es' | 'id';
+  locale: Locale;
   /** Friendly label, e.g. "English", "Español", "Indonesia". */
   label: string;
   /** Aggregate metrics for the current rolling window. */
