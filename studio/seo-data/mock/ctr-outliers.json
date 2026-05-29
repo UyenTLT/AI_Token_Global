@@ -2,7 +2,7 @@
   "meta": {
     "siteUrl": "aitoken.global",
     "snapshotDate": "2026-05-29",
-    "rangeDays": 28,
+    "rangeDays": 30,
     "dataSource": "mock",
     "mockNote": "Pages with actual CTR meaningfully below the typical CTR for their position. The component computes 'expected CTR' from an industry-standard position→CTR curve and surfaces pages with the biggest shortfall. Action: rewrite page title + meta description."
   },

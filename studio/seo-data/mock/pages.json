@@ -2,7 +2,7 @@
   "meta": {
     "siteUrl": "aitoken.global",
     "snapshotDate": "2026-05-29",
-    "rangeDays": 28,
+    "rangeDays": 30,
     "dataSource": "mock",
     "mockNote": "50 hand-crafted page rows mapping to real aitoken.global URLs. Distribution: 25 English (top static pages + blog), 12 Spanish, 13 Indonesian. Top page is the API comparison view, which is consistent with the strong commercial intent on top queries. Replace with real GSC export when aitoken.global is verified."
   },

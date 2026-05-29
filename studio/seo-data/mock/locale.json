@@ -2,7 +2,7 @@
   "meta": {
     "siteUrl": "aitoken.global",
     "snapshotDate": "2026-05-29",
-    "rangeDays": 28,
+    "rangeDays": 30,
     "dataSource": "mock",
     "mockNote": "Per-locale aggregates designed to roughly sum to the Overview totals (~8,432 clicks, 287,654 impressions). EN dominates volume because it's the oldest content; ES and ID are growing faster as recent translations land."
   },

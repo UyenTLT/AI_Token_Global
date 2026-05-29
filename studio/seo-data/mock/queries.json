@@ -2,7 +2,7 @@
   "meta": {
     "siteUrl": "aitoken.global",
     "snapshotDate": "2026-05-29",
-    "rangeDays": 28,
+    "rangeDays": 30,
     "dataSource": "mock",
     "mockNote": "50 hand-crafted realistic queries spanning English / Spanish / Indonesian content. Mix of high-volume head terms, mid-volume comparisons, and long-tail informational queries. Numbers reflect a content site with strong long-tail traffic and a few breakout pages. Replace with real GSC export when aitoken.global is verified."
   },

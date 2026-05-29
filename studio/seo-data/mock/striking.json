@@ -2,7 +2,7 @@
   "meta": {
     "siteUrl": "aitoken.global",
     "snapshotDate": "2026-05-29",
-    "rangeDays": 28,
+    "rangeDays": 30,
     "dataSource": "mock",
     "mockNote": "Striking-distance queries — curated subset of the queries snapshot. All have avg. position between 11 and 20 (page 2 territory) and at least 2,000 impressions. These are the highest-leverage editorial opportunities: a content refresh can push them to page 1."
   },
