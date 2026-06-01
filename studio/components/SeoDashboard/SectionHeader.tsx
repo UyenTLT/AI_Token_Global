@@ -38,7 +38,7 @@ export function SectionHeader({
     : null;
 
   return (
-    <Stack space={2}>
+    <Stack space={subtitle ? 4 : 2}>
       <Flex align="baseline" justify="space-between" gap={3} wrap="wrap">
         <Heading as="h2" size={2}>
           {title}
@@ -53,7 +53,7 @@ export function SectionHeader({
         </Text>
       </Flex>
       {subtitle ? (
-        <Text size={1} muted style={{ lineHeight: 1.55, maxWidth: '720px' }}>
+        <Text size={1} muted style={{ lineHeight: 1.6, maxWidth: '720px' }}>
           {subtitle}
         </Text>
       ) : null}

@@ -251,23 +251,26 @@ export function SeoByLocale() {
         ))}
       </Grid>
 
-      <ContextStrip padding={3} radius={2} shadow={1}>
-        <Stack space={3}>
+      <ContextStrip padding={4} radius={2} shadow={1}>
+        <Stack space={4}>
           {data.locales.map((l) => (
-            <Flex key={`ctx-${l.locale}`} align="baseline" gap={3} wrap="wrap">
-              <Box style={{ minWidth: 64 }}>
+            <Flex key={`ctx-${l.locale}`} gap={4} wrap="wrap" align="flex-start">
+              <Box style={{ minWidth: 96, paddingTop: 2 }}>
                 <Text size={1} weight="semibold">
                   {l.label}
                 </Text>
               </Box>
-              <Text size={1} muted>
-                Top query:{' '}
-                <Text as="span" size={1} weight="semibold">
-                  {l.topQuery}
+              <Stack space={2} flex={1}>
+                <Text size={1} muted>
+                  Top query:{' '}
+                  <Text as="span" size={1} weight="semibold">
+                    {l.topQuery}
+                  </Text>
                 </Text>
-                {'  ·  '}
-                Top page: <PathTag>{l.topPage}</PathTag>
-              </Text>
+                <Text size={1} muted>
+                  Top page: <PathTag>{l.topPage}</PathTag>
+                </Text>
+              </Stack>
             </Flex>
           ))}
         </Stack>
