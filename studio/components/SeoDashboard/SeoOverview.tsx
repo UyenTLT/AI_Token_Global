@@ -10,6 +10,8 @@ import {
   type DeltaSummary,
 } from './lib/formatters';
 import { PositionDistribution } from './charts/PositionDistribution';
+import { InfoTooltip } from './InfoTooltip';
+import { GLOSSARY } from './lib/glossary';
 
 const data: OverviewSnapshot = loadOverview();
 const queriesData = loadQueries();
@@ -19,6 +21,7 @@ interface ScorecardSpec {
   value: string;
   delta: DeltaSummary;
   helpText: string;
+  tooltip: string;
 }
 
 function buildScorecards(d: OverviewSnapshot): ScorecardSpec[] {
@@ -29,24 +32,28 @@ function buildScorecards(d: OverviewSnapshot): ScorecardSpec[] {
       value: formatNumber(current.clicks),
       delta: computeDelta(current.clicks, previous.clicks, 'up'),
       helpText: `vs prior ${meta.rangeDays} days`,
+      tooltip: GLOSSARY.clicks,
     },
     {
       label: 'Impressions',
       value: formatCompact(current.impressions),
       delta: computeDelta(current.impressions, previous.impressions, 'up'),
       helpText: `vs prior ${meta.rangeDays} days`,
+      tooltip: GLOSSARY.impressions,
     },
     {
       label: 'CTR',
       value: formatPercent(current.ctr),
       delta: computeDelta(current.ctr, previous.ctr, 'up'),
       helpText: 'clicks ÷ impressions',
+      tooltip: GLOSSARY.ctr,
     },
     {
       label: 'Avg. position',
       value: formatPosition(current.avgPosition),
       delta: computeDelta(current.avgPosition, previous.avgPosition, 'down'),
       helpText: 'lower is better',
+      tooltip: GLOSSARY.avgPosition,
     },
   ];
 }
@@ -100,14 +107,17 @@ export function SeoOverview() {
         {scorecards.map((s) => (
           <Card key={s.label} padding={4} radius={3} shadow={1} tone="default">
             <Stack space={3}>
-              <Text
-                size={0}
-                weight="semibold"
-                muted
-                style={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}
-              >
-                {s.label}
-              </Text>
+              <Flex align="center">
+                <Text
+                  size={0}
+                  weight="semibold"
+                  muted
+                  style={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}
+                >
+                  {s.label}
+                </Text>
+                <InfoTooltip description={s.tooltip} ariaLabel={`Definition of ${s.label}`} />
+              </Flex>
               <Heading
                 as="div"
                 size={5}

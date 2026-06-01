@@ -8,6 +8,7 @@ import { LocaleFilter, type LocaleFilterValue, filterByLocale, countByLocale } f
 import { SortableTable, type ColumnDef } from './SortableTable';
 import { useSortableData } from './lib/useSortableData';
 import { SectionHeader } from './SectionHeader';
+import { GLOSSARY } from './lib/glossary';
 
 const data: PagesSnapshot = loadPages();
 const LOCALE_COUNTS = countByLocale(data.rows);
@@ -27,6 +28,7 @@ const COLUMNS: ColumnDef<PageRow>[] = [
     numeric: false,
     defaultSort: 'asc',
     render: (row) => <PathText>{row.page}</PathText>,
+    tooltip: GLOSSARY.page,
   },
   {
     key: 'locale',
@@ -39,6 +41,7 @@ const COLUMNS: ColumnDef<PageRow>[] = [
         {row.locale.toUpperCase()}
       </Badge>
     ),
+    tooltip: GLOSSARY.locale,
   },
   {
     key: 'clicks',
@@ -47,6 +50,7 @@ const COLUMNS: ColumnDef<PageRow>[] = [
     numeric: true,
     defaultSort: 'desc',
     render: (row) => formatNumber(row.clicks),
+    tooltip: GLOSSARY.clicks,
   },
   {
     key: 'impressions',
@@ -55,6 +59,7 @@ const COLUMNS: ColumnDef<PageRow>[] = [
     numeric: true,
     defaultSort: 'desc',
     render: (row) => formatNumber(row.impressions),
+    tooltip: GLOSSARY.impressions,
   },
   {
     key: 'ctr',
@@ -63,6 +68,7 @@ const COLUMNS: ColumnDef<PageRow>[] = [
     numeric: true,
     defaultSort: 'desc',
     render: (row) => formatPercent(row.ctr, 2),
+    tooltip: GLOSSARY.ctr,
   },
   {
     key: 'position',
@@ -71,6 +77,7 @@ const COLUMNS: ColumnDef<PageRow>[] = [
     numeric: true,
     defaultSort: 'asc',
     render: (row) => formatPosition(row.position),
+    tooltip: GLOSSARY.avgPosition,
   },
 ];
 
@@ -102,6 +109,7 @@ export function SeoTopPages() {
         sortDir={sortDir}
         onSort={toggleSort}
         rowKey={(row, i) => `${row.page}-${i}`}
+        pageSize={10}
       />
     </Stack>
   );

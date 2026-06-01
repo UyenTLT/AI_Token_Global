@@ -14,6 +14,8 @@ import {
 } from './lib/formatters';
 import { SectionHeader } from './SectionHeader';
 import { LocaleDonut } from './charts/LocaleDonut';
+import { InfoTooltip } from './InfoTooltip';
+import { GLOSSARY } from './lib/glossary';
 
 const data: LocaleSnapshot = loadLocaleAggregate();
 
@@ -131,6 +133,7 @@ interface MetricRowSpec {
   key: string;
   label: string;
   help: string;
+  tooltip: string;
   pick: (b: OverviewBucket) => number;
   format: (value: number) => string;
   desirable: DesirableDirection;
@@ -143,6 +146,7 @@ const ROWS: MetricRowSpec[] = [
     key: 'clicks',
     label: 'Clicks',
     help: `Last ${data.meta.rangeDays} days`,
+    tooltip: GLOSSARY.clicks,
     pick: (b) => b.clicks,
     format: formatNumber,
     desirable: 'up',
@@ -152,6 +156,7 @@ const ROWS: MetricRowSpec[] = [
     key: 'impressions',
     label: 'Impressions',
     help: `Last ${data.meta.rangeDays} days`,
+    tooltip: GLOSSARY.impressions,
     pick: (b) => b.impressions,
     format: formatCompact,
     desirable: 'up',
@@ -161,6 +166,7 @@ const ROWS: MetricRowSpec[] = [
     key: 'ctr',
     label: 'CTR',
     help: 'Clicks ÷ impressions',
+    tooltip: GLOSSARY.ctr,
     pick: (b) => b.ctr,
     format: (v) => formatPercent(v, 2),
     desirable: 'up',
@@ -169,6 +175,7 @@ const ROWS: MetricRowSpec[] = [
     key: 'position',
     label: 'Avg. position',
     help: 'Lower is better',
+    tooltip: GLOSSARY.avgPosition,
     pick: (b) => b.avgPosition,
     format: formatPosition,
     desirable: 'down',
@@ -227,7 +234,10 @@ export function SeoByLocale() {
         {ROWS.map((row) => (
           <Fragment key={row.key}>
             <Cell>
-              <MetricLabel>{row.label}</MetricLabel>
+              <MetricLabel>
+                {row.label}
+                <InfoTooltip description={row.tooltip} ariaLabel={`Definition of ${row.label}`} />
+              </MetricLabel>
               <MetricLabelHelp>{row.help}</MetricLabelHelp>
             </Cell>
             {data.locales.map((l) => (

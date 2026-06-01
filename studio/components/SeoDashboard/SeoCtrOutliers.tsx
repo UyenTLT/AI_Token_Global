@@ -15,6 +15,7 @@ import { SortableTable, type ColumnDef } from './SortableTable';
 import { useSortableData } from './lib/useSortableData';
 import { SectionHeader } from './SectionHeader';
 import { CtrVsPositionScatter } from './charts/CtrVsPositionScatter';
+import { GLOSSARY } from './lib/glossary';
 
 const data: CtrOutliersSnapshot = loadCtrOutliers();
 const LOCALE_COUNTS = countByLocale(data.rows);
@@ -77,6 +78,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
     numeric: false,
     defaultSort: 'asc',
     render: (row) => <PathText>{row.page}</PathText>,
+    tooltip: GLOSSARY.page,
   },
   {
     key: 'locale',
@@ -89,6 +91,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
         {row.locale.toUpperCase()}
       </Badge>
     ),
+    tooltip: GLOSSARY.locale,
   },
   {
     key: 'position',
@@ -97,6 +100,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
     numeric: true,
     defaultSort: 'asc',
     render: (row) => formatPosition(row.position),
+    tooltip: GLOSSARY.position,
   },
   {
     key: 'impressions',
@@ -105,6 +109,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
     numeric: true,
     defaultSort: 'desc',
     render: (row) => formatNumber(row.impressions),
+    tooltip: GLOSSARY.impressions,
   },
   {
     key: 'ctr',
@@ -113,6 +118,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
     numeric: true,
     defaultSort: 'asc',
     render: (row) => formatPercent(row.ctr, 2),
+    tooltip: GLOSSARY.ctr,
   },
   {
     key: 'expectedCtr',
@@ -121,6 +127,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
     numeric: true,
     defaultSort: 'desc',
     render: (row) => formatPercent(row.expectedCtr, 2),
+    tooltip: GLOSSARY.expectedCtr,
   },
   {
     key: 'shortfall',
@@ -133,6 +140,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
         −{(row.shortfall * 100).toFixed(0)}%
       </ShortfallText>
     ),
+    tooltip: GLOSSARY.shortfall,
   },
   {
     key: 'potentialGain',
@@ -145,6 +153,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
         +{formatNumber(row.potentialGain)}
       </GainText>
     ),
+    tooltip: GLOSSARY.ctrGainAtTypical,
   },
 ];
 
@@ -195,6 +204,7 @@ export function SeoCtrOutliers() {
         sortDir={sortDir}
         onSort={toggleSort}
         rowKey={(row, i) => `${row.page}-${i}`}
+        pageSize={10}
       />
     </Stack>
   );

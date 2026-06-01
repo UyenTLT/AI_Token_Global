@@ -31,9 +31,11 @@ export function SeoDashboard() {
             />
           </Flex>
           <Text size={1} muted>
-            Search performance dashboard for aitoken.global. Showing mock data while Google
-            Search Console setup is pending — see TASK5_PROGRESS.md §1.5 Q1. Use{' '}
-            <strong>Download report</strong> to save the full dataset as JSON for AI tools.
+            Search performance dashboard for aitoken.global. The numbers below are
+            placeholders until the site is verified in Google Search Console — once
+            it is, this page swaps to real data with no code changes. Use{' '}
+            <strong>Download report</strong> to export the full dataset as JSON for
+            AI brainstorming.
           </Text>
         </Stack>
 

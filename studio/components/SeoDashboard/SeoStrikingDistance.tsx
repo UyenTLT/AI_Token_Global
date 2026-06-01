@@ -13,6 +13,7 @@ import {
 import { SortableTable, type ColumnDef } from './SortableTable';
 import { useSortableData } from './lib/useSortableData';
 import { SectionHeader } from './SectionHeader';
+import { GLOSSARY } from './lib/glossary';
 
 // Industry-standard CTR at the top of page 1. Used to estimate what each
 // striking-distance query *could* be doing for us if it ranked higher.
@@ -61,6 +62,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
     numeric: false,
     defaultSort: 'asc',
     render: (row) => <QueryText>{row.query}</QueryText>,
+    tooltip: GLOSSARY.query,
   },
   {
     key: 'locale',
@@ -73,6 +75,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
         {row.locale.toUpperCase()}
       </Badge>
     ),
+    tooltip: GLOSSARY.locale,
   },
   {
     key: 'position',
@@ -81,6 +84,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
     numeric: true,
     defaultSort: 'asc',
     render: (row) => formatPosition(row.position),
+    tooltip: GLOSSARY.position,
   },
   {
     key: 'impressions',
@@ -89,6 +93,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
     numeric: true,
     defaultSort: 'desc',
     render: (row) => formatNumber(row.impressions),
+    tooltip: GLOSSARY.impressions,
   },
   {
     key: 'clicks',
@@ -97,6 +102,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
     numeric: true,
     defaultSort: 'desc',
     render: (row) => formatNumber(row.clicks),
+    tooltip: GLOSSARY.clicks,
   },
   {
     key: 'potentialClicks',
@@ -105,6 +111,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
     numeric: true,
     defaultSort: 'desc',
     render: (row) => formatNumber(row.potentialClicks),
+    tooltip: GLOSSARY.potentialAtPosition1,
   },
   {
     key: 'potentialGain',
@@ -117,6 +124,7 @@ const COLUMNS: ColumnDef<AugmentedRow>[] = [
         +{formatNumber(row.potentialGain)}
       </GainText>
     ),
+    tooltip: GLOSSARY.potentialGain,
   },
 ];
 
@@ -168,6 +176,7 @@ export function SeoStrikingDistance() {
         sortDir={sortDir}
         onSort={toggleSort}
         rowKey={(row, i) => `${row.query}-${row.locale}-${i}`}
+        pageSize={10}
       />
     </Stack>
   );

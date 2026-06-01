@@ -14,6 +14,12 @@ interface Props {
 const Wrap = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+`;
+
+const RowGroup = styled.div`
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
 `;
 
@@ -40,12 +46,10 @@ const Count = styled.span`
 `;
 
 const BarTrack = styled.div`
-  grid-column: 1 / -1;
   background: rgba(127, 127, 127, 0.1);
   height: 8px;
   border-radius: 4px;
   overflow: hidden;
-  margin-top: -0.1rem;
 `;
 
 const BarFill = styled.div<{ $width: number; $color: string }>`
@@ -84,7 +88,7 @@ export function TopQueriesBar({ rows, topN = 10 }: Props) {
             const width = (row.clicks / max) * 100;
             const color = LOCALE_COLOR[row.locale] ?? '#6155F1';
             return (
-              <div key={`${row.query}-${row.locale}`}>
+              <RowGroup key={`${row.query}-${row.locale}`}>
                 <Row>
                   <Label title={row.query}>{row.query}</Label>
                   <Count>{formatNumber(row.clicks)}</Count>
@@ -92,7 +96,7 @@ export function TopQueriesBar({ rows, topN = 10 }: Props) {
                 <BarTrack>
                   <BarFill $width={width} $color={color} />
                 </BarTrack>
-              </div>
+              </RowGroup>
             );
           })}
         </Wrap>
