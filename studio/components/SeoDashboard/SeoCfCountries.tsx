@@ -5,6 +5,7 @@ import { formatNumber } from './lib/formatters';
 import { SortableTable, type ColumnDef } from './SortableTable';
 import { useSortableData } from './lib/useSortableData';
 import { SectionHeader } from './SectionHeader';
+import { HBarChart } from './charts/HBarChart';
 
 const data: CloudflareCountriesSnapshot = loadCloudflareCountries();
 
@@ -44,6 +45,10 @@ export function SeoCfCountries() {
         visibleCount={sortedRows.length}
         totalCount={data.rows.length}
         countNoun="countries"
+      />
+      <HBarChart
+        title="Top countries by visits"
+        items={data.rows.map((r) => ({ label: r.country, value: r.visits }))}
       />
       <SortableTable
         rows={sortedRows}

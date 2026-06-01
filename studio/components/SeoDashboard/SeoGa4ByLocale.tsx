@@ -17,6 +17,7 @@ import {
 } from './lib/formatters';
 import { SectionHeader } from './SectionHeader';
 import { InfoTooltip } from './InfoTooltip';
+import { ShareDonut } from './charts/ShareDonut';
 
 const data: Ga4LocaleSnapshot = loadGa4Locale();
 
@@ -229,6 +230,16 @@ export function SeoGa4ByLocale() {
         title="By Locale"
         rangeDays={data.meta.rangeDays}
         subtitle="The same behaviour metrics from Behavior Overview, broken out per language version of the site (EN · ES · ID). Use it to see where engaged traffic is concentrated and whether a locale is pulling its weight."
+      />
+
+      <ShareDonut
+        ariaLabel="User share by locale"
+        centerLabel="Users"
+        items={data.locales.map((l) => ({
+          label: l.label,
+          value: l.current.users,
+          sublabel: `/${l.locale}`,
+        }))}
       />
 
       <Grid $localeCount={data.locales.length}>

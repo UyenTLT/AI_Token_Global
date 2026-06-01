@@ -5,6 +5,7 @@ import { formatNumber } from './lib/formatters';
 import { SortableTable, type ColumnDef } from './SortableTable';
 import { useSortableData } from './lib/useSortableData';
 import { SectionHeader } from './SectionHeader';
+import { HBarChart } from './charts/HBarChart';
 
 const data: Ga4EventsSnapshot = loadGa4Events();
 
@@ -68,6 +69,14 @@ export function SeoGa4Events() {
         visibleCount={sortedRows.length}
         totalCount={data.rows.length}
         countNoun="events"
+      />
+      <HBarChart
+        title="Top events by count"
+        items={data.rows.map((r) => ({
+          label: r.event,
+          value: r.count,
+          color: r.custom ? '#6155F1' : 'rgba(127, 127, 127, 0.45)',
+        }))}
       />
       <SortableTable
         rows={sortedRows}

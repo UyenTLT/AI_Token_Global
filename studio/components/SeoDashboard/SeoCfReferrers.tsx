@@ -5,6 +5,7 @@ import { formatNumber } from './lib/formatters';
 import { SortableTable, type ColumnDef } from './SortableTable';
 import { useSortableData } from './lib/useSortableData';
 import { SectionHeader } from './SectionHeader';
+import { HBarChart } from './charts/HBarChart';
 
 const data: CloudflareReferrersSnapshot = loadCloudflareReferrers();
 
@@ -44,6 +45,10 @@ export function SeoCfReferrers() {
         visibleCount={sortedRows.length}
         totalCount={data.rows.length}
         countNoun="referrers"
+      />
+      <HBarChart
+        title="Top referrers by visits"
+        items={data.rows.map((r) => ({ label: r.referrer, value: r.visits }))}
       />
       <SortableTable
         rows={sortedRows}

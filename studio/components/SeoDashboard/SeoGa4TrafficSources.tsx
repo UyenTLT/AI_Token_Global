@@ -5,6 +5,7 @@ import { formatNumber, formatPercent, formatDuration } from './lib/formatters';
 import { SortableTable, type ColumnDef } from './SortableTable';
 import { useSortableData } from './lib/useSortableData';
 import { SectionHeader } from './SectionHeader';
+import { ShareDonut } from './charts/ShareDonut';
 
 const data: Ga4ChannelsSnapshot = loadGa4Channels();
 
@@ -72,6 +73,11 @@ export function SeoGa4TrafficSources() {
         visibleCount={sortedRows.length}
         totalCount={data.rows.length}
         countNoun="channels"
+      />
+      <ShareDonut
+        ariaLabel="User share by channel"
+        centerLabel="Users"
+        items={data.rows.map((r) => ({ label: r.channel, value: r.users }))}
       />
       <SortableTable
         rows={sortedRows}
