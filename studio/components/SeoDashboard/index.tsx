@@ -18,6 +18,9 @@ import { SeoStrikingDistance } from './SeoStrikingDistance';
 import { SeoByLocale } from './SeoByLocale';
 import { SeoCtrOutliers } from './SeoCtrOutliers';
 import { SeoGa4Overview } from './SeoGa4Overview';
+import { SeoGa4TrafficSources } from './SeoGa4TrafficSources';
+import { SeoGa4TopPages } from './SeoGa4TopPages';
+import { SeoGa4Events } from './SeoGa4Events';
 import { downloadFullReportAsJson } from './lib/exportReport';
 
 type View = 'search' | 'behavior';
@@ -99,6 +102,9 @@ export function SeoDashboard() {
           >
             <Stack space={5}>
               <SeoGa4Overview />
+              <SeoGa4TrafficSources />
+              <SeoGa4TopPages />
+              <SeoGa4Events />
             </Stack>
           </Box>
         )}

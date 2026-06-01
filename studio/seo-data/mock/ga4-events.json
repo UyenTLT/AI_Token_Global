@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "siteUrl": "aitoken.global",
+    "snapshotDate": "2026-06-01",
+    "rangeDays": 30,
+    "dataSource": "mock",
+    "mockNote": "Hand-crafted GA4 event placeholders until the GA4 Data API credentials land. Custom events match the ones wired in BaseLayout/Nav/token-calculator."
+  },
+  "rows": [
+    { "event": "page_view", "count": 58200, "users": 18420, "custom": false },
+    { "event": "user_engagement", "count": 41000, "users": 15000, "custom": false },
+    { "event": "scroll", "count": 31000, "users": 12800, "custom": false },
+    { "event": "session_start", "count": 24100, "users": 18420, "custom": false },
+    { "event": "first_visit", "count": 16310, "users": 16310, "custom": false },
+    { "event": "click", "count": 8600, "users": 5200, "custom": false },
+    { "event": "calculator_used", "count": 5100, "users": 3600, "custom": true },
+    { "event": "faq_open", "count": 3300, "users": 2100, "custom": true },
+    { "event": "cta_get_started", "count": 2400, "users": 1900, "custom": true },
+    { "event": "language_switch", "count": 1450, "users": 1100, "custom": true }
+  ]
+}

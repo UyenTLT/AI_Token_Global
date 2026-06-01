@@ -25,6 +25,9 @@ import type {
   LocaleSnapshot,
   CtrOutliersSnapshot,
   Ga4OverviewSnapshot,
+  Ga4ChannelsSnapshot,
+  Ga4PagesSnapshot,
+  Ga4EventsSnapshot,
 } from './types';
 
 type Loaded<T> = { default: T };
@@ -223,6 +226,90 @@ export function loadGa4Overview(): Ga4OverviewSnapshot {
       'No GA4 overview snapshot found. Expected either ' +
         'studio/seo-data/ga4/ga4-overview-YYYY-MM-DD.json or ' +
         'studio/seo-data/mock/ga4-overview.json. See studio/seo-data/README.md.',
+    );
+  }
+  return mock[0].default;
+}
+
+// ---- GA4 Traffic Sources ---------------------------------------------------
+
+const realGa4ChannelsModules = import.meta.glob<Loaded<Ga4ChannelsSnapshot>>(
+  '../../../seo-data/ga4/ga4-channels-*.json',
+  { eager: true },
+);
+const mockGa4ChannelsModules = import.meta.glob<Loaded<Ga4ChannelsSnapshot>>(
+  '../../../seo-data/mock/ga4-channels.json',
+  { eager: true },
+);
+
+export function loadGa4Channels(): Ga4ChannelsSnapshot {
+  const real = Object.entries(realGa4ChannelsModules).sort(
+    ([a], [b]) => b.localeCompare(a),
+  );
+  if (real.length > 0) return real[0][1].default;
+
+  const mock = Object.values(mockGa4ChannelsModules);
+  if (mock.length === 0) {
+    throw new Error(
+      'No GA4 channels snapshot found. Expected either ' +
+        'studio/seo-data/ga4/ga4-channels-YYYY-MM-DD.json or ' +
+        'studio/seo-data/mock/ga4-channels.json. See studio/seo-data/README.md.',
+    );
+  }
+  return mock[0].default;
+}
+
+// ---- GA4 Top Pages ---------------------------------------------------------
+
+const realGa4PagesModules = import.meta.glob<Loaded<Ga4PagesSnapshot>>(
+  '../../../seo-data/ga4/ga4-pages-*.json',
+  { eager: true },
+);
+const mockGa4PagesModules = import.meta.glob<Loaded<Ga4PagesSnapshot>>(
+  '../../../seo-data/mock/ga4-pages.json',
+  { eager: true },
+);
+
+export function loadGa4Pages(): Ga4PagesSnapshot {
+  const real = Object.entries(realGa4PagesModules).sort(
+    ([a], [b]) => b.localeCompare(a),
+  );
+  if (real.length > 0) return real[0][1].default;
+
+  const mock = Object.values(mockGa4PagesModules);
+  if (mock.length === 0) {
+    throw new Error(
+      'No GA4 pages snapshot found. Expected either ' +
+        'studio/seo-data/ga4/ga4-pages-YYYY-MM-DD.json or ' +
+        'studio/seo-data/mock/ga4-pages.json. See studio/seo-data/README.md.',
+    );
+  }
+  return mock[0].default;
+}
+
+// ---- GA4 Events ------------------------------------------------------------
+
+const realGa4EventsModules = import.meta.glob<Loaded<Ga4EventsSnapshot>>(
+  '../../../seo-data/ga4/ga4-events-*.json',
+  { eager: true },
+);
+const mockGa4EventsModules = import.meta.glob<Loaded<Ga4EventsSnapshot>>(
+  '../../../seo-data/mock/ga4-events.json',
+  { eager: true },
+);
+
+export function loadGa4Events(): Ga4EventsSnapshot {
+  const real = Object.entries(realGa4EventsModules).sort(
+    ([a], [b]) => b.localeCompare(a),
+  );
+  if (real.length > 0) return real[0][1].default;
+
+  const mock = Object.values(mockGa4EventsModules);
+  if (mock.length === 0) {
+    throw new Error(
+      'No GA4 events snapshot found. Expected either ' +
+        'studio/seo-data/ga4/ga4-events-YYYY-MM-DD.json or ' +
+        'studio/seo-data/mock/ga4-events.json. See studio/seo-data/README.md.',
     );
   }
   return mock[0].default;

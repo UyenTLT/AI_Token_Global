@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "siteUrl": "aitoken.global",
+    "snapshotDate": "2026-06-01",
+    "rangeDays": 30,
+    "dataSource": "mock",
+    "mockNote": "Hand-crafted GA4 channel placeholders until the GA4 Data API credentials land."
+  },
+  "rows": [
+    { "channel": "Organic Search", "users": 9800, "sessions": 12400, "engagementRate": 0.641, "avgEngagementSeconds": 82 },
+    { "channel": "Direct", "users": 4100, "sessions": 5200, "engagementRate": 0.583, "avgEngagementSeconds": 61 },
+    { "channel": "Referral", "users": 2200, "sessions": 2700, "engagementRate": 0.662, "avgEngagementSeconds": 95 },
+    { "channel": "Organic Social", "users": 1500, "sessions": 1850, "engagementRate": 0.524, "avgEngagementSeconds": 48 },
+    { "channel": "Email", "users": 520, "sessions": 640, "engagementRate": 0.708, "avgEngagementSeconds": 110 },
+    { "channel": "Paid Search", "users": 300, "sessions": 360, "engagementRate": 0.491, "avgEngagementSeconds": 40 }
+  ]
+}

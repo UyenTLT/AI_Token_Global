@@ -177,3 +177,66 @@ export interface Ga4OverviewSnapshot {
   /** Prior N-day window, for period-over-period comparison. */
   previous: Ga4OverviewBucket;
 }
+
+// ---- GA4 Traffic Sources ----------------------------------------------
+//
+// GA4 default channel grouping — how visitors arrive. The angle GSC can't
+// give us: GSC is organic-search-only, this is the whole funnel (direct,
+// referral, social, email…).
+
+export interface Ga4ChannelRow {
+  /** GA4 default channel group, e.g. "Organic Search", "Direct", "Referral". */
+  channel: string;
+  users: number;
+  sessions: number;
+  /** Engaged sessions / total sessions for this channel, fraction [0, 1]. */
+  engagementRate: number;
+  /** Avg engagement time per session, in seconds. */
+  avgEngagementSeconds: number;
+}
+
+export interface Ga4ChannelsSnapshot {
+  meta: SnapshotMeta;
+  rows: Ga4ChannelRow[];
+}
+
+// ---- GA4 Top Pages -----------------------------------------------------
+//
+// GA4 Engagement › Pages. Complements GSC Top Pages: that ranks by search
+// clicks, this ranks by actual on-site behaviour (views + engaged time).
+
+export interface Ga4PageRow {
+  /** Site-relative path incl. locale segment, e.g. "/en/token-calculator". */
+  page: string;
+  /** Locale segment derived from the path. */
+  locale: Locale;
+  views: number;
+  users: number;
+  /** Avg engagement time per session on this page, in seconds. */
+  avgEngagementSeconds: number;
+}
+
+export interface Ga4PagesSnapshot {
+  meta: SnapshotMeta;
+  rows: Ga4PageRow[];
+}
+
+// ---- GA4 Events --------------------------------------------------------
+//
+// GA4 Engagement › Events. Surfaces both the auto/enhanced-measurement events
+// and our own custom events (cta_get_started, calculator_used, faq_open,
+// language_switch) so the content team can see if CTAs and tools get used.
+
+export interface Ga4EventRow {
+  /** Event name, e.g. "page_view" or "cta_get_started". */
+  event: string;
+  count: number;
+  users: number;
+  /** True for our site-specific custom events; false for GA4 auto events. */
+  custom: boolean;
+}
+
+export interface Ga4EventsSnapshot {
+  meta: SnapshotMeta;
+  rows: Ga4EventRow[];
+}
