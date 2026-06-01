@@ -198,5 +198,39 @@ const hreflangs = SUPPORTED_LANGS.map(l => ({
       });
     }
   </script>
+
+  <!-- GA4 custom events. gtag is consent-gated, so these only reach GA4 after the
+       visitor accepts in the cookie banner. One delegated listener covers the whole site. -->
+  <script is:inline>
+    (function () {
+      function track(name, params) {
+        if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
+      }
+      document.addEventListener('click', function (e) {
+        // Declarative: any element with data-ga-event fires it on click.
+        // Other data-ga-* attributes become event params (data-ga-location -> location).
+        var el = e.target.closest('[data-ga-event]');
+        if (el) {
+          var params = {};
+          for (var i = 0; i < el.attributes.length; i++) {
+            var a = el.attributes[i];
+            if (a.name.indexOf('data-ga-') === 0 && a.name !== 'data-ga-event') {
+              params[a.name.slice(8).replace(/-/g, '_')] = a.value;
+            }
+          }
+          track(el.getAttribute('data-ga-event'), params);
+        }
+        // FAQ open — fire only when the clicked question just expanded. Runs after the
+        // page's own toggleFaq (which sets .open), so reading state here is reliable.
+        var q = e.target.closest('.faq-question');
+        if (q) {
+          var answer = q.nextElementSibling;
+          if (answer && answer.classList.contains('open')) {
+            track('faq_open', { question: (q.textContent || '').trim().slice(0, 100) });
+          }
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
