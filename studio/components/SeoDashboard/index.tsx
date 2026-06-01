@@ -1,4 +1,16 @@
-import { Stack, Heading, Text, Badge, Flex, Container, Button } from '@sanity/ui';
+import { useState } from 'react';
+import {
+  Stack,
+  Heading,
+  Text,
+  Badge,
+  Flex,
+  Container,
+  Button,
+  TabList,
+  Tab,
+  Box,
+} from '@sanity/ui';
 import { SeoOverview } from './SeoOverview';
 import { SeoTopQueries } from './SeoTopQueries';
 import { SeoTopPages } from './SeoTopPages';
@@ -8,11 +20,17 @@ import { SeoCtrOutliers } from './SeoCtrOutliers';
 import { SeoGa4Overview } from './SeoGa4Overview';
 import { downloadFullReportAsJson } from './lib/exportReport';
 
+type View = 'search' | 'behavior';
+
 export function SeoDashboard() {
+  // Top-level view switcher: keeps Search (GSC) and Behavior (GA4) on separate
+  // screens so neither requires scrolling past the other. Defaults to Search.
+  const [view, setView] = useState<View>('search');
+
   return (
     <Container width={3} paddingX={5} paddingY={5}>
       <Stack space={5}>
-        <Stack space={3}>
+        <Stack space={4}>
           <Flex align="center" gap={3} wrap="wrap" justify="space-between">
             <Flex align="center" gap={3} wrap="wrap">
               <Heading as="h1" size={4}>
@@ -32,39 +50,58 @@ export function SeoDashboard() {
             />
           </Flex>
           <Text size={1} muted>
-            Search performance dashboard for aitoken.global. The numbers below are
-            placeholders until the site is verified in Google Search Console — once
-            it is, this page swaps to real data with no code changes. Use{' '}
-            <strong>Download report</strong> to export the full dataset as JSON for
-            AI brainstorming.
+            Insights for aitoken.global across search and on-site behaviour. The
+            numbers are placeholders until each source is connected — then that
+            view swaps to real data with no code changes. Use{' '}
+            <strong>Download report</strong> to export the dataset as JSON.
           </Text>
+
+          <TabList space={2}>
+            <Tab
+              aria-controls="seo-view-search"
+              id="seo-tab-search"
+              label="Search · Google Search Console"
+              onClick={() => setView('search')}
+              selected={view === 'search'}
+            />
+            <Tab
+              aria-controls="seo-view-behavior"
+              id="seo-tab-behavior"
+              label="Behavior · Google Analytics 4"
+              onClick={() => setView('behavior')}
+              selected={view === 'behavior'}
+            />
+          </TabList>
         </Stack>
 
-        <SeoOverview />
-
-        <SeoTopQueries />
-
-        <SeoTopPages />
-
-        <SeoStrikingDistance />
-
-        <SeoByLocale />
-
-        <SeoCtrOutliers />
-
-        <Stack space={3}>
-          <Heading as="h2" size={3}>
-            Behavior · Google Analytics 4
-          </Heading>
-          <Text size={1} muted>
-            The sections above are search (Google Search Console). The section
-            below is on-site behaviour (Google Analytics 4) — mock data until the
-            GA4 Data API credentials land, then it swaps to real automatically,
-            same as the search sections.
-          </Text>
-        </Stack>
-
-        <SeoGa4Overview />
+        {view === 'search' ? (
+          <Box
+            key="search"
+            id="seo-view-search"
+            aria-labelledby="seo-tab-search"
+            role="tabpanel"
+          >
+            <Stack space={5}>
+              <SeoOverview />
+              <SeoTopQueries />
+              <SeoTopPages />
+              <SeoStrikingDistance />
+              <SeoByLocale />
+              <SeoCtrOutliers />
+            </Stack>
+          </Box>
+        ) : (
+          <Box
+            key="behavior"
+            id="seo-view-behavior"
+            aria-labelledby="seo-tab-behavior"
+            role="tabpanel"
+          >
+            <Stack space={5}>
+              <SeoGa4Overview />
+            </Stack>
+          </Box>
+        )}
       </Stack>
     </Container>
   );
