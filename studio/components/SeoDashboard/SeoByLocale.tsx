@@ -260,16 +260,23 @@ export function SeoByLocale() {
                   {l.label}
                 </Text>
               </Box>
-              <Stack space={2} flex={1}>
-                <Text size={1} muted>
-                  Top query:{' '}
-                  <Text as="span" size={1} weight="semibold">
+              <Stack space={3} flex={1}>
+                <Stack space={2}>
+                  <Text size={1} muted>
+                    Top query:
+                  </Text>
+                  <Text size={1} weight="semibold">
                     {l.topQuery}
                   </Text>
-                </Text>
-                <Text size={1} muted>
-                  Top page: <PathTag>{l.topPage}</PathTag>
-                </Text>
+                </Stack>
+                <Stack space={2}>
+                  <Text size={1} muted>
+                    Top page:
+                  </Text>
+                  <Box>
+                    <PathTag>{l.topPage}</PathTag>
+                  </Box>
+                </Stack>
               </Stack>
             </Flex>
           ))}
