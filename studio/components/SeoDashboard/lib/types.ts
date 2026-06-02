@@ -12,7 +12,7 @@
 import type { Locale } from './locales';
 export type { Locale };
 
-export type DataSourceKind = 'mock' | 'gsc';
+export type DataSourceKind = 'mock' | 'gsc' | 'ga4' | 'cloudflare';
 
 export interface SnapshotMeta {
   /** Domain or property the data is for (e.g. "aitoken.global"). */
@@ -147,4 +147,172 @@ export interface CtrOutliersSnapshot {
   /** Filter criteria used by the fetch script when picking rows. Free-form text. */
   criteria?: string;
   rows: CtrOutlierRow[];
+}
+
+// ---- GA4 Behavior Overview --------------------------------------------
+//
+// On-site behaviour from Google Analytics 4 (Data API). Complements the GSC
+// Overview: GSC answers "how do people find us" (search), GA4 answers "what do
+// they do once they're here". Metrics picked for a content site — engagement
+// rate replaces the old bounce rate; engagement time measures real attention.
+//
+// `dataSource` on the meta flips 'mock' -> 'ga4' when real snapshots land in
+// studio/seo-data/ga4/. Same loader-with-fallback pattern as the GSC sections.
+
+export interface Ga4OverviewBucket {
+  /** Distinct users in the window. */
+  users: number;
+  /** Sessions that lasted >10s, fired a key event, or had >=2 pageviews. */
+  engagedSessions: number;
+  /** Engaged sessions / total sessions, fraction in [0, 1]. Replaces bounce rate. */
+  engagementRate: number;
+  /** Average engagement time per active user, in seconds. */
+  avgEngagementSeconds: number;
+}
+
+export interface Ga4OverviewSnapshot {
+  meta: SnapshotMeta;
+  /** Most recent N-day window. */
+  current: Ga4OverviewBucket;
+  /** Prior N-day window, for period-over-period comparison. */
+  previous: Ga4OverviewBucket;
+}
+
+// ---- GA4 Traffic Sources ----------------------------------------------
+//
+// GA4 default channel grouping — how visitors arrive. The angle GSC can't
+// give us: GSC is organic-search-only, this is the whole funnel (direct,
+// referral, social, email…).
+
+export interface Ga4ChannelRow {
+  /** GA4 default channel group, e.g. "Organic Search", "Direct", "Referral". */
+  channel: string;
+  users: number;
+  sessions: number;
+  /** Engaged sessions / total sessions for this channel, fraction [0, 1]. */
+  engagementRate: number;
+  /** Avg engagement time per active user, in seconds. */
+  avgEngagementSeconds: number;
+}
+
+export interface Ga4ChannelsSnapshot {
+  meta: SnapshotMeta;
+  rows: Ga4ChannelRow[];
+}
+
+// ---- GA4 Top Pages -----------------------------------------------------
+//
+// GA4 Engagement › Pages. Complements GSC Top Pages: that ranks by search
+// clicks, this ranks by actual on-site behaviour (views + engaged time).
+
+export interface Ga4PageRow {
+  /** Site-relative path incl. locale segment, e.g. "/en/token-calculator". */
+  page: string;
+  /** Locale segment derived from the path. */
+  locale: Locale;
+  views: number;
+  users: number;
+  /** Avg engagement time per session on this page, in seconds. */
+  avgEngagementSeconds: number;
+}
+
+export interface Ga4PagesSnapshot {
+  meta: SnapshotMeta;
+  rows: Ga4PageRow[];
+}
+
+// ---- GA4 Events --------------------------------------------------------
+//
+// GA4 Engagement › Events. Surfaces both the auto/enhanced-measurement events
+// and our own custom events (cta_get_started, calculator_used, faq_open,
+// language_switch) so the content team can see if CTAs and tools get used.
+
+export interface Ga4EventRow {
+  /** Event name, e.g. "page_view" or "cta_get_started". */
+  event: string;
+  count: number;
+  users: number;
+  /** True for our site-specific custom events; false for GA4 auto events. */
+  custom: boolean;
+}
+
+export interface Ga4EventsSnapshot {
+  meta: SnapshotMeta;
+  rows: Ga4EventRow[];
+}
+
+// ---- GA4 By Locale -----------------------------------------------------
+//
+// Per-locale behaviour aggregates (en/es/id), mirroring the GSC By Locale grid
+// but with GA4 metrics. Contextual per locale: top page + top acquisition
+// channel (GA4 has no search queries, so top channel takes that slot).
+
+export interface Ga4LocaleAggregate {
+  locale: Locale;
+  /** Friendly label, e.g. "English". */
+  label: string;
+  current: Ga4OverviewBucket;
+  previous: Ga4OverviewBucket;
+  /** Highest-traffic page (path) in this locale. */
+  topPage: string;
+  /** Channel bringing the most users to this locale, e.g. "Organic Search". */
+  topChannel: string;
+}
+
+export interface Ga4LocaleSnapshot {
+  meta: SnapshotMeta;
+  locales: Ga4LocaleAggregate[];
+}
+
+// ---- Cloudflare Web Analytics -----------------------------------------
+//
+// Cookieless headcount + real page-speed from Cloudflare Web Analytics. Counts
+// every visitor (no consent gate, not blocked by ad-blockers), so its numbers
+// run a bit higher than GA4 — an honest-traffic reality check, plus load time.
+
+export interface CloudflareOverviewBucket {
+  visits: number;
+  pageViews: number;
+  /** Median page load time in milliseconds. Lower is better. */
+  medianLoadMs: number;
+}
+
+export interface CloudflareOverviewSnapshot {
+  meta: SnapshotMeta;
+  current: CloudflareOverviewBucket;
+  previous: CloudflareOverviewBucket;
+}
+
+export interface CloudflarePageRow {
+  /** Site-relative path incl. locale segment, e.g. "/en/token-calculator". */
+  page: string;
+  locale: Locale;
+  visits: number;
+  pageViews: number;
+}
+
+export interface CloudflarePagesSnapshot {
+  meta: SnapshotMeta;
+  rows: CloudflarePageRow[];
+}
+
+export interface CloudflareReferrerRow {
+  /** Referring host, e.g. "google.com", or "Direct / none". */
+  referrer: string;
+  visits: number;
+}
+
+export interface CloudflareReferrersSnapshot {
+  meta: SnapshotMeta;
+  rows: CloudflareReferrerRow[];
+}
+
+export interface CloudflareCountryRow {
+  country: string;
+  visits: number;
+}
+
+export interface CloudflareCountriesSnapshot {
+  meta: SnapshotMeta;
+  rows: CloudflareCountryRow[];
 }

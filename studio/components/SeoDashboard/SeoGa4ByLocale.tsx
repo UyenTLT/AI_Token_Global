@@ -1,33 +1,34 @@
 import { Fragment } from 'react';
 import { Card, Stack, Text, Box, Flex } from '@sanity/ui';
 import styled from 'styled-components';
-import type { LocaleAggregate, LocaleSnapshot, OverviewBucket } from './lib/types';
-import { loadLocaleAggregate } from './lib/loadSnapshot';
+import type {
+  Ga4LocaleAggregate,
+  Ga4LocaleSnapshot,
+  Ga4OverviewBucket,
+} from './lib/types';
+import { loadGa4Locale } from './lib/loadSnapshot';
 import {
-  formatNumber,
   formatCompact,
   formatPercent,
-  formatPosition,
+  formatDuration,
   computeDelta,
   type DeltaSummary,
   type DesirableDirection,
 } from './lib/formatters';
 import { SectionHeader } from './SectionHeader';
-import { LocaleDonut } from './charts/LocaleDonut';
-import { EmptyState } from './EmptyState';
 import { InfoTooltip } from './InfoTooltip';
-import { GLOSSARY } from './lib/glossary';
+import { ShareDonut } from './charts/ShareDonut';
+import { EmptyState } from './EmptyState';
 
-const data: LocaleSnapshot = loadLocaleAggregate();
+const data: Ga4LocaleSnapshot = loadGa4Locale();
 
-// Sum each metric across all locales so we can show "share of total"
-// inside the Clicks / Impressions rows.
+// Totals across locales, for the "share of total" shown on Users / Engaged sessions.
 const TOTALS = data.locales.reduce(
   (acc, l) => ({
-    clicks: acc.clicks + l.current.clicks,
-    impressions: acc.impressions + l.current.impressions,
+    users: acc.users + l.current.users,
+    engagedSessions: acc.engagedSessions + l.current.engagedSessions,
   }),
-  { clicks: 0, impressions: 0 },
+  { users: 0, engagedSessions: 0 },
 );
 
 const GOOD = '#22c55e';
@@ -126,69 +127,70 @@ function deltaColor(d: DeltaSummary): string {
   if (d.sign === 0) return FLAT;
   return d.isGood ? GOOD : BAD;
 }
-
 function deltaArrow(d: DeltaSummary): string {
   if (d.isNew) return '';
   if (d.sign === 0) return '·';
   return d.sign === 1 ? '↑' : '↓';
 }
-
 function deltaMagnitude(d: DeltaSummary): string {
   if (d.isNew) return 'new';
   if (d.sign === 0) return '—';
   return `${(Math.abs(d.relative) * 100).toFixed(1)}%`;
 }
 
+type ShareKey = 'users' | 'engagedSessions';
+
 interface MetricRowSpec {
   key: string;
   label: string;
   help: string;
   tooltip: string;
-  pick: (b: OverviewBucket) => number;
+  pick: (b: Ga4OverviewBucket) => number;
   format: (value: number) => string;
   desirable: DesirableDirection;
-  /** If true, also show share-of-total in parens next to the value. */
-  showShare?: 'clicks' | 'impressions';
+  /** If set, also show share-of-total next to the value. */
+  showShare?: ShareKey;
 }
 
 const ROWS: MetricRowSpec[] = [
   {
-    key: 'clicks',
-    label: 'Clicks',
+    key: 'users',
+    label: 'Users',
     help: `Last ${data.meta.rangeDays} days`,
-    tooltip: GLOSSARY.clicks,
-    pick: (b) => b.clicks,
-    format: formatNumber,
-    desirable: 'up',
-    showShare: 'clicks',
-  },
-  {
-    key: 'impressions',
-    label: 'Impressions',
-    help: `Last ${data.meta.rangeDays} days`,
-    tooltip: GLOSSARY.impressions,
-    pick: (b) => b.impressions,
+    tooltip: 'Distinct visitors to this locale in the period.',
+    pick: (b) => b.users,
     format: formatCompact,
     desirable: 'up',
-    showShare: 'impressions',
+    showShare: 'users',
   },
   {
-    key: 'ctr',
-    label: 'CTR',
-    help: 'Clicks ÷ impressions',
-    tooltip: GLOSSARY.ctr,
-    pick: (b) => b.ctr,
-    format: (v) => formatPercent(v, 2),
+    key: 'engagedSessions',
+    label: 'Engaged sessions',
+    help: `Last ${data.meta.rangeDays} days`,
+    tooltip:
+      'Sessions that lasted >10s, fired a key event, or had 2+ pageviews.',
+    pick: (b) => b.engagedSessions,
+    format: formatCompact,
+    desirable: 'up',
+    showShare: 'engagedSessions',
+  },
+  {
+    key: 'engagementRate',
+    label: 'Engagement rate',
+    help: 'Engaged ÷ total sessions',
+    tooltip: 'Share of sessions that were engaged. Replaces bounce rate.',
+    pick: (b) => b.engagementRate,
+    format: (v) => formatPercent(v, 1),
     desirable: 'up',
   },
   {
-    key: 'position',
-    label: 'Avg. position',
-    help: 'Lower is better',
-    tooltip: GLOSSARY.avgPosition,
-    pick: (b) => b.avgPosition,
-    format: formatPosition,
-    desirable: 'down',
+    key: 'avgEngagementSeconds',
+    label: 'Avg. engagement time',
+    help: 'Per active user',
+    tooltip: 'Average time visitors were actively engaged, per user.',
+    pick: (b) => b.avgEngagementSeconds,
+    format: formatDuration,
+    desirable: 'up',
   },
 ];
 
@@ -202,14 +204,15 @@ function MetricCell({
   locale,
 }: {
   row: MetricRowSpec;
-  locale: LocaleAggregate;
+  locale: Ga4LocaleAggregate;
 }) {
   const currentValue = row.pick(locale.current);
   const previousValue = row.pick(locale.previous);
   const delta = computeDelta(currentValue, previousValue, row.desirable);
 
-  const totalForShare = row.showShare ? TOTALS[row.showShare] : 0;
-  const share = row.showShare ? shareOfTotal(currentValue, totalForShare) : null;
+  const share = row.showShare
+    ? shareOfTotal(currentValue, TOTALS[row.showShare])
+    : null;
 
   return (
     <Cell $align="right">
@@ -224,20 +227,28 @@ function MetricCell({
   );
 }
 
-export function SeoByLocale() {
+export function SeoGa4ByLocale() {
   return (
     <Stack space={4}>
       <SectionHeader
         title="By Locale"
         rangeDays={data.meta.rangeDays}
-        subtitle={`The same headline metrics from Overview, broken out per language version of the site (${data.locales.map((l) => l.locale.toUpperCase()).join(' · ')}). Use this to see where your traffic is concentrated and whether a particular locale is under- or over-performing for the effort you've put into it.`}
+        subtitle={`The same behaviour metrics from Behavior Overview, broken out per language version of the site (${data.locales.map((l) => l.locale.toUpperCase()).join(' · ')}). Use it to see where engaged traffic is concentrated and whether a locale is pulling its weight.`}
       />
 
       {data.locales.length === 0 ? (
         <EmptyState message="No per-locale data for this period yet." />
       ) : (
         <>
-          <LocaleDonut locales={data.locales} />
+          <ShareDonut
+            ariaLabel="User share by locale"
+            centerLabel="Users"
+            items={data.locales.map((l) => ({
+              label: l.label,
+              value: l.current.users,
+              sublabel: `/${l.locale}`,
+            }))}
+          />
 
           <Grid $localeCount={data.locales.length}>
         {/* Header row */}
@@ -254,7 +265,10 @@ export function SeoByLocale() {
             <Cell>
               <MetricLabel>
                 {row.label}
-                <InfoTooltip description={row.tooltip} ariaLabel={`Definition of ${row.label}`} />
+                <InfoTooltip
+                  description={row.tooltip}
+                  ariaLabel={`Definition of ${row.label}`}
+                />
               </MetricLabel>
               <MetricLabelHelp>{row.help}</MetricLabelHelp>
             </Cell>
@@ -277,19 +291,19 @@ export function SeoByLocale() {
               <Stack space={3} flex={1}>
                 <Stack space={2}>
                   <Text size={1} muted>
-                    Top query:
-                  </Text>
-                  <Text size={1} weight="semibold">
-                    {l.topQuery}
-                  </Text>
-                </Stack>
-                <Stack space={2}>
-                  <Text size={1} muted>
                     Top page:
                   </Text>
                   <Box>
                     <PathTag>{l.topPage}</PathTag>
                   </Box>
+                </Stack>
+                <Stack space={2}>
+                  <Text size={1} muted>
+                    Top channel:
+                  </Text>
+                  <Text size={1} weight="semibold">
+                    {l.topChannel}
+                  </Text>
                 </Stack>
               </Stack>
             </Flex>

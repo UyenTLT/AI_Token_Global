@@ -1,28 +1,32 @@
 import { Card } from '@sanity/ui';
 import styled from 'styled-components';
-import type { LocaleAggregate } from '../lib/types';
 import { formatNumber } from '../lib/formatters';
 import { EmptyState } from '../EmptyState';
 
-// Donut chart of click-share per locale. Reads directly from the
-// existing By Locale snapshot, no new data fetching.
+// Generic share-of-total donut. Pure: takes pre-shaped { label, value } items
+// and renders a donut + legend — mock vs real makes no difference, so it works
+// unchanged once a loader swaps in real data. Generalized from LocaleDonut so
+// any section (channels, locales, …) can show a share breakdown.
+
+export interface DonutSlice {
+  label: string;
+  value: number;
+  /** Optional small suffix after the label in the legend, e.g. "/en". */
+  sublabel?: string;
+  /** Optional explicit color; otherwise assigned from the palette by order. */
+  color?: string;
+}
 
 interface Props {
-  locales: LocaleAggregate[];
+  ariaLabel: string;
+  items: DonutSlice[];
+  /** Label shown under the center total, e.g. "Users" or "Visits". */
+  centerLabel: string;
 }
 
-// Same brand-aligned palette used by the rest of the dashboard.
-const COLOR_BY_LOCALE: Record<string, string> = {
-  en: '#6155F1',
-  es: '#3E81E5',
-  id: '#0ABFBC',
-};
-
-const FALLBACK_COLORS = ['#F59E0B', '#84CC16', '#EC4899', '#06B6D4'];
-
-function colorFor(locale: string, index: number): string {
-  return COLOR_BY_LOCALE[locale] ?? FALLBACK_COLORS[index % FALLBACK_COLORS.length];
-}
+// Brand-aligned palette. First three match the EN/ES/ID locale colors used
+// elsewhere, so locale donuts come out consistent without passing colors.
+const PALETTE = ['#6155F1', '#3E81E5', '#0ABFBC', '#F59E0B', '#84CC16', '#EC4899', '#06B6D4'];
 
 const Wrap = styled.div`
   display: grid;
@@ -93,35 +97,28 @@ const RADIUS = 70;
 const STROKE_WIDTH = 24;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-export function LocaleDonut({ locales }: Props) {
-  const total = locales.reduce((sum, l) => sum + l.current.clicks, 0);
-  if (total === 0) return <EmptyState message="No clicks in this period yet." />;
+export function ShareDonut({ ariaLabel, items, centerLabel }: Props) {
+  const total = items.reduce((sum, i) => sum + i.value, 0);
+  if (total === 0) return <EmptyState message={`No ${centerLabel.toLowerCase()} in this period yet.`} />;
   let cumulative = 0;
-  const segments = locales.map((l, i) => {
-    const fraction = total === 0 ? 0 : l.current.clicks / total;
+  const segments = items.map((it, i) => {
+    const fraction = total === 0 ? 0 : it.value / total;
     const start = cumulative;
     cumulative += fraction;
     return {
-      label: l.label,
-      locale: l.locale,
-      clicks: l.current.clicks,
+      label: it.label,
+      sublabel: it.sublabel,
+      value: it.value,
       fraction,
       start,
-      color: colorFor(l.locale, i),
+      color: it.color ?? PALETTE[i % PALETTE.length],
     };
   });
 
   return (
     <Card padding={4} radius={3} shadow={1}>
       <Wrap>
-        <svg
-          viewBox="0 0 200 200"
-          width="180"
-          height="180"
-          role="img"
-          aria-label="Click share by locale"
-        >
-          {/* track */}
+        <svg viewBox="0 0 200 200" width="180" height="180" role="img" aria-label={ariaLabel}>
           <circle
             cx={100}
             cy={100}
@@ -130,12 +127,11 @@ export function LocaleDonut({ locales }: Props) {
             stroke="rgba(127,127,127,0.12)"
             strokeWidth={STROKE_WIDTH}
           />
-          {/* segments */}
-          {segments.map((seg) => {
+          {segments.map((seg, i) => {
             if (seg.fraction === 0) return null;
             return (
               <circle
-                key={seg.locale}
+                key={`${seg.label}-${i}`}
                 cx={100}
                 cy={100}
                 r={RADIUS}
@@ -149,23 +145,25 @@ export function LocaleDonut({ locales }: Props) {
               />
             );
           })}
-          {/* center text */}
           <foreignObject x="50" y="74" width="100" height="52">
             <div style={{ textAlign: 'center' }}>
-              <CenterText>Total</CenterText>
+              <CenterText>{centerLabel}</CenterText>
               <CenterValue>{formatNumber(total)}</CenterValue>
             </div>
           </foreignObject>
         </svg>
 
         <Legend>
-          {segments.map((seg) => (
-            <LegendRow key={seg.locale}>
+          {segments.map((seg, i) => (
+            <LegendRow key={`${seg.label}-legend-${i}`}>
               <Swatch $color={seg.color} />
               <LegendLabel>
-                {seg.label} <span style={{ opacity: 0.55 }}>/{seg.locale}</span>
+                {seg.label}
+                {seg.sublabel ? (
+                  <span style={{ opacity: 0.55 }}> {seg.sublabel}</span>
+                ) : null}
               </LegendLabel>
-              <LegendValue>{formatNumber(seg.clicks)}</LegendValue>
+              <LegendValue>{formatNumber(seg.value)}</LegendValue>
               <LegendPercent>{(seg.fraction * 100).toFixed(1)}%</LegendPercent>
             </LegendRow>
           ))}

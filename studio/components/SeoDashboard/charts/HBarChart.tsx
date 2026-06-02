@@ -1,16 +1,29 @@
 import { Card, Stack, Text } from '@sanity/ui';
 import styled from 'styled-components';
-import type { QueryRow } from '../lib/types';
 import { formatNumber } from '../lib/formatters';
 import { EmptyState } from '../EmptyState';
 
-// Horizontal-bar chart of the top N queries by clicks. Visually
-// reinforces the table — useful for at-a-glance "who's pulling weight".
+// Generic horizontal-bar chart. Pure: takes pre-shaped { label, value } items
+// and renders them — it has no idea whether the numbers are mock or real, so it
+// works unchanged once a loader swaps mock data for real. Same chunky/squared
+// bar style as the GSC Top Queries chart, for visual consistency.
+
+export interface BarItem {
+  label: string;
+  value: number;
+  /** Optional per-bar color; defaults to brand purple. */
+  color?: string;
+}
 
 interface Props {
-  rows: QueryRow[];
+  title: string;
+  items: BarItem[];
   topN?: number;
+  /** Formatter for the value shown on the right. Defaults to thousands-separated. */
+  format?: (n: number) => string;
 }
+
+const BRAND = '#6155F1';
 
 const Wrap = styled.div`
   display: flex;
@@ -61,21 +74,10 @@ const BarFill = styled.div<{ $width: number; $color: string }>`
   transition: width 0.4s ease;
 `;
 
-// Grade colors so the bars vary subtly down the list rather than being
-// one flat slab — keeps the eye moving.
-const LOCALE_COLOR: Record<string, string> = {
-  en: '#6155F1',
-  es: '#3E81E5',
-  id: '#0ABFBC',
-};
-
-export function TopQueriesBar({ rows, topN = 10 }: Props) {
-  if (rows.length === 0) return <EmptyState message="No queries with impressions in this period yet." />;
-  // Rank by clicks; but a young site often has impressions and ~0 clicks, where
-  // ranking by clicks is all-zero and useless — fall back to impressions.
-  const metric: 'clicks' | 'impressions' = rows.some((r) => r.clicks > 0) ? 'clicks' : 'impressions';
-  const top = [...rows].sort((a, b) => b[metric] - a[metric]).slice(0, topN);
-  const max = top.length === 0 ? 0 : top[0][metric];
+export function HBarChart({ title, items, topN = 10, format = formatNumber }: Props) {
+  const top = [...items].sort((a, b) => b.value - a.value).slice(0, topN);
+  if (top.length === 0) return <EmptyState message="No data for this period yet." />;
+  const max = top[0].value;
 
   return (
     <Card padding={4} radius={3} shadow={1}>
@@ -86,21 +88,19 @@ export function TopQueriesBar({ rows, topN = 10 }: Props) {
           muted
           style={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}
         >
-          Top {topN} by {metric}
+          {title}
         </Text>
         <Wrap>
-          {top.map((row) => {
-            const value = row[metric];
-            const width = max > 0 ? (value / max) * 100 : 0;
-            const color = LOCALE_COLOR[row.locale] ?? '#6155F1';
+          {top.map((item, i) => {
+            const width = max > 0 ? (item.value / max) * 100 : 0;
             return (
-              <RowGroup key={`${row.query}-${row.locale}`}>
+              <RowGroup key={`${item.label}-${i}`}>
                 <Row>
-                  <Label title={row.query}>{row.query}</Label>
-                  <Count>{formatNumber(value)}</Count>
+                  <Label title={item.label}>{item.label}</Label>
+                  <Count>{format(item.value)}</Count>
                 </Row>
                 <BarTrack>
-                  <BarFill $width={width} $color={color} />
+                  <BarFill $width={width} $color={item.color ?? BRAND} />
                 </BarTrack>
               </RowGroup>
             );

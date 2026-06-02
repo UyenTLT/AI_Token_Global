@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "siteUrl": "aitoken.global",
+    "snapshotDate": "2026-06-02",
+    "rangeDays": 30,
+    "dataSource": "ga4"
+  },
+  "rows": [
+    {
+      "page": "/en/",
+      "locale": "en",
+      "views": 4,
+      "users": 3,
+      "avgEngagementSeconds": 5
+    }
+  ]
+}

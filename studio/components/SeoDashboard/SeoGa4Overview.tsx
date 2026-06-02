@@ -1,65 +1,59 @@
 import { Card, Stack, Heading, Text, Box, Flex } from '@sanity/ui';
-import type { OverviewSnapshot } from './lib/types';
-import { loadOverview, loadQueries } from './lib/loadSnapshot';
+import type { Ga4OverviewSnapshot } from './lib/types';
+import { loadGa4Overview } from './lib/loadSnapshot';
 import {
-  formatNumber,
   formatCompact,
   formatPercent,
-  formatPosition,
+  formatDuration,
   computeDelta,
   type DeltaSummary,
 } from './lib/formatters';
-import { PositionDistribution } from './charts/PositionDistribution';
-import { InfoTooltip } from './InfoTooltip';
-import { GLOSSARY } from './lib/glossary';
 import { SectionHeader } from './SectionHeader';
 
-const data: OverviewSnapshot = loadOverview();
-const queriesData = loadQueries();
+const data: Ga4OverviewSnapshot = loadGa4Overview();
 
 interface ScorecardSpec {
   label: string;
   value: string;
   delta: DeltaSummary;
   helpText: string;
-  tooltip: string;
 }
 
-function buildScorecards(d: OverviewSnapshot): ScorecardSpec[] {
+function buildScorecards(d: Ga4OverviewSnapshot): ScorecardSpec[] {
   const { current, previous, meta } = d;
   return [
     {
-      label: 'Clicks',
-      value: formatNumber(current.clicks),
-      delta: computeDelta(current.clicks, previous.clicks, 'up'),
+      label: 'Users',
+      value: formatCompact(current.users),
+      delta: computeDelta(current.users, previous.users, 'up'),
       helpText: `vs prior ${meta.rangeDays} days`,
-      tooltip: GLOSSARY.clicks,
     },
     {
-      label: 'Impressions',
-      value: formatCompact(current.impressions),
-      delta: computeDelta(current.impressions, previous.impressions, 'up'),
+      label: 'Engaged sessions',
+      value: formatCompact(current.engagedSessions),
+      delta: computeDelta(current.engagedSessions, previous.engagedSessions, 'up'),
       helpText: `vs prior ${meta.rangeDays} days`,
-      tooltip: GLOSSARY.impressions,
     },
     {
-      label: 'CTR',
-      value: current.impressions > 0 ? formatPercent(current.ctr) : '—',
-      delta: computeDelta(current.ctr, previous.ctr, 'up'),
-      helpText: 'clicks ÷ impressions',
-      tooltip: GLOSSARY.ctr,
+      label: 'Engagement rate',
+      value: formatPercent(current.engagementRate, 1),
+      delta: computeDelta(current.engagementRate, previous.engagementRate, 'up'),
+      helpText: 'engaged ÷ total sessions',
     },
     {
-      label: 'Avg. position',
-      value: current.avgPosition > 0 ? formatPosition(current.avgPosition) : '—',
-      delta: computeDelta(current.avgPosition, previous.avgPosition, 'down'),
-      helpText: 'lower is better',
-      tooltip: GLOSSARY.avgPosition,
+      label: 'Avg. engagement time',
+      value: formatDuration(current.avgEngagementSeconds),
+      delta: computeDelta(
+        current.avgEngagementSeconds,
+        previous.avgEngagementSeconds,
+        'up',
+      ),
+      helpText: 'per active user',
     },
   ];
 }
 
-// Color tokens. Picked to read clearly in both light and dark Studio themes.
+// Same delta color tokens as the GSC Overview, for a consistent read.
 const GOOD = '#22c55e';
 const BAD = '#ef4444';
 const FLAT = '#9ca3af';
@@ -69,28 +63,26 @@ function deltaColor(d: DeltaSummary): string {
   if (d.sign === 0) return FLAT;
   return d.isGood ? GOOD : BAD;
 }
-
 function deltaArrow(d: DeltaSummary): string {
   if (d.isNew) return '';
   if (d.sign === 0) return '·';
   return d.sign === 1 ? '↑' : '↓';
 }
-
 function deltaMagnitude(d: DeltaSummary): string {
   if (d.isNew) return 'new';
   if (d.sign === 0) return '—';
   return `${(Math.abs(d.relative) * 100).toFixed(1)}%`;
 }
 
-export function SeoOverview() {
+export function SeoGa4Overview() {
   const scorecards = buildScorecards(data);
 
   return (
     <Stack space={4}>
       <SectionHeader
-        title="Overview"
+        title="Behavior Overview"
         rangeDays={data.meta.rangeDays}
-        subtitle={`Site-wide totals for the last ${data.meta.rangeDays} days, with the change vs. the prior ${data.meta.rangeDays} days. Use this as a 5-second status check on whether the site is growing. The histogram below shows where your search rankings sit — page 1, page 2, or deeper.`}
+        subtitle={`On-site behaviour from Google Analytics 4 for the last ${data.meta.rangeDays} days, with the change vs. the prior ${data.meta.rangeDays} days. Where the Search sections show how people find the site, this shows what they do once they arrive — engagement rate replaces the old bounce rate.`}
       />
 
       <Box
@@ -103,17 +95,14 @@ export function SeoOverview() {
         {scorecards.map((s) => (
           <Card key={s.label} padding={4} radius={3} shadow={1} tone="default">
             <Stack space={3}>
-              <Flex align="center">
-                <Text
-                  size={0}
-                  weight="semibold"
-                  muted
-                  style={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}
-                >
-                  {s.label}
-                </Text>
-                <InfoTooltip description={s.tooltip} ariaLabel={`Definition of ${s.label}`} />
-              </Flex>
+              <Text
+                size={0}
+                weight="semibold"
+                muted
+                style={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}
+              >
+                {s.label}
+              </Text>
               <Heading
                 as="div"
                 size={5}
@@ -143,8 +132,6 @@ export function SeoOverview() {
           </Card>
         ))}
       </Box>
-
-      <PositionDistribution rows={queriesData.rows} />
     </Stack>
   );
 }

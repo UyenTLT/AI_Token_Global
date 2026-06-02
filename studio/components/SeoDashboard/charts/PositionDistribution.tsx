@@ -2,6 +2,7 @@ import { Card, Stack, Text, Flex } from '@sanity/ui';
 import styled from 'styled-components';
 import type { QueryRow } from '../lib/types';
 import { formatNumber } from '../lib/formatters';
+import { EmptyState } from '../EmptyState';
 
 // Histogram of queries grouped by SERP position bucket. Answers
 // "how many of our queries are on page 1 vs page 2 vs deeper?" — a
@@ -20,7 +21,7 @@ interface Bucket {
 }
 
 const BUCKETS: Bucket[] = [
-  { label: 'Top 3', help: 'Pos 1–3', min: 1, max: 3.99, color: '#22c55e' },
+  { label: 'Top 3', help: 'Pos 1–3', min: 0, max: 3.99, color: '#22c55e' },
   { label: 'Rest of page 1', help: 'Pos 4–10', min: 4, max: 10.99, color: '#84cc16' },
   { label: 'Page 2', help: 'Pos 11–20', min: 11, max: 20.99, color: '#f59e0b' },
   { label: 'Page 3+', help: 'Pos 21+', min: 21, max: Infinity, color: '#ef4444' },
@@ -89,6 +90,7 @@ const ColumnHelp = styled.div`
 
 export function PositionDistribution({ rows }: Props) {
   const total = rows.length;
+  if (total === 0) return <EmptyState message="No queries with impressions in this period yet." />;
   const counts = BUCKETS.map((b) =>
     rows.filter((r) => r.position >= b.min && r.position <= b.max).length,
   );

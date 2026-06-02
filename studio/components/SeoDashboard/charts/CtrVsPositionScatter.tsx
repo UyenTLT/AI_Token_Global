@@ -2,6 +2,7 @@ import { Card, Stack, Text, Flex } from '@sanity/ui';
 import styled from 'styled-components';
 import type { PageRow } from '../lib/types';
 import { expectedCtrForPosition } from '../lib/ctrCurve';
+import { EmptyState } from '../EmptyState';
 
 // Scatter plot of CTR vs avg. position for each row, with the
 // industry-standard expected-CTR curve overlaid. Points well below
@@ -76,8 +77,11 @@ const GRID = 'rgba(127, 127, 127, 0.15)';
 const AXIS = 'rgba(127, 127, 127, 0.5)';
 
 export function CtrVsPositionScatter({ rows }: Props) {
+  if (rows.length === 0) return <EmptyState message="No pages with impressions in this period yet." />;
   const curvePath = buildCurvePath();
-  const points = rows.map((row) => {
+  const points = rows
+    .filter((row) => Number.isFinite(row.position) && Number.isFinite(row.ctr))
+    .map((row) => {
     const expected = expectedCtrForPosition(row.position);
     const isBelow = row.ctr < expected * 0.7; // > 30% below curve = clear outlier
     return {

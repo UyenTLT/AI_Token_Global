@@ -44,6 +44,8 @@ interface Props<T> {
   rowKey: (row: T, index: number) => string;
   /** Rows per page. Omit (or pass undefined / 0) to disable pagination. */
   pageSize?: number;
+  /** Message shown in place of rows when there are none. */
+  emptyMessage?: string;
 }
 
 // Semi-transparent grays — read OK in both light and dark Studio themes.
@@ -141,6 +143,7 @@ export function SortableTable<T>({
   onSort,
   rowKey,
   pageSize,
+  emptyMessage = 'No data for this period yet.',
 }: Props<T>) {
   const paginate = Boolean(pageSize && pageSize > 0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -214,15 +217,28 @@ export function SortableTable<T>({
             </tr>
           </thead>
           <tbody>
-            {visibleRows.map((row, i) => (
-              <BodyRow key={rowKey(row, start + i)}>
-                {columns.map((col) => (
-                  <BodyCell key={col.key} $align={col.align} $numeric={col.numeric}>
-                    {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key] ?? '')}
-                  </BodyCell>
-                ))}
+            {rows.length === 0 ? (
+              <BodyRow>
+                <BodyCell
+                  $align="left"
+                  $numeric={false}
+                  colSpan={columns.length}
+                  style={{ textAlign: 'center', opacity: 0.6, padding: '1.75rem 1rem' }}
+                >
+                  {emptyMessage}
+                </BodyCell>
               </BodyRow>
-            ))}
+            ) : (
+              visibleRows.map((row, i) => (
+                <BodyRow key={rowKey(row, start + i)}>
+                  {columns.map((col) => (
+                    <BodyCell key={col.key} $align={col.align} $numeric={col.numeric}>
+                      {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key] ?? '')}
+                    </BodyCell>
+                  ))}
+                </BodyRow>
+              ))
+            )}
           </tbody>
         </Table>
       </TableWrap>
