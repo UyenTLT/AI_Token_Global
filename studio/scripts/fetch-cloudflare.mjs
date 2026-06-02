@@ -70,11 +70,15 @@ async function write(section, payload) {
 }
 
 async function overviewBucket(range) {
-  const g = (await gql('quantiles { pageLoadTimeP50 }', range, 1))[0];
+  // The RUM pageload dataset exposes only `count` (page views) and `sum.visits`
+  // — there is NO page-load-time metric here (it lives in a separate web-vitals
+  // dataset). So visits + page views are real; medianLoadMs stays 0 until/unless
+  // we wire the web-vitals dataset for it.
+  const g = (await gql('', range, 1))[0];
   return {
     visits: g?.sum?.visits ?? 0,
     pageViews: g?.count ?? 0,
-    medianLoadMs: Math.round(g?.quantiles?.pageLoadTimeP50 ?? 0),
+    medianLoadMs: 0,
   };
 }
 
