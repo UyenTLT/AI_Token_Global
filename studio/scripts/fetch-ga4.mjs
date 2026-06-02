@@ -98,14 +98,15 @@ async function write(section, payload) {
 const METRICS = ['activeUsers', 'engagedSessions', 'engagementRate', 'userEngagementDuration', 'sessions'];
 
 function bucket(m) {
-  // Build a Ga4OverviewBucket from a metric map. avgEngagementSeconds = total
-  // engagement seconds / active users (GA4's "average engagement time per user").
+  // Build a Ga4OverviewBucket from a metric map. num() guards every field so an
+  // empty range (no rows) yields zeros, not undefined (which JSON would drop).
+  // avgEngagementSeconds = engagement seconds / active users (GA4's avg per user).
+  const users = num(m.activeUsers);
   return {
-    users: m.activeUsers,
-    engagedSessions: m.engagedSessions,
-    engagementRate: m.engagementRate, // already a fraction [0,1]
-    avgEngagementSeconds:
-      m.activeUsers > 0 ? Math.round(m.userEngagementDuration / m.activeUsers) : 0,
+    users,
+    engagedSessions: num(m.engagedSessions),
+    engagementRate: num(m.engagementRate), // already a fraction [0,1]
+    avgEngagementSeconds: users > 0 ? Math.round(num(m.userEngagementDuration) / users) : 0,
   };
 }
 
@@ -185,40 +186,61 @@ async function events() {
 }
 
 async function locale() {
-  // GA4 has no locale dimension — bucket pagePath by its first segment. Approximate
-  // for users/sessions (a visitor across pages counts in each); refine later if needed.
-  async function perRange(range) {
+  // GA4 has no locale dimension, so we bucket pagePath by its first segment.
+  // Metrics come from a pagePath-ONLY query (summing channel-split rows would
+  // over-count users); top channel comes from a separate pagePath×channel query.
+  // Note: per-locale users is still approximate — a visitor who hits pages in two
+  // locales counts in each. GA4 can't give true distinct-users-per-locale natively.
+  async function metricsByLocale(range) {
     const { rows, metricHeaders } = await reportWithHeaders({
       dateRanges: [range],
-      dimensions: [{ name: 'pagePath' }, { name: 'sessionDefaultChannelGroup' }],
+      dimensions: [{ name: 'pagePath' }],
       metrics: METRICS.map((name) => ({ name })).concat([{ name: 'screenPageViews' }]),
       limit: 2000,
     });
-    const acc = {}; // locale -> { metrics..., pages:{path:views}, channels:{ch:users} }
+    const acc = {};
     for (const r of rows) {
       const path = r.dimensionValues?.[0]?.value ?? '';
-      const ch = r.dimensionValues?.[1]?.value ?? '(unknown)';
       const loc = localeOf(path);
       if (!loc) continue;
       const m = metricMap(r, metricHeaders);
       const a = (acc[loc] ??= {
-        activeUsers: 0, engagedSessions: 0, sessions: 0, userEngagementDuration: 0,
-        engagementRateNum: 0, engagementRateDen: 0, pages: {}, channels: {},
+        activeUsers: 0, engagedSessions: 0, sessions: 0, userEngagementDuration: 0, pages: {},
       });
-      a.activeUsers += m.activeUsers;
-      a.engagedSessions += m.engagedSessions;
-      a.sessions += m.sessions;
-      a.userEngagementDuration += m.userEngagementDuration;
-      a.pages[path] = (a.pages[path] ?? 0) + m.screenPageViews;
-      a.channels[ch] = (a.channels[ch] ?? 0) + m.activeUsers;
+      a.activeUsers += num(m.activeUsers);
+      a.engagedSessions += num(m.engagedSessions);
+      a.sessions += num(m.sessions);
+      a.userEngagementDuration += num(m.userEngagementDuration);
+      a.pages[path] = (a.pages[path] ?? 0) + num(m.screenPageViews);
     }
     return acc;
   }
 
-  const cur = await perRange(CURRENT);
-  const prev = await perRange(PREVIOUS);
+  async function topChannelByLocale() {
+    const { rows, metricHeaders } = await reportWithHeaders({
+      dateRanges: [CURRENT],
+      dimensions: [{ name: 'pagePath' }, { name: 'sessionDefaultChannelGroup' }],
+      metrics: [{ name: 'activeUsers' }],
+      limit: 2000,
+    });
+    const acc = {};
+    for (const r of rows) {
+      const loc = localeOf(r.dimensionValues?.[0]?.value ?? '');
+      if (!loc) continue;
+      const ch = r.dimensionValues?.[1]?.value ?? '(unknown)';
+      const m = metricMap(r, metricHeaders);
+      const a = (acc[loc] ??= {});
+      a[ch] = (a[ch] ?? 0) + num(m.activeUsers);
+    }
+    return acc;
+  }
+
+  const cur = await metricsByLocale(CURRENT);
+  const prev = await metricsByLocale(PREVIOUS);
+  const channels = await topChannelByLocale();
 
   function toBucket(a) {
+    if (!a) return { users: 0, engagedSessions: 0, engagementRate: 0, avgEngagementSeconds: 0 };
     return {
       users: a.activeUsers,
       engagedSessions: a.engagedSessions,
@@ -226,7 +248,7 @@ async function locale() {
       avgEngagementSeconds: a.activeUsers > 0 ? Math.round(a.userEngagementDuration / a.activeUsers) : 0,
     };
   }
-  const topKey = (obj) => Object.entries(obj).sort((x, y) => y[1] - x[1])[0]?.[0] ?? '—';
+  const topKey = (obj) => Object.entries(obj ?? {}).sort((x, y) => y[1] - x[1])[0]?.[0] ?? '—';
 
   const locales = [];
   for (const loc of ['en', 'es', 'id']) {
@@ -236,9 +258,9 @@ async function locale() {
       locale: loc,
       label: LOCALE_LABEL[loc],
       current: toBucket(a),
-      previous: toBucket(prev[loc] ?? { activeUsers: 0, engagedSessions: 0, sessions: 0, userEngagementDuration: 0 }),
+      previous: toBucket(prev[loc]),
       topPage: topKey(a.pages),
-      topChannel: topKey(a.channels),
+      topChannel: topKey(channels[loc]),
     });
   }
   await write('locale', { meta: META, locales });

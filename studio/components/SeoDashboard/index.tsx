@@ -26,8 +26,22 @@ import { SeoCfTopPages } from './SeoCfTopPages';
 import { SeoCfReferrers } from './SeoCfReferrers';
 import { SeoCfCountries } from './SeoCfCountries';
 import { downloadFullReportAsJson } from './lib/exportReport';
+import { loadOverview, loadGa4Overview, loadCloudflareOverview } from './lib/loadSnapshot';
 
 type View = 'search' | 'behavior' | 'traffic';
+
+// Badge reflects the real state across the three sources: all mock → "Mock data";
+// some real → "Mixed"; all real → "Live data". Reads each overview's dataSource.
+const DATA_SOURCES = [
+  loadOverview().meta.dataSource,
+  loadGa4Overview().meta.dataSource,
+  loadCloudflareOverview().meta.dataSource,
+];
+const DATA_BADGE = DATA_SOURCES.every((s) => s === 'mock')
+  ? { text: 'Mock data', tone: 'caution' as const }
+  : DATA_SOURCES.every((s) => s !== 'mock')
+    ? { text: 'Live data', tone: 'positive' as const }
+    : { text: 'Mixed: live + mock', tone: 'caution' as const };
 
 const VIEWS: { id: View; label: string }[] = [
   { id: 'search', label: 'Search · Google Search Console' },
@@ -88,8 +102,8 @@ export function SeoDashboard() {
               <Heading as="h1" size={4}>
                 SEO Insights
               </Heading>
-              <Badge tone="caution" fontSize={1}>
-                Mock data
+              <Badge tone={DATA_BADGE.tone} fontSize={1}>
+                {DATA_BADGE.text}
               </Badge>
             </Flex>
             <Button
