@@ -46,6 +46,19 @@ const hreflangs = SUPPORTED_LANGS.map(l => ({
 // token is present, so local/dev builds without the var simply skip it.
 const cfToken = import.meta.env.PUBLIC_CLOUDFLARE_BEACON_TOKEN;
 const cloudflareBeacon = cfToken ? JSON.stringify({ token: cfToken }) : null;
+
+// GA4 measurement ID comes from the PUBLIC_GA4_MEASUREMENT_ID env var (set in
+// Amplify) — single source of truth. The tag below only renders when it's set,
+// so local/dev builds without the var skip GA4 entirely. The init script is
+// built here so the ID can be templated into the inline (global) gtag script.
+const ga4Id = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
+const ga4InitScript = ga4Id
+  ? `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied', wait_for_update: 500 });
+gtag('js', new Date());
+gtag('config', ${JSON.stringify(ga4Id)});`
+  : '';
 ---
 
 <!DOCTYPE html>
@@ -54,24 +67,15 @@ const cloudflareBeacon = cfToken ? JSON.stringify({ token: cfToken }) : null;
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Google tag (gtag.js) — GA4 measurement ID G-2KG5EVJQ22 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2KG5EVJQ22" is:inline></script>
-  <script is:inline>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    // Consent Mode v2 — default everything to 'denied' until the visitor chooses.
-    // GDPR-safe: no analytics/ad storage fires before consent. The cookie consent
-    // banner flips these to 'granted' via gtag('consent', 'update', …) on Accept.
-    gtag('consent', 'default', {
-      ad_storage: 'denied',
-      ad_user_data: 'denied',
-      ad_personalization: 'denied',
-      analytics_storage: 'denied',
-      wait_for_update: 500
-    });
-    gtag('js', new Date());
-    gtag('config', 'G-2KG5EVJQ22');
-  </script>
+  <!-- Google tag (gtag.js) — measurement ID from PUBLIC_GA4_MEASUREMENT_ID env var.
+       Consent Mode v2 defaults to denied; the cookie banner flips it on Accept.
+       Renders only when the env var is set (so local/dev builds skip GA4). -->
+  {ga4Id && (
+    <Fragment>
+      <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`} is:inline></script>
+      <script is:inline set:html={ga4InitScript}></script>
+    </Fragment>
+  )}
 
   <!-- Cloudflare Web Analytics — cookieless, no consent gate (fires for every visitor).
        Token injected from the PUBLIC_CLOUDFLARE_BEACON_TOKEN env var (set in Amplify). -->
