@@ -32,12 +32,15 @@ type View = 'search' | 'behavior' | 'traffic';
 
 // Badge reflects the real state across the three sources: all mock → "Mock data";
 // some real → "Mixed"; all real → "Live data". Reads each overview's dataSource.
+const GSC_OVERVIEW = loadOverview();
 const DATA_SOURCES = [
-  loadOverview().meta.dataSource,
+  GSC_OVERVIEW.meta.dataSource,
   loadGa4Overview().meta.dataSource,
   loadCloudflareOverview().meta.dataSource,
 ];
-const DATA_BADGE = DATA_SOURCES.every((s) => s === 'mock')
+const SITE_URL = GSC_OVERVIEW.meta.siteUrl;
+const ALL_MOCK = DATA_SOURCES.every((s) => s === 'mock');
+const DATA_BADGE = ALL_MOCK
   ? { text: 'Mock data', tone: 'caution' as const }
   : DATA_SOURCES.every((s) => s !== 'mock')
     ? { text: 'Live data', tone: 'positive' as const }
@@ -116,10 +119,11 @@ export function SeoDashboard() {
             />
           </Flex>
           <Text size={1} muted>
-            Insights for aitoken.global across search and on-site behaviour. The
-            numbers are placeholders until each source is connected — then that
-            view swaps to real data with no code changes. Use{' '}
-            <strong>Download report</strong> to export the dataset as JSON.
+            Insights for {SITE_URL} across search and on-site behaviour.{' '}
+            {ALL_MOCK
+              ? 'The numbers are placeholders until each source is connected — then each view swaps to real data with no code changes. '
+              : 'Each view swaps from placeholder to real data automatically as its source connects. '}
+            Use <strong>Download report</strong> to export the dataset as JSON.
           </Text>
 
           <Flex align="center" gap={3} wrap="wrap">

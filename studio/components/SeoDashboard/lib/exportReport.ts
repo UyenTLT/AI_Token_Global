@@ -49,8 +49,8 @@ export interface FullReport {
   siteUrl: string;
   /** Rolling window in days. Read from the GSC Overview snapshot. */
   rangeDays: number;
-  /** `mock` if every section is mock data; `mixed` once any real data has landed. */
-  dataSource: 'mock' | 'mixed';
+  /** `mock` (all sections mock), `live` (all real), or `mixed` (some of each). */
+  dataSource: 'mock' | 'mixed' | 'live';
   /** A line of context for whoever (human or AI) reads this file first. */
   readme: string;
   sections: {
@@ -82,7 +82,7 @@ export interface FullReport {
 }
 
 const README_TEXT = [
-  'SEO Insights export from the aitoken.global Sanity Studio dashboard.',
+  'SEO Insights export from the {{siteUrl}} Sanity Studio dashboard.',
   '',
   'Three data sources, grouped under "sections":',
   '',
@@ -145,14 +145,18 @@ export function buildFullReport(): FullReport {
     ga4Overview, ga4Channels, ga4Pages, ga4Events, ga4Locale,
     cfOverview, cfPages, cfReferrers, cfCountries,
   ].map((s) => s.meta.dataSource);
-  const dataSource: FullReport['dataSource'] = allMeta.every((s) => s === 'mock') ? 'mock' : 'mixed';
+  const dataSource: FullReport['dataSource'] = allMeta.every((s) => s === 'mock')
+    ? 'mock'
+    : allMeta.every((s) => s !== 'mock')
+      ? 'live'
+      : 'mixed';
 
   return {
     exportedAt: new Date().toISOString(),
     siteUrl: overview.meta.siteUrl,
     rangeDays: overview.meta.rangeDays,
     dataSource,
-    readme: README_TEXT,
+    readme: README_TEXT.replace('{{siteUrl}}', overview.meta.siteUrl),
     sections: {
       search: { overview, queries, pages, striking, byLocale, ctrOutliers },
       behavior: {

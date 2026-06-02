@@ -122,14 +122,17 @@ const LocaleCode = styled.span`
 `;
 
 function deltaColor(d: DeltaSummary): string {
+  if (d.isNew) return GOOD;
   if (d.sign === 0) return FLAT;
   return d.isGood ? GOOD : BAD;
 }
 function deltaArrow(d: DeltaSummary): string {
+  if (d.isNew) return '';
   if (d.sign === 0) return '·';
   return d.sign === 1 ? '↑' : '↓';
 }
 function deltaMagnitude(d: DeltaSummary): string {
+  if (d.isNew) return 'new';
   if (d.sign === 0) return '—';
   return `${(Math.abs(d.relative) * 100).toFixed(1)}%`;
 }
@@ -229,7 +232,7 @@ export function SeoGa4ByLocale() {
       <SectionHeader
         title="By Locale"
         rangeDays={data.meta.rangeDays}
-        subtitle="The same behaviour metrics from Behavior Overview, broken out per language version of the site (EN · ES · ID). Use it to see where engaged traffic is concentrated and whether a locale is pulling its weight."
+        subtitle={`The same behaviour metrics from Behavior Overview, broken out per language version of the site (${data.locales.map((l) => l.locale.toUpperCase()).join(' · ')}). Use it to see where engaged traffic is concentrated and whether a locale is pulling its weight.`}
       />
 
       <ShareDonut

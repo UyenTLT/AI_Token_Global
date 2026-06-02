@@ -59,14 +59,17 @@ const BAD = '#ef4444';
 const FLAT = '#9ca3af';
 
 function deltaColor(d: DeltaSummary): string {
+  if (d.isNew) return GOOD;
   if (d.sign === 0) return FLAT;
   return d.isGood ? GOOD : BAD;
 }
 function deltaArrow(d: DeltaSummary): string {
+  if (d.isNew) return '';
   if (d.sign === 0) return '·';
   return d.sign === 1 ? '↑' : '↓';
 }
 function deltaMagnitude(d: DeltaSummary): string {
+  if (d.isNew) return 'new';
   if (d.sign === 0) return '—';
   return `${(Math.abs(d.relative) * 100).toFixed(1)}%`;
 }
@@ -79,7 +82,7 @@ export function SeoGa4Overview() {
       <SectionHeader
         title="Behavior Overview"
         rangeDays={data.meta.rangeDays}
-        subtitle="On-site behaviour from Google Analytics 4 for the last 30 days, with the change vs. the prior 30 days. Where the Search sections show how people find the site, this shows what they do once they arrive — engagement rate replaces the old bounce rate."
+        subtitle={`On-site behaviour from Google Analytics 4 for the last ${data.meta.rangeDays} days, with the change vs. the prior ${data.meta.rangeDays} days. Where the Search sections show how people find the site, this shows what they do once they arrive — engagement rate replaces the old bounce rate.`}
       />
 
       <Box

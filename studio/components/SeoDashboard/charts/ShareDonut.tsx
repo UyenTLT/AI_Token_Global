@@ -1,6 +1,7 @@
 import { Card } from '@sanity/ui';
 import styled from 'styled-components';
 import { formatNumber } from '../lib/formatters';
+import { EmptyState } from '../EmptyState';
 
 // Generic share-of-total donut. Pure: takes pre-shaped { label, value } items
 // and renders a donut + legend — mock vs real makes no difference, so it works
@@ -98,6 +99,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 export function ShareDonut({ ariaLabel, items, centerLabel }: Props) {
   const total = items.reduce((sum, i) => sum + i.value, 0);
+  if (total === 0) return <EmptyState message={`No ${centerLabel.toLowerCase()} in this period yet.`} />;
   let cumulative = 0;
   const segments = items.map((it, i) => {
     const fraction = total === 0 ? 0 : it.value / total;

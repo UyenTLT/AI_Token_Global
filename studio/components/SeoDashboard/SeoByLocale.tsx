@@ -121,16 +121,19 @@ const LocaleCode = styled.span`
 `;
 
 function deltaColor(d: DeltaSummary): string {
+  if (d.isNew) return GOOD;
   if (d.sign === 0) return FLAT;
   return d.isGood ? GOOD : BAD;
 }
 
 function deltaArrow(d: DeltaSummary): string {
+  if (d.isNew) return '';
   if (d.sign === 0) return '·';
   return d.sign === 1 ? '↑' : '↓';
 }
 
 function deltaMagnitude(d: DeltaSummary): string {
+  if (d.isNew) return 'new';
   if (d.sign === 0) return '—';
   return `${(Math.abs(d.relative) * 100).toFixed(1)}%`;
 }
@@ -226,7 +229,7 @@ export function SeoByLocale() {
       <SectionHeader
         title="By Locale"
         rangeDays={data.meta.rangeDays}
-        subtitle="The same headline metrics from Overview, broken out per language version of the site (EN · ES · ID). Use this to see where your traffic is concentrated and whether a particular locale is under- or over-performing for the effort you've put into it."
+        subtitle={`The same headline metrics from Overview, broken out per language version of the site (${data.locales.map((l) => l.locale.toUpperCase()).join(' · ')}). Use this to see where your traffic is concentrated and whether a particular locale is under- or over-performing for the effort you've put into it.`}
       />
 
       <LocaleDonut locales={data.locales} />

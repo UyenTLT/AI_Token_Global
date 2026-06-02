@@ -35,9 +35,9 @@ function buildScorecards(d: CloudflareOverviewSnapshot): ScorecardSpec[] {
     },
     {
       label: 'Median load time',
-      value: formatLoadMs(current.medianLoadMs),
+      value: current.medianLoadMs > 0 ? formatLoadMs(current.medianLoadMs) : '—',
       delta: computeDelta(current.medianLoadMs, previous.medianLoadMs, 'down'),
-      helpText: 'lower is better',
+      helpText: current.medianLoadMs > 0 ? 'lower is better' : 'not collected yet',
     },
   ];
 }
@@ -47,14 +47,17 @@ const BAD = '#ef4444';
 const FLAT = '#9ca3af';
 
 function deltaColor(d: DeltaSummary): string {
+  if (d.isNew) return GOOD;
   if (d.sign === 0) return FLAT;
   return d.isGood ? GOOD : BAD;
 }
 function deltaArrow(d: DeltaSummary): string {
+  if (d.isNew) return '';
   if (d.sign === 0) return '·';
   return d.sign === 1 ? '↑' : '↓';
 }
 function deltaMagnitude(d: DeltaSummary): string {
+  if (d.isNew) return 'new';
   if (d.sign === 0) return '—';
   return `${(Math.abs(d.relative) * 100).toFixed(1)}%`;
 }
@@ -67,7 +70,7 @@ export function SeoCfOverview() {
       <SectionHeader
         title="Overview"
         rangeDays={data.meta.rangeDays}
-        subtitle="Cloudflare Web Analytics for the last 30 days. It's cookieless and not blocked by ad-blockers, so it counts visitors GA4 misses — treat it as an honest headcount. It also measures real page-load speed, which the other sources don't."
+        subtitle={`Cloudflare Web Analytics for the last ${data.meta.rangeDays} days. It's cookieless and not blocked by ad-blockers, so it counts visitors GA4 misses — treat it as an honest headcount to cross-check against GA4.`}
       />
 
       <Box

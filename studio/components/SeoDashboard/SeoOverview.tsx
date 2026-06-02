@@ -44,14 +44,14 @@ function buildScorecards(d: OverviewSnapshot): ScorecardSpec[] {
     },
     {
       label: 'CTR',
-      value: formatPercent(current.ctr),
+      value: current.impressions > 0 ? formatPercent(current.ctr) : '—',
       delta: computeDelta(current.ctr, previous.ctr, 'up'),
       helpText: 'clicks ÷ impressions',
       tooltip: GLOSSARY.ctr,
     },
     {
       label: 'Avg. position',
-      value: formatPosition(current.avgPosition),
+      value: current.avgPosition > 0 ? formatPosition(current.avgPosition) : '—',
       delta: computeDelta(current.avgPosition, previous.avgPosition, 'down'),
       helpText: 'lower is better',
       tooltip: GLOSSARY.avgPosition,
@@ -65,16 +65,19 @@ const BAD = '#ef4444';
 const FLAT = '#9ca3af';
 
 function deltaColor(d: DeltaSummary): string {
+  if (d.isNew) return GOOD;
   if (d.sign === 0) return FLAT;
   return d.isGood ? GOOD : BAD;
 }
 
 function deltaArrow(d: DeltaSummary): string {
+  if (d.isNew) return '';
   if (d.sign === 0) return '·';
   return d.sign === 1 ? '↑' : '↓';
 }
 
 function deltaMagnitude(d: DeltaSummary): string {
+  if (d.isNew) return 'new';
   if (d.sign === 0) return '—';
   return `${(Math.abs(d.relative) * 100).toFixed(1)}%`;
 }
@@ -87,7 +90,7 @@ export function SeoOverview() {
       <SectionHeader
         title="Overview"
         rangeDays={data.meta.rangeDays}
-        subtitle="Site-wide totals for the last 30 days, with the change vs. the prior 30 days. Use this as a 5-second status check on whether the site is growing. The histogram below shows where your search rankings sit — page 1, page 2, or deeper."
+        subtitle={`Site-wide totals for the last ${data.meta.rangeDays} days, with the change vs. the prior ${data.meta.rangeDays} days. Use this as a 5-second status check on whether the site is growing. The histogram below shows where your search rankings sit — page 1, page 2, or deeper.`}
       />
 
       <Box

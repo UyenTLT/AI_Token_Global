@@ -51,6 +51,12 @@ export interface DeltaSummary {
   isGood: boolean;
   /** 1 / -1 / 0 — sign of the absolute change. */
   sign: 1 | -1 | 0;
+  /**
+   * True when there's no prior-period baseline (previous = 0) but a non-zero
+   * current value — i.e. brand-new from zero. A relative % is meaningless here
+   * (it would be ∞), so the UI shows "new" instead of a misleading "0.0%".
+   */
+  isNew: boolean;
 }
 
 /** Compute a delta + whether it's a good or bad outcome. */
@@ -63,7 +69,8 @@ export function computeDelta(
   const relative = previous === 0 ? 0 : absolute / previous;
   const sign: 1 | -1 | 0 = absolute > 0 ? 1 : absolute < 0 ? -1 : 0;
   const isGood = sign === 0 ? true : desirable === 'up' ? sign === 1 : sign === -1;
-  return { relative, absolute, isGood, sign };
+  const isNew = previous === 0 && current !== 0;
+  return { relative, absolute, isGood, sign, isNew };
 }
 
 /** "+6.9%" / "−3.2%" / "—" with the unicode minus and em-dash. */

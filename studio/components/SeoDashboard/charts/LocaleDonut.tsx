@@ -2,6 +2,7 @@ import { Card } from '@sanity/ui';
 import styled from 'styled-components';
 import type { LocaleAggregate } from '../lib/types';
 import { formatNumber } from '../lib/formatters';
+import { EmptyState } from '../EmptyState';
 
 // Donut chart of click-share per locale. Reads directly from the
 // existing By Locale snapshot, no new data fetching.
@@ -94,6 +95,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 export function LocaleDonut({ locales }: Props) {
   const total = locales.reduce((sum, l) => sum + l.current.clicks, 0);
+  if (total === 0) return <EmptyState message="No clicks in this period yet." />;
   let cumulative = 0;
   const segments = locales.map((l, i) => {
     const fraction = total === 0 ? 0 : l.current.clicks / total;

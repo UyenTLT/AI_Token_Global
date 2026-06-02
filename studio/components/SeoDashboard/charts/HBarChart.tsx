@@ -1,6 +1,7 @@
 import { Card, Stack, Text } from '@sanity/ui';
 import styled from 'styled-components';
 import { formatNumber } from '../lib/formatters';
+import { EmptyState } from '../EmptyState';
 
 // Generic horizontal-bar chart. Pure: takes pre-shaped { label, value } items
 // and renders them — it has no idea whether the numbers are mock or real, so it
@@ -75,7 +76,8 @@ const BarFill = styled.div<{ $width: number; $color: string }>`
 
 export function HBarChart({ title, items, topN = 10, format = formatNumber }: Props) {
   const top = [...items].sort((a, b) => b.value - a.value).slice(0, topN);
-  const max = top.length === 0 ? 0 : top[0].value;
+  if (top.length === 0) return <EmptyState message="No data for this period yet." />;
+  const max = top[0].value;
 
   return (
     <Card padding={4} radius={3} shadow={1}>

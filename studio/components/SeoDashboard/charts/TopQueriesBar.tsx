@@ -2,6 +2,7 @@ import { Card, Stack, Text } from '@sanity/ui';
 import styled from 'styled-components';
 import type { QueryRow } from '../lib/types';
 import { formatNumber } from '../lib/formatters';
+import { EmptyState } from '../EmptyState';
 
 // Horizontal-bar chart of the top N queries by clicks. Visually
 // reinforces the table — useful for at-a-glance "who's pulling weight".
@@ -69,8 +70,12 @@ const LOCALE_COLOR: Record<string, string> = {
 };
 
 export function TopQueriesBar({ rows, topN = 10 }: Props) {
-  const top = [...rows].sort((a, b) => b.clicks - a.clicks).slice(0, topN);
-  const max = top.length === 0 ? 0 : top[0].clicks;
+  if (rows.length === 0) return <EmptyState message="No queries with impressions in this period yet." />;
+  // Rank by clicks; but a young site often has impressions and ~0 clicks, where
+  // ranking by clicks is all-zero and useless — fall back to impressions.
+  const metric: 'clicks' | 'impressions' = rows.some((r) => r.clicks > 0) ? 'clicks' : 'impressions';
+  const top = [...rows].sort((a, b) => b[metric] - a[metric]).slice(0, topN);
+  const max = top.length === 0 ? 0 : top[0][metric];
 
   return (
     <Card padding={4} radius={3} shadow={1}>
@@ -81,17 +86,18 @@ export function TopQueriesBar({ rows, topN = 10 }: Props) {
           muted
           style={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}
         >
-          Top {topN} by clicks
+          Top {topN} by {metric}
         </Text>
         <Wrap>
           {top.map((row) => {
-            const width = max > 0 ? (row.clicks / max) * 100 : 0;
+            const value = row[metric];
+            const width = max > 0 ? (value / max) * 100 : 0;
             const color = LOCALE_COLOR[row.locale] ?? '#6155F1';
             return (
               <RowGroup key={`${row.query}-${row.locale}`}>
                 <Row>
                   <Label title={row.query}>{row.query}</Label>
-                  <Count>{formatNumber(row.clicks)}</Count>
+                  <Count>{formatNumber(value)}</Count>
                 </Row>
                 <BarTrack>
                   <BarFill $width={width} $color={color} />
