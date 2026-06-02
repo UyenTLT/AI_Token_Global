@@ -139,7 +139,7 @@ async function channels() {
       users: m.activeUsers,
       sessions: m.sessions,
       engagementRate: m.engagementRate,
-      avgEngagementSeconds: m.sessions > 0 ? Math.round(m.userEngagementDuration / m.sessions) : 0,
+      avgEngagementSeconds: m.activeUsers > 0 ? Math.round(m.userEngagementDuration / m.activeUsers) : 0,
     };
   });
   await write('channels', { meta: META, rows: rowsOut });
@@ -250,16 +250,17 @@ async function locale() {
   }
   const topKey = (obj) => Object.entries(obj ?? {}).sort((x, y) => y[1] - x[1])[0]?.[0] ?? '—';
 
+  // Always emit all locales (zeros when a locale has no data this period), so the
+  // dashboard's By Locale grid stays complete instead of silently dropping a column.
   const locales = [];
   for (const loc of ['en', 'es', 'id']) {
     const a = cur[loc];
-    if (!a) continue;
     locales.push({
       locale: loc,
       label: LOCALE_LABEL[loc],
       current: toBucket(a),
       previous: toBucket(prev[loc]),
-      topPage: topKey(a.pages),
+      topPage: a ? topKey(a.pages) : '—',
       topChannel: topKey(channels[loc]),
     });
   }

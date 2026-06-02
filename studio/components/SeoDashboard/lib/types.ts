@@ -191,7 +191,7 @@ export interface Ga4ChannelRow {
   sessions: number;
   /** Engaged sessions / total sessions for this channel, fraction [0, 1]. */
   engagementRate: number;
-  /** Avg engagement time per session, in seconds. */
+  /** Avg engagement time per active user, in seconds. */
   avgEngagementSeconds: number;
 }
 

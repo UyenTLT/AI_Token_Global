@@ -162,16 +162,17 @@ async function localeSection(curPages, queryRows) {
       ? { clicks: a.clicks, impressions: a.impressions, ctr: a.impressions ? a.clicks / a.impressions : 0, avgPosition: a.impressions ? a.posW / a.impressions : 0 }
       : { clicks: 0, impressions: 0, ctr: 0, avgPosition: 0 };
   const topKey = (obj) => Object.entries(obj ?? {}).sort((x, y) => y[1] - x[1])[0]?.[0] ?? '—';
+  // Always emit all locales (zeros when a locale has no data this period), so the
+  // By Locale grid stays complete instead of silently dropping a column.
   const locales = [];
   for (const loc of ['en', 'es', 'id']) {
-    if (!cur[loc]) continue;
     locales.push({
       locale: loc,
       label: LOCALE_LABEL[loc],
       current: toBucket(cur[loc]),
       previous: toBucket(prev[loc]),
       topQuery: topQ[loc]?.query ?? '—',
-      topPage: topKey(cur[loc].pages),
+      topPage: cur[loc] ? topKey(cur[loc].pages) : '—',
     });
   }
   await write('locale', { meta: META, locales });
