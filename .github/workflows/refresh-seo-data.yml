@@ -22,7 +22,7 @@ name: Refresh SEO data
 on:
   workflow_dispatch: {} # manual "Run workflow" button (works on any branch)
   schedule:
-    - cron: '0 6 * * 1' # Mondays 06:00 UTC. Weekly is plenty (GSC lags ~2-3 days). Adjust freely.
+    - cron: '0 6 * * *' # Daily 06:00 UTC. (GSC lags ~2-3 days, so the search numbers move slowly; GA4/Cloudflare are fresher.)
 
 permissions:
   contents: write # commit the regenerated snapshots back to the repo
