@@ -14,6 +14,7 @@ import {
 } from './lib/formatters';
 import { SectionHeader } from './SectionHeader';
 import { LocaleDonut } from './charts/LocaleDonut';
+import { EmptyState } from './EmptyState';
 import { InfoTooltip } from './InfoTooltip';
 import { GLOSSARY } from './lib/glossary';
 
@@ -232,9 +233,13 @@ export function SeoByLocale() {
         subtitle={`The same headline metrics from Overview, broken out per language version of the site (${data.locales.map((l) => l.locale.toUpperCase()).join(' · ')}). Use this to see where your traffic is concentrated and whether a particular locale is under- or over-performing for the effort you've put into it.`}
       />
 
-      <LocaleDonut locales={data.locales} />
+      {data.locales.length === 0 ? (
+        <EmptyState message="No per-locale data for this period yet." />
+      ) : (
+        <>
+          <LocaleDonut locales={data.locales} />
 
-      <Grid $localeCount={data.locales.length}>
+          <Grid $localeCount={data.locales.length}>
         {/* Header row */}
         <HeaderCell>Metric</HeaderCell>
         {data.locales.map((l) => (
@@ -290,7 +295,9 @@ export function SeoByLocale() {
             </Flex>
           ))}
         </Stack>
-      </ContextStrip>
+          </ContextStrip>
+        </>
+      )}
     </Stack>
   );
 }

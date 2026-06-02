@@ -3,11 +3,11 @@
 // token (Account Analytics read scope). Run from studio/:
 //   node scripts/fetch-cloudflare.mjs
 //
-// v1 (untested against the live API at write time): the Cloudflare RUM GraphQL
-// field names below — quantiles.pageLoadTimeP50, dimensions.{requestPath,
-// refererHost,countryName}, filter date_geq/date_leq, the Date! var type — are
-// best-effort and may need a tweak after the first run. GraphQL errors are
-// descriptive; paste them and I'll fix. The dashboard shapes won't change.
+// Verified against the live API. The RUM pageload dataset exposes `count` (page
+// views), `sum.visits`, and dimensions requestPath / refererHost / countryName.
+// There is NO page-load-time metric here (it lives in a separate web-vitals
+// dataset), so medianLoadMs stays 0 for now. The dashboard shows an empty-state
+// when there's no data — no mock fallback.
 
 import 'dotenv/config';
 import { mkdir, writeFile } from 'node:fs/promises';

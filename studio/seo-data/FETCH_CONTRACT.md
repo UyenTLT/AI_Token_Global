@@ -13,14 +13,15 @@ your fetch script  ──►  JSON files in studio/seo-data/{gsc,ga4,cloudflare}
 
 - **The dashboard is auth-agnostic.** OAuth, service account, manual export —
   doesn't matter. We only consume the **output JSON**. Authenticate however works.
-- **Loader rule (per section):** it globs `…/<source>/<file>-*.json`, picks the
+- **Loader rule (per section):** it globs `…/<source>/<file>-*.json` and picks the
   **most recent by filename** (dates are `YYYY-MM-DD`, so they sort
-  lexicographically), and falls back to `mock/<file>.json` if none exist.
+  lexicographically). If a section has no file yet, the dashboard shows an
+  empty-state — **there is no mock fallback**.
 - **To go live:** drop a correctly-named, correctly-shaped JSON into the source
   folder and commit. No code changes. To refresh: write a new dated file.
 
-Branch: `levii/seo-dashboard`. Mock examples for every file live in
-`studio/seo-data/mock/` — copy a mock file and match its shape exactly.
+Branch: `levii/seo-dashboard`. Match the shapes in this doc exactly — there are no
+mock files to copy from; until a real file lands, the section renders an empty-state.
 
 ## The `meta` object — required on EVERY file
 

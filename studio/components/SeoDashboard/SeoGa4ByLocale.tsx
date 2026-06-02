@@ -18,6 +18,7 @@ import {
 import { SectionHeader } from './SectionHeader';
 import { InfoTooltip } from './InfoTooltip';
 import { ShareDonut } from './charts/ShareDonut';
+import { EmptyState } from './EmptyState';
 
 const data: Ga4LocaleSnapshot = loadGa4Locale();
 
@@ -235,17 +236,21 @@ export function SeoGa4ByLocale() {
         subtitle={`The same behaviour metrics from Behavior Overview, broken out per language version of the site (${data.locales.map((l) => l.locale.toUpperCase()).join(' · ')}). Use it to see where engaged traffic is concentrated and whether a locale is pulling its weight.`}
       />
 
-      <ShareDonut
-        ariaLabel="User share by locale"
-        centerLabel="Users"
-        items={data.locales.map((l) => ({
-          label: l.label,
-          value: l.current.users,
-          sublabel: `/${l.locale}`,
-        }))}
-      />
+      {data.locales.length === 0 ? (
+        <EmptyState message="No per-locale data for this period yet." />
+      ) : (
+        <>
+          <ShareDonut
+            ariaLabel="User share by locale"
+            centerLabel="Users"
+            items={data.locales.map((l) => ({
+              label: l.label,
+              value: l.current.users,
+              sublabel: `/${l.locale}`,
+            }))}
+          />
 
-      <Grid $localeCount={data.locales.length}>
+          <Grid $localeCount={data.locales.length}>
         {/* Header row */}
         <HeaderCell>Metric</HeaderCell>
         {data.locales.map((l) => (
@@ -304,7 +309,9 @@ export function SeoGa4ByLocale() {
             </Flex>
           ))}
         </Stack>
-      </ContextStrip>
+          </ContextStrip>
+        </>
+      )}
     </Stack>
   );
 }

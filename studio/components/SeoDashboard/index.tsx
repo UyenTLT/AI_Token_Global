@@ -26,25 +26,13 @@ import { SeoCfTopPages } from './SeoCfTopPages';
 import { SeoCfReferrers } from './SeoCfReferrers';
 import { SeoCfCountries } from './SeoCfCountries';
 import { downloadFullReportAsJson } from './lib/exportReport';
-import { loadOverview, loadGa4Overview, loadCloudflareOverview } from './lib/loadSnapshot';
+import { loadOverview } from './lib/loadSnapshot';
 
 type View = 'search' | 'behavior' | 'traffic';
 
-// Badge reflects the real state across the three sources: all mock → "Mock data";
-// some real → "Mixed"; all real → "Live data". Reads each overview's dataSource.
-const GSC_OVERVIEW = loadOverview();
-const DATA_SOURCES = [
-  GSC_OVERVIEW.meta.dataSource,
-  loadGa4Overview().meta.dataSource,
-  loadCloudflareOverview().meta.dataSource,
-];
-const SITE_URL = GSC_OVERVIEW.meta.siteUrl;
-const ALL_MOCK = DATA_SOURCES.every((s) => s === 'mock');
-const DATA_BADGE = ALL_MOCK
-  ? { text: 'Mock data', tone: 'caution' as const }
-  : DATA_SOURCES.every((s) => s !== 'mock')
-    ? { text: 'Live data', tone: 'positive' as const }
-    : { text: 'Mixed: live + mock', tone: 'caution' as const };
+// No mock data: sections show real snapshots, or an empty-state when a source has
+// no data in the window. The site name comes from the snapshot meta.
+const SITE_URL = loadOverview().meta.siteUrl;
 
 const VIEWS: { id: View; label: string }[] = [
   { id: 'search', label: 'Search · Google Search Console' },
@@ -105,8 +93,8 @@ export function SeoDashboard() {
               <Heading as="h1" size={4}>
                 SEO Insights
               </Heading>
-              <Badge tone={DATA_BADGE.tone} fontSize={1}>
-                {DATA_BADGE.text}
+              <Badge tone="positive" fontSize={1}>
+                Live data
               </Badge>
             </Flex>
             <Button
@@ -119,11 +107,9 @@ export function SeoDashboard() {
             />
           </Flex>
           <Text size={1} muted>
-            Insights for {SITE_URL} across search and on-site behaviour.{' '}
-            {ALL_MOCK
-              ? 'The numbers are placeholders until each source is connected — then each view swaps to real data with no code changes. '
-              : 'Each view swaps from placeholder to real data automatically as its source connects. '}
-            Use <strong>Download report</strong> to export the dataset as JSON.
+            Insights for {SITE_URL} across search and on-site behaviour. Empty
+            sections just mean no data in this window yet. Use{' '}
+            <strong>Download report</strong> to export the dataset as JSON.
           </Text>
 
           <Flex align="center" gap={3} wrap="wrap">
