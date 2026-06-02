@@ -70,7 +70,7 @@ const LOCALE_COLOR: Record<string, string> = {
 
 export function TopQueriesBar({ rows, topN = 10 }: Props) {
   const top = [...rows].sort((a, b) => b.clicks - a.clicks).slice(0, topN);
-  const max = top.length === 0 ? 1 : top[0].clicks;
+  const max = top.length === 0 ? 0 : top[0].clicks;
 
   return (
     <Card padding={4} radius={3} shadow={1}>
@@ -85,7 +85,7 @@ export function TopQueriesBar({ rows, topN = 10 }: Props) {
         </Text>
         <Wrap>
           {top.map((row) => {
-            const width = (row.clicks / max) * 100;
+            const width = max > 0 ? (row.clicks / max) * 100 : 0;
             const color = LOCALE_COLOR[row.locale] ?? '#6155F1';
             return (
               <RowGroup key={`${row.query}-${row.locale}`}>

@@ -75,7 +75,7 @@ const BarFill = styled.div<{ $width: number; $color: string }>`
 
 export function HBarChart({ title, items, topN = 10, format = formatNumber }: Props) {
   const top = [...items].sort((a, b) => b.value - a.value).slice(0, topN);
-  const max = top.length === 0 ? 1 : top[0].value;
+  const max = top.length === 0 ? 0 : top[0].value;
 
   return (
     <Card padding={4} radius={3} shadow={1}>
@@ -90,7 +90,7 @@ export function HBarChart({ title, items, topN = 10, format = formatNumber }: Pr
         </Text>
         <Wrap>
           {top.map((item, i) => {
-            const width = (item.value / max) * 100;
+            const width = max > 0 ? (item.value / max) * 100 : 0;
             return (
               <RowGroup key={`${item.label}-${i}`}>
                 <Row>
