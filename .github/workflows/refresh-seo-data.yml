@@ -3,15 +3,15 @@
 #
 # ── Activation checklist ────────────────────────────────────────────────────
 # 1. Add these repo secrets (Settings → Secrets and variables → Actions).
-#    The three JSON creds are base64 (avoids newline/paste issues): on your
-#    machine run e.g. `base64 -w0 studio/secrets/ga4-service-account.json`.
-#      GA4_SERVICE_ACCOUNT_JSON_B64 – base64 of the GA4 service-account key
-#      GOOGLE_OAUTH_CLIENT_JSON_B64 – base64 of secrets/oauth-credentials.json
-#      GSC_OAUTH_TOKEN_JSON_B64     – base64 of secrets/gsc-oauth-token.json (the
-#                                     refresh token from the first local run —
-#                                     this is what lets GSC run without a browser)
-#      CLOUDFLARE_API_TOKEN         – the cfut_… token (plain)
-#      SANITY_AUTH_TOKEN            – a Sanity deploy token (only if using sanity deploy)
+#    For the three JSON creds, open the file, copy everything, and paste the raw
+#    contents (multi-line is fine — they're passed via env + printf, not the shell).
+#      GA4_SERVICE_ACCOUNT_JSON – contents of secrets/ga4-service-account.json
+#      GOOGLE_OAUTH_CLIENT_JSON – contents of secrets/oauth-credentials.json
+#      GSC_OAUTH_TOKEN_JSON     – contents of secrets/gsc-oauth-token.json (the
+#                                 refresh token from the first local run —
+#                                 this is what lets GSC run without a browser)
+#      CLOUDFLARE_API_TOKEN     – the cfut_… token (plain)
+#      SANITY_AUTH_TOKEN        – a Sanity deploy token (only if using sanity deploy)
 # 2. Merge this branch to main — `schedule:` only fires from the default branch.
 #    (Until then, use the "Run workflow" button — workflow_dispatch — to test.)
 #
@@ -60,11 +60,15 @@ jobs:
         run: npm ci
 
       - name: Write credential files from secrets
+        env:
+          GA4_SERVICE_ACCOUNT_JSON: ${{ secrets.GA4_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_OAUTH_CLIENT_JSON: ${{ secrets.GOOGLE_OAUTH_CLIENT_JSON }}
+          GSC_OAUTH_TOKEN_JSON: ${{ secrets.GSC_OAUTH_TOKEN_JSON }}
         run: |
           mkdir -p secrets
-          echo "${{ secrets.GA4_SERVICE_ACCOUNT_JSON_B64 }}" | base64 -d > secrets/ga4-service-account.json
-          echo "${{ secrets.GOOGLE_OAUTH_CLIENT_JSON_B64 }}" | base64 -d > secrets/oauth-credentials.json
-          echo "${{ secrets.GSC_OAUTH_TOKEN_JSON_B64 }}" | base64 -d > secrets/gsc-oauth-token.json
+          printf '%s' "$GA4_SERVICE_ACCOUNT_JSON" > secrets/ga4-service-account.json
+          printf '%s' "$GOOGLE_OAUTH_CLIENT_JSON" > secrets/oauth-credentials.json
+          printf '%s' "$GSC_OAUTH_TOKEN_JSON" > secrets/gsc-oauth-token.json
 
       - name: Fetch GA4
         run: node scripts/fetch-ga4.mjs
