@@ -17,6 +17,9 @@ pnpm-debug.log*
 .env*
 !.env.example
 
+# fetch-script credentials — service-account JSON, OAuth creds/tokens. NEVER commit.
+secrets/
+
 # macOS-specific files
 .DS_Store
 
