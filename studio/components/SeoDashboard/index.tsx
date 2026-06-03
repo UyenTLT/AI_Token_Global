@@ -98,7 +98,7 @@ export function SeoDashboard() {
   const [view, setView] = useState<View>('search');
 
   return (
-    <Container width={3} paddingX={5} paddingY={5}>
+    <Container width={3} paddingX={[3, 4, 5]} paddingY={[4, 4, 5]}>
       <Stack space={5}>
         <Stack space={4}>
           <Flex align="center" gap={3} wrap="wrap" justify="space-between">
