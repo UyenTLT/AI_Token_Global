@@ -415,7 +415,8 @@ const noindex  = page?.seo?.noindex ?? false;
     </div>
 
     <div class="card-elevated reveal" style="overflow: hidden;">
-      <table class="compare-table" style="width: 100%; border-collapse: collapse;">
+      <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+      <table class="compare-table" style="width: 100%; min-width: 560px; border-collapse: collapse;">
         <thead>
           <tr style="background: #FAFAFE;">
             <th>{t('home.compareColModel')}</th><th>{t('home.compareColProvider')}</th><th>{t('home.compareColContext')}</th><th>{t('home.compareColInput')}</th><th>{t('home.compareColOutput')}</th><th>{t('home.compareColModality')}</th>
@@ -460,6 +461,7 @@ const noindex  = page?.seo?.noindex ?? false;
           </tr>
         </tbody>
       </table>
+      </div>
     </div>
     <p style="font-size: 0.78rem; color: #999; margin-top: 1rem; text-align: center;">{t('home.tableNote')}</p>
   </div>
