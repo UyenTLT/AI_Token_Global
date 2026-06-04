@@ -91,8 +91,15 @@ export async function getPostBySlug(slug: string, lang: string): Promise<SanityP
   if (!client) return null;
   return client.fetch(
     `*[_type == "post" && slug.current == $slug && language == $lang][0] {
-      _id, title, slug, publishedAt, excerpt, tags, category, articleNumber, language, body,
-      coverImage { asset -> { url } }
+      _id, title, slug, publishedAt, excerpt, tags, category, articleNumber, language,
+      coverImage { asset -> { url } },
+      body[] {
+        ...,
+        _type == "image" => {
+          ...,
+          asset -> { url, metadata { dimensions } }
+        }
+      }
     }`,
     { slug, lang }
   );
