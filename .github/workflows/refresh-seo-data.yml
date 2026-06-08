@@ -11,7 +11,9 @@
 #                                 refresh token from the first local run —
 #                                 this is what lets GSC run without a browser)
 #      CLOUDFLARE_API_TOKEN     – the cfut_… token (plain)
-#      SANITY_AUTH_TOKEN        – a Sanity deploy token (only if using sanity deploy)
+#      SANITY_AUTH_TOKEN        – a Sanity token with Deploy Studio AND write/Editor
+#                                 access (deploy = redeploy Studio; write = upload
+#                                 the seoInsights documents)
 # 2. Merge this branch to main — `schedule:` only fires from the default branch.
 #    (Until then, use the "Run workflow" button — workflow_dispatch — to test.)
 #
@@ -95,6 +97,17 @@ jobs:
             git commit -m "chore(seo): refresh data snapshots [skip ci]"
             git push
           fi
+
+      # ── Mirror snapshots into Sanity as seoInsights documents ─────────────
+      # Lets pipeline agents read the SEO numbers from the CMS (one singleton
+      # doc per source: seoInsights-gsc / -ga4 / -cloudflare) instead of parsing
+      # the raw JSON. Uses the Sanity CLI, so SANITY_AUTH_TOKEN must have
+      # write/Editor access (not just deploy).
+      - name: Upload SEO insights to Sanity
+        if: success()
+        run: node scripts/upload-seo-insights.mjs
+        env:
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
 
       # ── Studio redeploy ──────────────────────────────────────────────────
       # The Studio reads JSON at build time, so it must be redeployed to show the
