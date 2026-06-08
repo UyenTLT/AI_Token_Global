@@ -33,7 +33,7 @@ const canonicalURL = new URL(Astro.url.pathname, siteOrigin).href;
 
 const seoTitle = seo?.seoTitle ?? title;
 const seoDescription = seo?.seoDescription ?? description ?? t('meta.defaultDescription');
-const ogImageUrl = seo?.ogImage?.asset?.url ?? `${siteOrigin}/AI_Token_logoPNG.avif`;
+const ogImageUrl = seo?.ogImage?.asset?.url ?? `${siteOrigin}/og-image.png`;
 const shouldNoindex = seo?.noindex ?? noindex;
 
 const hreflangs = SUPPORTED_LANGS.map(l => ({
