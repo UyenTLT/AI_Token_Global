@@ -14,6 +14,7 @@ import { useCasesPageSchema } from './schemas/useCasesPage';
 import { tokenCalculatorPageSchema } from './schemas/tokenCalculatorPage';
 import { compliancePageSchema } from './schemas/compliancePage';
 import { homePageSchema } from './schemas/homePage';
+import { seoInsightsSchema } from './schemas/seoInsights';
 import { ArticleNumberFilter } from './components/ArticleNumberFilter';
 import { SeoDashboard } from './components/SeoDashboard';
 
@@ -50,6 +51,6 @@ export default defineConfig({
     },
   ],
   schema: {
-    types: [postSchema, imageMetaSchema, faqItemSchema, aiTrendsPageSchema, apiModelPageSchema, apiComparePageSchema, beginnersGuidePageSchema, userGuidePageSchema, useCasesPageSchema, tokenCalculatorPageSchema, compliancePageSchema, homePageSchema],
+    types: [postSchema, imageMetaSchema, faqItemSchema, aiTrendsPageSchema, apiModelPageSchema, apiComparePageSchema, beginnersGuidePageSchema, userGuidePageSchema, useCasesPageSchema, tokenCalculatorPageSchema, compliancePageSchema, homePageSchema, seoInsightsSchema],
   },
 });
