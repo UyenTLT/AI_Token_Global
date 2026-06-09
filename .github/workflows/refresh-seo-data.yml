@@ -104,8 +104,6 @@ jobs:
       # the raw JSON. Uses the Sanity CLI, so SANITY_AUTH_TOKEN must have
       # write/Editor access (not just deploy).
       - name: Upload SEO insights to Sanity
-        if: success()
-            continue-on-error: true
         run: node scripts/upload-seo-insights.mjs
         env:
           SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
