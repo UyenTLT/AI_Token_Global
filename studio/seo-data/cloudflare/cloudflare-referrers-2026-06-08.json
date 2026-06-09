@@ -5,5 +5,14 @@
     "rangeDays": 30,
     "dataSource": "cloudflare"
   },
-  "rows": []
+  "rows": [
+    {
+      "referrer": "Direct / none",
+      "visits": 30
+    },
+    {
+      "referrer": "www.aitoken.global",
+      "visits": 0
+    }
+  ]
 }

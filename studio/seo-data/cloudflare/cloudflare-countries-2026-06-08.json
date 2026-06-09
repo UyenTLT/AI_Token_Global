@@ -5,5 +5,18 @@
     "rangeDays": 30,
     "dataSource": "cloudflare"
   },
-  "rows": []
+  "rows": [
+    {
+      "country": "TW",
+      "visits": 20
+    },
+    {
+      "country": "BR",
+      "visits": 10
+    },
+    {
+      "country": "US",
+      "visits": 0
+    }
+  ]
 }

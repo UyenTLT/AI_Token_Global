@@ -6,9 +6,9 @@
     "dataSource": "cloudflare"
   },
   "current": {
-    "visits": 0,
-    "pageViews": 0,
-    "medianLoadMs": 0
+    "visits": 30,
+    "pageViews": 520,
+    "medianLoadMs": 149
   },
   "previous": {
     "visits": 0,
