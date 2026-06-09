@@ -1,0 +1,19 @@
+{
+  "meta": {
+    "siteUrl": "aitoken.global",
+    "snapshotDate": "2026-06-09",
+    "rangeDays": 30,
+    "dataSource": "gsc"
+  },
+  "criteria": "position 8-20, impressions >= 10",
+  "rows": [
+    {
+      "query": "chat api platform",
+      "locale": "en",
+      "clicks": 0,
+      "impressions": 15,
+      "ctr": 0,
+      "position": 11.133333333333333
+    }
+  ]
+}
