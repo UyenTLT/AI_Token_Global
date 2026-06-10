@@ -26,21 +26,37 @@ const structure = (S: StructureBuilder) =>
       S.listItem()
         .title('Blog Posts')
         .child(
-          S.documentList()
+          S.list()
             .title('Blog Posts')
-            .filter('_type == "post"')
-            .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
-        ),
-      S.listItem()
-        .title('Pipeline Posts')
-        .child(
-          S.documentList()
-            .title('Pipeline Posts')
-            .filter('_type == "post" && generatedByPipeline == true')
-            .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
+            .items([
+              S.listItem()
+                .title('🇺🇸 English')
+                .child(
+                  S.documentList()
+                    .title('🇺🇸 English')
+                    .filter('_type == "post" && language == "en"')
+                    .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
+                ),
+              S.listItem()
+                .title('🇪🇸 Spanish')
+                .child(
+                  S.documentList()
+                    .title('🇪🇸 Spanish')
+                    .filter('_type == "post" && language == "es"')
+                    .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
+                ),
+              S.listItem()
+                .title('🇮🇩 Indonesian')
+                .child(
+                  S.documentList()
+                    .title('🇮🇩 Indonesian')
+                    .filter('_type == "post" && language == "id"')
+                    .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
+                ),
+            ])
         ),
       S.divider(),
-      ...S.documentTypeListItems(),
+      ...S.documentTypeListItems().filter(item => item.getId() !== 'post'),
     ]);
 
 export default defineConfig({
